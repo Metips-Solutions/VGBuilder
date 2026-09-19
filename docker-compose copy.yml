@@ -1,0 +1,30 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${db_user}
+      POSTGRES_PASSWORD: ${db_password}
+      POSTGRES_DB: ${db_name}
+    ports:
+      - "${db_port}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  server:
+    build:
+      context: ./server
+    restart: unless-stopped
+    env_file:
+      - server/.env
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    volumes:
+      - ./server/src:/app/src # hot-reload del código sin rebuildear la imagen
+
+volumes:
+  pgdata:
