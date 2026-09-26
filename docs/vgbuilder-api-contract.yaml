@@ -1,0 +1,363 @@
+openapi: 3.0.3
+info:
+  title: VGBuilder API
+  version: "1.0.0"
+  description: >
+    Contrato de API unificado de VGBuilder. Une los tres módulos del
+    backend (Catalog, Inventory, Affinity), cada uno documentado por
+    separado más abajo con su propio alcance y reglas.
+
+    ────────────────────────────────────────────────────────────────
+    CATALOG (Epic 1 — catalog.routes.ts)
+    Hoy solo existe un endpoint real: GET /catalog/characters. Otras
+    entidades del esquema (games, artifact_sets, team_presets) todavía
+    no tienen endpoint propio en Catalog — team_presets se expone hoy
+    desde Affinity, no desde aquí. No agregar endpoints especulativos
+    a esta sección hasta que existan en catalog.routes.ts.
+
+    INVENTORY (Epic 2 — inventory.routes.ts)
+    Proxy de solo lectura hacia Enka Network: el navegador nos llama a
+    nosotros, nosotros llamamos a Enka del lado del servidor (evitando
+    CORS). No persiste nada del usuario (eso vive en IndexedDB del
+    cliente). Esta sección describe la respuesta YA NORMALIZADA por
+    inventory.service.ts, no el JSON crudo de Enka.
+
+    ⚠️ PENDIENTE DE RESOLVER CON EL EQUIPO: Enka identifica personajes,
+    armas y sets de artefactos con IDs NUMÉRICOS del juego (ej. avatarId
+    10000114), mientras que catalog.characters usa UUID/id interno. Se
+    necesita un mecanismo de mapeo (ej. columna `external_game_id` en
+    `characters` y `artifact_sets`) para poder cruzar un inventario real
+    contra el catálogo. Este contrato deja `gameCharacterId` como el id
+    numérico crudo hasta que se resuelva ese mapeo.
+
+    Nota sobre armas: `InventoryWeapon` es deliberadamente mínimo (solo
+    nombre e ícono para el dashboard). El motor de afinidad no consume
+    nada del arma, así que la Task 2.1.1 no necesita resolver el parseo
+    fino de affixMap/refinamiento para tener un inventario funcional en v1.
+
+    AFFINITY (Epic 3 — affinity.routes.ts)
+    Sirve datos crudos de dos tablas para que el motor de afinidad
+    (shared/affinity-engine, que corre en el navegador) calcule por su
+    cuenta. Este módulo NO calcula nada — si algo aquí implica calcular
+    un resultado, no pertenece a este contrato.
+    ────────────────────────────────────────────────────────────────
+
+servers:
+  - url: http://localhost:3000/api
+
+tags:
+  - name: Characters
+    description: Catalog (Epic 1)
+  - name: Inventory
+    description: Inventory (Epic 2)
+  - name: TagAffinities
+    description: Affinity (Epic 3)
+  - name: Presets
+    description: Affinity (Epic 3)
+
+paths:
+  # ── Catalog (Epic 1) ──────────────────────────────────────────────
+  /catalog/characters:
+    get:
+      tags: [Characters]
+      summary: Listar personajes con sus tags resueltos
+      description: >
+        Refleja catalog.service.ts (getCharactersWithTags): columnas fijas
+        de la tabla characters, más el arreglo de tags que sale del join
+        con character_tags/tags.
+      responses:
+        '200':
+          description: Lista de personajes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Character'
+
+  # ── Inventory (Epic 2) ────────────────────────────────────────────
+  /inventory/{uid}:
+    get:
+      tags: [Inventory]
+      summary: Obtener el inventario normalizado de un jugador por su UID de juego
+      parameters:
+        - name: uid
+          in: path
+          required: true
+          description: UID del jugador en el juego (ej. UID de Genshin Impact)
+          schema:
+            type: string
+          example: "601321537"
+      responses:
+        '200':
+          description: Inventario normalizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NormalizedInventoryResponse'
+        '404':
+          description: UID no encontrado o perfil no público en Enka
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '502':
+          description: Enka no respondió o respondió con error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  # ── Affinity (Epic 3) ─────────────────────────────────────────────
+  /affinity/tag-affinities:
+    get:
+      tags: [TagAffinities]
+      summary: Listar los pesos de afinidad entre pares de tags
+      responses:
+        '200':
+          description: Lista de afinidades tag-a-tag
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TagAffinity'
+
+  /affinity/presets:
+    get:
+      tags: [Presets]
+      summary: Listar presets de equipos meta
+      description: >
+        Misma tabla que team_presets del esquema; se expone desde Affinity
+        porque es affinity-engine (calcularMatchPreset) quien la consume
+        directamente, no Catalog.
+      responses:
+        '200':
+          description: Lista de presets
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TeamPreset'
+
+components:
+  schemas:
+    # ── Catalog (Epic 1) ────────────────────────────────────────────
+    CharacterTagRef:
+      type: object
+      description: Una entrada de character_tags ya resuelta contra tags, tal como la arma getCharactersWithTags.
+      required: [category, value]
+      properties:
+        category:
+          type: string
+          example: mechanic
+        value:
+          type: string
+          example: buff_vaporize_dmg
+
+    Character:
+      type: object
+      required: [id, name, element, weaponType, rarity, region, tags]
+      properties:
+        id:
+          type: string
+          description: >
+            ID interno/inestable. Úsalo solo como llave de join en memoria
+            durante la sesión (ej. para cruzar contra el inventario cargado
+            del jugador). No lo persistas ni lo trates como estable entre
+            cargas — mismo criterio ya establecido para TeamPreset.
+        name:
+          type: string
+        element:
+          type: string
+          description: Vocabulario libre; no está restringido a un enum en el contrato.
+          example: Pyro
+        weaponType:
+          type: string
+          example: Claymore
+        rarity:
+          type: integer
+        region:
+          type: string
+        alignmentClass:
+          type: string
+          nullable: true
+        imageUrl:
+          type: string
+          format: uri
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/CharacterTagRef'
+
+    # ── Inventory (Epic 2) ──────────────────────────────────────────
+    NormalizedInventoryResponse:
+      type: object
+      required: [uid, nickname, characters]
+      properties:
+        uid:
+          type: string
+          example: "601321537"
+        nickname:
+          type: string
+          nullable: true
+        accountLevel:
+          type: integer
+          nullable: true
+        characters:
+          type: array
+          items:
+            $ref: '#/components/schemas/InventoryCharacterEntry'
+
+    InventoryCharacterEntry:
+      type: object
+      required: [gameCharacterId, level, ascension, constellation, friendshipLevel, weapon, artifacts]
+      properties:
+        gameCharacterId:
+          type: integer
+          description: >
+            ID numérico crudo de Enka (avatarId). Pendiente de cruzar contra
+            catalog.characters una vez exista el mapeo (ver nota del módulo).
+          example: 10000114
+        level:
+          type: integer
+          example: 90
+        ascension:
+          type: integer
+          minimum: 0
+          maximum: 6
+          example: 6
+        constellation:
+          type: integer
+          minimum: 0
+          maximum: 6
+          description: Derivado del tamaño de talentIdList en la respuesta cruda de Enka (0 si no viene el campo).
+          example: 0
+        friendshipLevel:
+          type: integer
+          example: 10
+        weapon:
+          $ref: '#/components/schemas/InventoryWeapon'
+          nullable: true
+        artifacts:
+          type: array
+          items:
+            $ref: '#/components/schemas/InventoryArtifactPiece'
+
+    InventoryWeapon:
+      type: object
+      description: >
+        Deliberadamente mínimo: el motor de afinidad no consume nada del
+        arma (decisión de alcance de Epic 3 — las armas son mucho más
+        fáciles de conseguir/dupear que los personajes, así que no aportan
+        señal real sobre qué tan limitado está el inventario del jugador).
+        Este bloque existe solo para que el dashboard pueda mostrar qué
+        arma trae puesta cada personaje, no para cálculo. No agregar
+        gameWeaponId/level/ascension/refinement exacto aquí salvo que
+        surja una necesidad concreta de cálculo que lo justifique.
+      required: [name, icon]
+      properties:
+        name:
+          type: string
+          description: Nombre del arma tal cual lo expone Enka (vía flat.nameTextMapHash resuelto).
+          example: "Sacrificial Sword"
+        icon:
+          type: string
+          description: URL del ícono, tal cual lo expone Enka.
+        refinement:
+          type: integer
+          nullable: true
+          description: Opcional/best-effort. No garantizado en la v1 del proxy.
+          example: 2
+
+    InventoryArtifactPiece:
+      type: object
+      required: [slot, gameSetId, level, mainStat, subStats]
+      properties:
+        slot:
+          type: string
+          description: equipType crudo de Enka.
+          enum: [EQUIP_BRACER, EQUIP_NECKLACE, EQUIP_SHOES, EQUIP_RING, EQUIP_DRESS]
+        gameSetId:
+          type: integer
+          description: setId crudo de Enka. Mismo problema de mapeo que gameCharacterId.
+          example: 15040
+        level:
+          type: integer
+          example: 21
+        mainStat:
+          $ref: '#/components/schemas/ArtifactStat'
+        subStats:
+          type: array
+          items:
+            $ref: '#/components/schemas/ArtifactStat'
+
+    ArtifactStat:
+      type: object
+      required: [statType, value]
+      properties:
+        statType:
+          type: string
+          description: appendPropId / mainPropId crudo de Enka (ej. FIGHT_PROP_CRITICAL_HURT).
+          example: FIGHT_PROP_CRITICAL_HURT
+        value:
+          type: number
+          example: 13.2
+
+    Error:
+      type: object
+      required: [code, message]
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+
+    # ── Affinity (Epic 3) ───────────────────────────────────────────
+    TagAffinity:
+      type: object
+      description: >
+        weight es el peso de UNA fila (un par de tags), no un score final.
+        calcularSinergiaEquipo suma libremente todos los pares que
+        matcheen dentro del equipo evaluado, sin normalizar — el total de
+        un equipo NO tiene techo ni está acotado a -10/10. El frontend no
+        debe asumir que puede mostrar el score del equipo como un 0-100
+        directo; ese rango solo aplica por fila.
+      required: [id, tagAId, tagBId, weight]
+      properties:
+        id:
+          type: string
+        tagAId:
+          type: string
+        tagBId:
+          type: string
+        weight:
+          type: integer
+          minimum: -10
+          maximum: 10
+          description: Peso de esta fila (par de tags), según el comentario de schema.ts. No confundir con el score total de un equipo, que no está acotado.
+          example: 4
+
+    TeamPreset:
+      type: object
+      required: [id, name, composition]
+      properties:
+        id:
+          type: string
+          description: ID interno/inestable, mismo criterio que Character.id — llave de join en memoria durante la sesión, no persistente.
+        name:
+          type: string
+        composition:
+          type: array
+          description: >
+            Arreglo plano de slugs/nombres de personaje. Sin objetos
+            anidados ni campo role — calcularMatchPreset no lee nada más
+            que esto.
+          items:
+            type: string
+          example: ["xingqiu", "xiangling", "bennett", "chongyun"]
