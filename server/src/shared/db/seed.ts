@@ -18,34 +18,39 @@ import { eq } from "drizzle-orm";
 
 type CharacterSeed = {
     name: string;
-    elemento: string;
     rol: string;
     mecanica: string;
+    weapon_type: string;
+    rarity: BigInteger;
+    region: string;
+    alignment_class: string;
+    imageURL: string;
 };
 
 const ROSTER: CharacterSeed[] = [
-    { name: "Amber", elemento: "Pyro", rol: "Support", mecanica: "Aplicador Pyro off-field" },
-    { name: "Barbara", elemento: "Hydro", rol: "Healer", mecanica: "Aplicadora Hydro / curación" },
-    { name: "Beidou", elemento: "Electro", rol: "Sub-DPS", mecanica: "Aplicadora Electro on-field / shield" },
-    { name: "Bennett", elemento: "Pyro", rol: "Support", mecanica: "Aplicador Pyro off-field / buff ATK+curación" },
-    { name: "Chongyun", elemento: "Cryo", rol: "Support", mecanica: "Enabler de Freeze" },
-    { name: "Diluc", elemento: "Pyro", rol: "Main DPS", mecanica: "Aplicador Pyro on-field" },
-    { name: "Fischl", elemento: "Electro", rol: "Sub-DPS", mecanica: "Aplicadora Electro off-field / batería" },
-    { name: "Jean", elemento: "Anemo", rol: "Support", mecanica: "Enabler de Swirl / curación" },
-    { name: "Kaeya", elemento: "Cryo", rol: "Sub-DPS", mecanica: "Aplicador Cryo on-field" },
-    { name: "Keqing", elemento: "Electro", rol: "Main DPS", mecanica: "Aplicadora Electro on-field / movilidad" },
-    { name: "Klee", elemento: "Pyro", rol: "Main DPS", mecanica: "Aplicadora Pyro on-field / AoE" },
-    { name: "Lisa", elemento: "Electro", rol: "Sub-DPS", mecanica: "Aplicadora Electro AoE / CC" },
-    { name: "Mona", elemento: "Hydro", rol: "Sub-DPS", mecanica: "Aplicadora Hydro / amplificadora de daño" },
-    { name: "Ningguang", elemento: "Geo", rol: "Sub-DPS", mecanica: "Aplicadora Geo / shield" },
-    { name: "Noelle", elemento: "Geo", rol: "Support", mecanica: "Aplicadora Geo / shield+curación" },
-    { name: "Qiqi", elemento: "Cryo", rol: "Healer", mecanica: "Aplicadora Cryo / curación" },
-    { name: "Razor", elemento: "Electro", rol: "Main DPS", mecanica: "Aplicador Electro on-field" },
-    { name: "Sucrose", elemento: "Anemo", rol: "Support", mecanica: "Enabler de Swirl / buff EM" },
-    { name: "Venti", elemento: "Anemo", rol: "Support", mecanica: "Enabler de Swirl / agrupamiento (CC)" },
-    { name: "Xiangling", elemento: "Pyro", rol: "Sub-DPS", mecanica: "Aplicadora Pyro off-field / Vaporize-enabler" },
-    { name: "Xingqiu", elemento: "Hydro", rol: "Sub-DPS", mecanica: "Aplicador Hydro off-field / Vaporize-enabler" },
+    { name: "Amber", rol: "Support", mecanica: "Aplicador Pyro off-field",  weapon_type:"Bow", rarity: 4, region: "Mondstadt", alignment_class: null, imageURL: null},
+    { name: "Barbara", rol: "Healer", mecanica: "Aplicadora Hydro / curación", weapon_type:"Catalyst", rarity: 4, region: "Mondstadt", alignment_class: null, imageURL: null},
+    { name: "Beidou", rol: "Sub-DPS", mecanica: "Aplicadora Electro on-field / shield", weapon_type:"Claymore", rarity: 4, region: "Liyue", alignment_class: null, imageURL: null},
+    { name: "Bennett", rol: "Support", mecanica: "Aplicador Pyro off-field / buff ATK+curación", weapon_type:"Sword", rarity: 4, region: "Mondstadt", alignment_class: null, imageURL: null},
+    { name: "Chongyun", rol: "Support", mecanica: "Enabler de Freeze", weapon_type:"Claymore", rarity: 4, region: "Liyue", alignment_class: null, imageURL: null},
+    { name: "Diluc", rol: "Main DPS", mecanica: "Aplicador Pyro on-field", weapon_type:"Claymore", rarity: 5, region: "Mondstadt", alignment_class: null, imageURL: null},
+    { name: "Fischl", rol: "Sub-DPS", mecanica: "Aplicadora Electro off-field / batería", weapon_type:"Bow", rarity: 4, region: "Mondstadt", alignment_class: "Hexerei", imageURL: null},
+    { name: "Jean", rol: "Support", mecanica: "Enabler de Swirl / curación", weapon_type: "Sword", rarity: 4, region: "Mondstadt", alignment_class: null, imageURL: null},
+    { name: "Kaeya", rol: "Sub-DPS", mecanica: "Aplicador Cryo on-field", weapon_type: "Sword", rarity: 4, region: "Mondstadt", alignment_class: , imageURL: null},
+    { name: "Keqing", rol: "Main DPS", mecanica: "Aplicadora Electro on-field / movilidad", weapon_type: "Sword", rarity: 5, region: "Liyue", alignment_class: null, imageURL: null},
+    { name: "Klee",  rol: "Main DPS", mecanica: "Aplicadora Pyro on-field / AoE", weapon_type: "Catalyst", rarity: 5, region: "Mondstadt", alignment_class: "Hexerei", imageURL: null},
+    { name: "Lisa",  rol: "Sub-DPS", mecanica: "Aplicadora Electro AoE / CC", weapon_type: "Catalyst", rarity: 4, region: "Mondstadt", alignment_class: null, imageURL: null},
+    { name: "Mona",  rol: "Sub-DPS", mecanica: "Aplicadora Hydro / amplificadora de daño", weapon_type: "Catalyst", rarity: 5, region: "Mondstadt", alignment_class: "Hexerei", imageURL: null},
+    { name: "Ningguang", rol: "Sub-DPS", mecanica: "Aplicadora Geo / shield", weapon_type: "Catalyst", rarity: 4, region: "Liyue", alignment_class: null, imageURL: null},
+    { name: "Noelle", rol: "Support", mecanica: "Aplicadora Geo / shield+curación", weapon_type: "Claymore", rarity: 4, region: "Mondstadt", alignment_class: null, imageURL: null},
+    { name: "Qiqi", rol: "Healer", mecanica: "Aplicadora Cryo / curación", weapon_type: "Sword", rarity: 5, region: "Liyue", alignment_class: "Witch", imageURL: null},
+    { name: "Razor", rol: "Main DPS", mecanica: "Aplicador Electro on-field", weapon_type: "Claymore", rarity: 4, region: "Mondstadt", alignment_class: "Hexerei", imageURL: null},
+    { name: "Sucrose", rol: "Support", mecanica: "Enabler de Swirl / buff EM", weapon_type: "Catalyst", rarity: 4, region: "Mondstadt", alignment_class: "Hexerei", imageURL: null},
+    { name: "Venti", rol: "Support", mecanica: "Enabler de Swirl / agrupamiento (CC)", weapon_type: "Bow", rarity: 5, region: "Mondstadt", alignment_class: "Hexerei", imageURL: null},
+    { name: "Xiangling", rol: "Sub-DPS", mecanica: "Aplicadora Pyro off-field / Vaporize-enabler", weapon_type: "Polearm", rarity: 4, region: "Liyue", alignment_class: null, imageURL: null},
+    { name: "Xingqiu", rol: "Sub-DPS", mecanica: "Aplicador Hydro off-field / Vaporize-enabler", weapon_type: "Sword", rarity: 4, region: "Liyue", alignment_class: null, imageURL: null},
 ];
+
 
 async function seed() {
     console.log("Limpiando datos previos de genshin-impact...");
