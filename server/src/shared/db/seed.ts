@@ -21,34 +21,34 @@ type CharacterSeed = {
     rol: string;
     mecanica: string;
     weapon_type: string;
-    rarity: BigInteger;
+    rarity: number;
     region: string;
     alignment_class: string;
     imageURL: string;
 };
 
 const ROSTER: CharacterSeed[] = [
-    { name: "Amber", rol: "Support", mecanica: "Aplicador Pyro off-field",  weapon_type:"Bow", rarity: 4, region: "Mondstadt", alignment_class: null, imageURL: null},
-    { name: "Barbara", rol: "Healer", mecanica: "Aplicadora Hydro / curación", weapon_type:"Catalyst", rarity: 4, region: "Mondstadt", alignment_class: null, imageURL: null},
-    { name: "Beidou", rol: "Sub-DPS", mecanica: "Aplicadora Electro on-field / shield", weapon_type:"Claymore", rarity: 4, region: "Liyue", alignment_class: null, imageURL: null},
-    { name: "Bennett", rol: "Support", mecanica: "Aplicador Pyro off-field / buff ATK+curación", weapon_type:"Sword", rarity: 4, region: "Mondstadt", alignment_class: null, imageURL: null},
-    { name: "Chongyun", rol: "Support", mecanica: "Enabler de Freeze", weapon_type:"Claymore", rarity: 4, region: "Liyue", alignment_class: null, imageURL: null},
-    { name: "Diluc", rol: "Main DPS", mecanica: "Aplicador Pyro on-field", weapon_type:"Claymore", rarity: 5, region: "Mondstadt", alignment_class: null, imageURL: null},
-    { name: "Fischl", rol: "Sub-DPS", mecanica: "Aplicadora Electro off-field / batería", weapon_type:"Bow", rarity: 4, region: "Mondstadt", alignment_class: "Hexerei", imageURL: null},
-    { name: "Jean", rol: "Support", mecanica: "Enabler de Swirl / curación", weapon_type: "Sword", rarity: 4, region: "Mondstadt", alignment_class: null, imageURL: null},
-    { name: "Kaeya", rol: "Sub-DPS", mecanica: "Aplicador Cryo on-field", weapon_type: "Sword", rarity: 4, region: "Mondstadt", alignment_class: , imageURL: null},
-    { name: "Keqing", rol: "Main DPS", mecanica: "Aplicadora Electro on-field / movilidad", weapon_type: "Sword", rarity: 5, region: "Liyue", alignment_class: null, imageURL: null},
-    { name: "Klee",  rol: "Main DPS", mecanica: "Aplicadora Pyro on-field / AoE", weapon_type: "Catalyst", rarity: 5, region: "Mondstadt", alignment_class: "Hexerei", imageURL: null},
-    { name: "Lisa",  rol: "Sub-DPS", mecanica: "Aplicadora Electro AoE / CC", weapon_type: "Catalyst", rarity: 4, region: "Mondstadt", alignment_class: null, imageURL: null},
-    { name: "Mona",  rol: "Sub-DPS", mecanica: "Aplicadora Hydro / amplificadora de daño", weapon_type: "Catalyst", rarity: 5, region: "Mondstadt", alignment_class: "Hexerei", imageURL: null},
-    { name: "Ningguang", rol: "Sub-DPS", mecanica: "Aplicadora Geo / shield", weapon_type: "Catalyst", rarity: 4, region: "Liyue", alignment_class: null, imageURL: null},
-    { name: "Noelle", rol: "Support", mecanica: "Aplicadora Geo / shield+curación", weapon_type: "Claymore", rarity: 4, region: "Mondstadt", alignment_class: null, imageURL: null},
-    { name: "Qiqi", rol: "Healer", mecanica: "Aplicadora Cryo / curación", weapon_type: "Sword", rarity: 5, region: "Liyue", alignment_class: "Witch", imageURL: null},
-    { name: "Razor", rol: "Main DPS", mecanica: "Aplicador Electro on-field", weapon_type: "Claymore", rarity: 4, region: "Mondstadt", alignment_class: "Hexerei", imageURL: null},
-    { name: "Sucrose", rol: "Support", mecanica: "Enabler de Swirl / buff EM", weapon_type: "Catalyst", rarity: 4, region: "Mondstadt", alignment_class: "Hexerei", imageURL: null},
-    { name: "Venti", rol: "Support", mecanica: "Enabler de Swirl / agrupamiento (CC)", weapon_type: "Bow", rarity: 5, region: "Mondstadt", alignment_class: "Hexerei", imageURL: null},
-    { name: "Xiangling", rol: "Sub-DPS", mecanica: "Aplicadora Pyro off-field / Vaporize-enabler", weapon_type: "Polearm", rarity: 4, region: "Liyue", alignment_class: null, imageURL: null},
-    { name: "Xingqiu", rol: "Sub-DPS", mecanica: "Aplicador Hydro off-field / Vaporize-enabler", weapon_type: "Sword", rarity: 4, region: "Liyue", alignment_class: null, imageURL: null},
+    { name: "Amber", rol: "Support", mecanica: "Aplicador Pyro off-field",  weapon_type:"Bow", rarity: 4, region: "Mondstadt", alignment_class: "", imageURL: ""},
+    { name: "Barbara", rol: "Healer", mecanica: "Aplicadora Hydro / curación", weapon_type:"Catalyst", rarity: 4, region: "Mondstadt", alignment_class: "", imageURL: ""},
+    { name: "Beidou", rol: "Sub-DPS", mecanica: "Aplicadora Electro on-field / shield", weapon_type:"Claymore", rarity: 4, region: "Liyue", alignment_class: "", imageURL: ""},
+    { name: "Bennett", rol: "Support", mecanica: "Aplicador Pyro off-field / buff ATK+curación", weapon_type:"Sword", rarity: 4, region: "Mondstadt", alignment_class: "", imageURL: ""},
+    { name: "Chongyun", rol: "Support", mecanica: "Enabler de Freeze", weapon_type:"Claymore", rarity: 4, region: "Liyue", alignment_class: "", imageURL: ""},
+    { name: "Diluc", rol: "Main DPS", mecanica: "Aplicador Pyro on-field", weapon_type:"Claymore", rarity: 5, region: "Mondstadt", alignment_class: "", imageURL: ""},
+    { name: "Fischl", rol: "Sub-DPS", mecanica: "Aplicadora Electro off-field / batería", weapon_type:"Bow", rarity: 4, region: "Mondstadt", alignment_class: "Hexerei", imageURL: ""},
+    { name: "Jean", rol: "Support", mecanica: "Enabler de Swirl / curación", weapon_type: "Sword", rarity: 4, region: "Mondstadt", alignment_class: "", imageURL: ""},
+    { name: "Kaeya", rol: "Sub-DPS", mecanica: "Aplicador Cryo on-field", weapon_type: "Sword", rarity: 4, region: "Mondstadt", alignment_class: "", imageURL: ""},
+    { name: "Keqing", rol: "Main DPS", mecanica: "Aplicadora Electro on-field / movilidad", weapon_type: "Sword", rarity: 5, region: "Liyue", alignment_class: "", imageURL: ""},
+    { name: "Klee",  rol: "Main DPS", mecanica: "Aplicadora Pyro on-field / AoE", weapon_type: "Catalyst", rarity: 5, region: "Mondstadt", alignment_class: "Hexerei", imageURL: ""},
+    { name: "Lisa",  rol: "Sub-DPS", mecanica: "Aplicadora Electro AoE / CC", weapon_type: "Catalyst", rarity: 4, region: "Mondstadt", alignment_class: "", imageURL: ""},
+    { name: "Mona",  rol: "Sub-DPS", mecanica: "Aplicadora Hydro / amplificadora de daño", weapon_type: "Catalyst", rarity: 5, region: "Mondstadt", alignment_class: "Hexerei", imageURL: ""},
+    { name: "Ningguang", rol: "Sub-DPS", mecanica: "Aplicadora Geo / shield", weapon_type: "Catalyst", rarity: 4, region: "Liyue", alignment_class: "", imageURL: ""},
+    { name: "Noelle", rol: "Support", mecanica: "Aplicadora Geo / shield+curación", weapon_type: "Claymore", rarity: 4, region: "Mondstadt", alignment_class: "", imageURL: ""},
+    { name: "Qiqi", rol: "Healer", mecanica: "Aplicadora Cryo / curación", weapon_type: "Sword", rarity: 5, region: "Liyue", alignment_class: "Witch", imageURL: ""},
+    { name: "Razor", rol: "Main DPS", mecanica: "Aplicador Electro on-field", weapon_type: "Claymore", rarity: 4, region: "Mondstadt", alignment_class: "Hexerei", imageURL: ""},
+    { name: "Sucrose", rol: "Support", mecanica: "Enabler de Swirl / buff EM", weapon_type: "Catalyst", rarity: 4, region: "Mondstadt", alignment_class: "Hexerei", imageURL: ""},
+    { name: "Venti", rol: "Support", mecanica: "Enabler de Swirl / agrupamiento (CC)", weapon_type: "Bow", rarity: 5, region: "Mondstadt", alignment_class: "Hexerei", imageURL: ""},
+    { name: "Xiangling", rol: "Sub-DPS", mecanica: "Aplicadora Pyro off-field / Vaporize-enabler", weapon_type: "Polearm", rarity: 4, region: "Liyue", alignment_class: "", imageURL: ""},
+    { name: "Xingqiu", rol: "Sub-DPS", mecanica: "Aplicador Hydro off-field / Vaporize-enabler", weapon_type: "Sword", rarity: 4, region: "Liyue", alignment_class: "", imageURL: ""},
 ];
 
 
