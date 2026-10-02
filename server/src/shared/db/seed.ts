@@ -108,6 +108,9 @@ async function seed() {
         ]);
     }
 
+    // Llamada a la funcion de descripciones
+    await insertCharacterDescriptions();
+
     console.log("Listo ✅");
     process.exit(0);
 }
@@ -116,3 +119,38 @@ seed().catch((err) => {
     console.error(err);
     process.exit(1);
 });
+
+// Diccionario de descripciones
+const characterDescriptions: Record<string, string> = {
+    "Amber": "Arquera Pyro especializada en daño a distancia y utilidad. Utiliza su señuelo explosivo \"Barón Bunny\" para distraer enemigos y su Definitiva para aplicar fuego rápidamente y romper escudos. Además, su talento pasivo reduce el consumo de aguante al planear, siendo excelente para la exploración.",
+    "Barbara": "Catalizadora Hydro enfocada en curación. Su Habilidad Elemental crea un aro de agua que aplica Hydro y cura progresivamente, mientras que su Definitiva restaura una gran cantidad de vida a todo el equipo al instante. Su pasiva reduce el consumo de aguante.",
+    "Beidou": "Espadachina Claymore Electro destacada por su mecánica de contraataque. Su Habilidad Elemental absorbe daño para devolverlo como un golpe Electro devastador. Su Definitiva crea un escudo que lanza rayos a los enemigos al realizar ataques normales.",
+    "Bennett": "Espadachín Pyro especializado en soporte ofensivo. Su Definitiva crea un área de inspiración que cura rápidamente a los aliados con baja vida y otorga un enorme bono de Ataque a quienes estén dentro, siendo esencial para maximizar el daño del equipo.",
+    "Chongyun": "Espadachín Claymore Cryo enfocado en habilitar reacciones. Su Habilidad Elemental crea un campo de escarcha que imbuye en Cryo los ataques cuerpo a cuerpo de su equipo. Su Definitiva lanza espadas gigantes de hielo para causar daño explosivo instantáneo.",
+    "Diluc": "Espadachín Claymore Pyro especializado en daño continuo. Su Habilidad Elemental permite encadenar tres poderosos golpes de fuego, y su Definitiva lanza un fénix que arrasa a los enemigos y encanta su mandoble con daño Pyro temporalmente.",
+    "Fischl": "Arquera Electro enfocada en daño constante fuera del campo. Su Habilidad Elemental invoca a su cuervo \"Oz\", que dispara ataques Electro a los enemigos de forma continua. Su Definitiva sirve para reposicionar a Oz y generar daño de impacto.",
+    "Jean": "Espadachina Anemo versátil en curación y control. Su Habilidad Elemental permite succionar y lanzar a los enemigos. Su Definitiva crea un campo de dientes de león que cura a todo el equipo al instante, daña a los rivales y elimina estados elementales negativos.",
+    "Kaeya": "Espadachín Cryo de daño rápido y apoyo. Su Habilidad Elemental lanza una ráfaga de hielo de muy bajo tiempo de recarga. Su Definitiva crea carámbanos que orbitan alrededor del personaje activo, aplicando daño Cryo ideal para reacciones elementales.",
+    "Keqing": "Espadachina Electro de gran movilidad. Su Habilidad Elemental lanza un estilete al que puede teletransportarse, imbuyendo su arma en daño Electro. Su Definitiva desata una ráfaga de múltiples cortes rápidos en área, otorgándole invulnerabilidad momentánea.",
+    "Klee": "Catalizadora Pyro enfocada en explosiones y daño en área. Lanza bombas con sus ataques normales. Su Habilidad Elemental lanza al muñeco \"Saltarín\", que se divide en minas trampa, y su Definitiva invoca chispas que atacan automáticamente a los rivales.",
+    "Lisa": "Catalizadora Electro especializada en daño progresivo en área. Su Habilidad Elemental acumula cargas de conductividad en los enemigos para desatar un golpe final masivo. Su Definitiva crea un campo estático que ataca continuamente y reduce la defensa enemiga.",
+    "Mona": "Catalizadora Hydro enfocada en potenciar el daño del equipo. Su Habilidad Elemental invoca un señuelo ilusorio que atrae ataques. Su Definitiva atrapa a los enemigos en burbujas, amplificando enormemente el daño que reciben de los siguientes ataques.",
+    "Ningguang": "Catalizadora Geo orientada al daño de ráfaga y defensa. Acumula jades estelares con sus ataques normales para potenciar su ataque cargado. Su Habilidad Elemental crea un muro que bloquea proyectiles, y su Definitiva dispara una lluvia masiva de gemas rastreadoras.",
+    "Noelle": "Espadachina Claymore Geo que combina supervivencia y ataque. Su Habilidad Elemental genera un escudo que puede curar al equipo mientras ataca. Su Definitiva amplía el alcance de su arma y convierte todo su daño a Geo, escalando su poder con su propia Defensa.",
+    "Qiqi": "Espadachina Cryo enfocada en curación extrema. Su Habilidad Elemental invoca un orbe de hielo que ataca y cura progresivamente. Su Definitiva marca a los enemigos con talismanes; cualquier personaje que golpee a un objetivo marcado recuperará gran cantidad de vida.",
+    "Razor": "Espadachín Claymore Electro especializado en daño físico. Su Habilidad Elemental ataca y genera partículas para recargar energía rápidamente. Su Definitiva invoca al \"Lobo interno\", aumentando drásticamente su velocidad de ataque y su resistencia a interrupciones.",
+    "Sucrose": "Catalizadora Anemo de control de masas y apoyo. Sus habilidades atraen a los enemigos, agrupándolos y absorbiendo elementos. Su función principal es potenciar el daño de las reacciones elementales al compartir su propia Maestría Elemental con todo el equipo.",
+    "Venti": "Arquero Anemo supremo en control de masas. Su Habilidad Elemental lanza a los enemigos por los aires. Su Definitiva crea un inmenso vórtice que succiona a los enemigos ligeros, infligiendo daño Anemo continuo y facilitando reacciones elementales constantes.",
+    "Xiangling": "Lancera Pyro clave para daño sostenido fuera del campo. Su Habilidad Elemental despliega a \"Guoba\", que escupe fuego de forma autónoma. Su Definitiva crea un \"Pyronado\" giratorio que orbita al personaje activo, aplicando daño Pyro de manera ininterrumpida.",
+    "Xingqiu": "Espadachín Hydro de soporte indispensable. Su Habilidad Elemental crea espadas protectoras que reducen el daño recibido. Su Definitiva coordina veloces espadas de agua con los ataques normales del personaje activo, siendo perfecto para habilitar reacciones."
+};
+
+// Función asíncrona dedicada a actualizar las descripciones
+async function insertCharacterDescriptions() {
+    console.log("Inyectando descripciones de personajes...");
+    for (const [charName, charDesc] of Object.entries(characterDescriptions)) {
+        await db.update(characters)
+            .set({ description: charDesc })
+            .where(eq(characters.name, charName));
+    }
+}
