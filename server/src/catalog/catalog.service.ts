@@ -1,20 +1,24 @@
 import * as catalogRepository from "./catalog.repository";
 
-/**
- * Task 1.1.4 — Endpoints de solo lectura para el catálogo.
- *
- * Este servicio compone y formatea los datos que vienen del repositorio.
- * No sabe nada de HTTP (eso vive en catalog.routes.ts) ni de SQL (eso vive
- * en catalog.repository.ts).
- */
+type CharacterTagRef = { category: string; value: string };
 
 export async function getCharactersWithTags() {
-  const characters = await catalogRepository.findAllCharacters();
+ const [characters, allTags] = await Promise.all([
+  catalogRepository.findAllCharacters(),
+  catalogRepository.findAllCharacterTags(),
+ ]);
 
-  return Promise.all(
-    characters.map(async (character) => ({
-      ...character,
-      tags: await catalogRepository.findCharacterTags(character.id),
-    }))
-  );
+ // Agrupar tags por personaje en memoria
+ const tagsByCharacter = new Map<number, CharacterTagRef[]>();
+ for (const { characterId, category, value } of allTags) {
+  const list = tagsByCharacter.get(characterId) ?? [];
+  list.push({ category, value });
+  tagsByCharacter.set(characterId, list);
+ }
+
+ return characters.map((character) => ({
+  ...character,
+  id: String(character.id), // el contrato define id como string
+  tags: tagsByCharacter.get(character.id) ?? [],
+ }));
 }
