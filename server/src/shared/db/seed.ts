@@ -29,27 +29,27 @@ type CharacterSeed = {
 };
 
 const ROSTER: CharacterSeed[] = [
-    { name: "Amber", elemento: "Pyro", rol: "Support", weaponType:"Bow", rarity: 4, region: "Mondstadt", imageUrl: null, mechanics: [{value: "taunt"},{value: "pyro_application"},{value: "off_field_pyro_dmg"},{value: "buff_attack", minConstellation: 6}]},
-    { name: "Barbara",  elemento: "Hydro", rol: "Healer", weaponType:"Catalyst", rarity: 4, region: "Mondstadt", imageUrl: null, mechanics: [{value: "healer"},{value: "hydro_application"},{value: "buff_hydro_dmg", minConstellation: 2},{value: "revive", minConstellation: 6}]},
-    { name: "Beidou",  elemento: "Electro", rol: "Sub-DPS", weaponType:"Claymore", rarity: 4, region: "Liyue", imageUrl: null, mechanics: [{value: "off_field_electro_dmg"},{value: "electro_application"},{value: "coordinated_attacks"},{value: "damage_reduction"},{value: "interruption_resistance"},{value: "shield", minConstellation: 1},{value: "debuff_electro_res", minConstellation: 6}]},
-    { name: "Bennett",  elemento: "Pyro", rol: "Support", weaponType:"Sword", rarity: 4, region: "Mondstadt", imageUrl: null, mechanics: [{value: "healer"},{value: "buff_attack"},{value: "battery"},{value: "buff_pyro_dmg", minConstellation: 6},{value: "pyro_infusion", minConstellation: 6}]},
-    { name: "Chongyun",  elemento: "Cryo", rol: "Support", weaponType:"Claymore", rarity: 4, region: "Liyue", imageUrl: null, mechanics: [{value: "cryo_infusion"},{value: "buff_attack_speed"},{value: "debuff_cryo_res"},{value: "cooldown_reduction", minConstellation: 2}]},
-    { name: "Diluc",  elemento: "Pyro", rol: "Main DPS", weaponType:"Claymore", rarity: 5, region: "Mondstadt", imageUrl: null, mechanics: [{value: "pyro_application"},{value: "pyro_infusion"},{value: "buff_attack_speed", minConstellation: 2}]},
-    { name: "Fischl",  elemento: "Electro", rol: "Sub-DPS", weaponType:"Bow", rarity: 4, region: "Mondstadt", imageUrl: null, mechanics: [{value: "off_field_electro_dmg"},{value: "battery"},{value: "electro_application"},{value: "snapshot"},{value: "coordinated_attacks", minConstellation: 6},{value: "buff_attack", minAlignmentCount: 2}, {value: "buff_elemental_mastery", minAlignmentCount: 2}]},
-    { name: "Jean",  elemento: "Anemo", rol: "Support", weaponType: "Sword", rarity: 4, region: "Mondstadt", imageUrl: null, mechanics: [{value: "healer"},{value: "anemo_application"},{value: "crowd_control"},{value: "buff_attack_speed", minConstellation: 2},{value: "debuff_anemo_res", minConstellation: 4}]},
-    { name: "Kaeya",  elemento: "Cryo", rol: "Sub-DPS", weaponType: "Sword", rarity: 4, region: "Mondstadt", imageUrl: null, mechanics: [{value: "off_field_cryo_dmg"},{value: "cryo_application"},{value: "battery"},{value: "shield", minConstellation: 4}]},
-    { name: "Keqing",  elemento: "Electro", rol: "Main DPS", weaponType: "Sword", rarity: 5, region: "Liyue", imageUrl: null, mechanics: [{value: "electro_application"}]},
-    { name: "Klee",   elemento: "Pyro", rol: "Main DPS", weaponType: "Catalyst", rarity: 5, region: "Mondstadt", alignmentClass: "Hexerei", imageUrl: null, mechanics: [{value: "pyro_application"},{value: "battery"},{value: "coordinated_attacks"}]},
-    { name: "Lisa",   elemento: "Electro", rol: "Sub-DPS", weaponType: "Catalyst", rarity: 4, region: "Mondstadt",  imageUrl: null, mechanics: [{value: "off_field_electro_dmg"},{value: "electro_application"},{value: "debuff_defense"}]},
-    { name: "Mona",   elemento: "Hydro", rol: "Sub-DPS", weaponType: "Catalyst", rarity: 5, region: "Mondstadt", alignmentClass: "Hexerei", imageUrl: null, mechanics: [{value: "off_field_hydro_dmg"},{value: "hydro_application"},{value: "taunt"},{value: "crowd_control"},{value: "buff_all_dmg"}, {value: "buff_vaporize_dmg", minConstellation: 1},{value: "buff_electrocharged_dmg", minConstellation: 1},{value: "buff_hydro_swirl_dmg", minConstellation: 1},{value: "extend_frozen_duration", minConstellation: 1},{value: "buff_vaporize_dmg", minAlignmentCount: 2}]},
-    { name: "Ningguang",  elemento: "Geo", rol: "Sub-DPS", weaponType: "Catalyst", rarity: 4, region: "Liyue", imageUrl: null, mechanics: [{value: "geo_construct"},{value: "buff_geo_dmg"},{value: "battery", minConstellation: 2}]},
-    { name: "Noelle",  elemento: "Geo", rol: "Support", weaponType: "Claymore", rarity: 4, region: "Mondstadt", imageUrl: null, mechanics: [{value: "shield"},{value: "healer"},{value: "geo_application"},{value: "geo_infusion"},{value: "cooldown_reduction"}]},
-    { name: "Qiqi",  elemento: "Cryo", rol: "Healer", weaponType: "Sword", rarity: 5, region: "Liyue", alignmentClass: "Witch", imageUrl: null, mechanics: [{value: "healer"},{value: "cryo_application"},{value: "coordinated_attacks"},{value: "buff_superconduct_dmg", minAlignmentCount: 2},{value: "revive", minConstellation: 6}]},
-    { name: "Razor", elemento: "Electro", rol: "Main DPS", weaponType: "Claymore", rarity: 4, region: "Mondstadt", alignmentClass: "Hexerei", imageUrl: null, mechanics: [{value: "electro_application"},{value: "debuff_defense", minConstellation: 4}]},
-    { name: "Sucrose",  elemento: "Anemo", rol: "Support", weaponType: "Catalyst", rarity: 4, region: "Mondstadt", alignmentClass: "Hexerei", imageUrl: null, mechanics: [{value: "anemo_application"},{value: "battery"},{value: "buff_elemental_mastery"},{value: "buff_all_dmg", minAlignmentCount: 2},{value: "buff_hexerei_dmg", minAlignmentCount: 2}, {value: "buff_absorbed_elemental_dmg", minConstellation: 6}]},
-    { name: "Venti",  elemento: "Anemo", rol: "Support", weaponType: "Bow", rarity: 5, region: "Mondstadt", alignmentClass: "Hexerei", imageUrl: null, mechanics: [{value: "off_field_anemo_dmg"},{value: "anemo_application"},{value: "battery"},{value: "snapshot"},{value: "debuff_anemo_res", minConstellation: 2},{value: "debuff_physical_res", minAlignmentCount: 2},{value: "debuff_absorbed_elemental_res", minConstellation: 6}]},
-    { name: "Xiangling",  elemento: "Pyro", rol: "Sub-DPS", weaponType: "Polearm", rarity: 4, region: "Liyue", imageUrl: null, mechanics: [{value: "off_field_pyro_dmg"},{value: "pyro_application"},{value: "snapshot"},{value: "buff_attack"},{value: "debuff_pyro_res", minConstellation: 1},{value: "buff_pyro_dmg", minAlignmentCount: 6}]},
-    { name: "Xingqiu",  elemento: "Hydro", rol: "Sub-DPS", weaponType: "Sword", rarity: 4, region: "Liyue", imageUrl: null, mechanics: [{value: "off_field_hydro_dmg"},{value: "hydro_application"},{value: "coordinated_attacks"},{value: "damage_reduction"},{value: "interruption_resistance"},{value: "healer"},{value: "debuff_hydro_res", minConstellation: 2}]},
+    { name: "Amber", elemento: "Pyro", rol: "Support", weaponType: "Bow", rarity: 4, region: "Mondstadt", imageUrl: null, mechanics: [{ value: "taunt" }, { value: "pyro_application" }, { value: "off_field_pyro_dmg" }, { value: "buff_attack", minConstellation: 6 }] },
+    { name: "Barbara", elemento: "Hydro", rol: "Healer", weaponType: "Catalyst", rarity: 4, region: "Mondstadt", imageUrl: null, mechanics: [{ value: "healer" }, { value: "hydro_application" }, { value: "buff_hydro_dmg", minConstellation: 2 }, { value: "revive", minConstellation: 6 }] },
+    { name: "Beidou", elemento: "Electro", rol: "Sub-DPS", weaponType: "Claymore", rarity: 4, region: "Liyue", imageUrl: null, mechanics: [{ value: "off_field_electro_dmg" }, { value: "electro_application" }, { value: "coordinated_attacks" }, { value: "damage_reduction" }, { value: "interruption_resistance" }, { value: "shield", minConstellation: 1 }, { value: "debuff_electro_res", minConstellation: 6 }] },
+    { name: "Bennett", elemento: "Pyro", rol: "Support", weaponType: "Sword", rarity: 4, region: "Mondstadt", imageUrl: null, mechanics: [{ value: "healer" }, { value: "buff_attack" }, { value: "battery" }, { value: "buff_pyro_dmg", minConstellation: 6 }, { value: "pyro_infusion", minConstellation: 6 }] },
+    { name: "Chongyun", elemento: "Cryo", rol: "Support", weaponType: "Claymore", rarity: 4, region: "Liyue", imageUrl: null, mechanics: [{ value: "cryo_infusion" }, { value: "buff_attack_speed" }, { value: "debuff_cryo_res" }, { value: "cooldown_reduction", minConstellation: 2 }] },
+    { name: "Diluc", elemento: "Pyro", rol: "Main DPS", weaponType: "Claymore", rarity: 5, region: "Mondstadt", imageUrl: null, mechanics: [{ value: "pyro_application" }, { value: "pyro_infusion" }, { value: "buff_attack_speed", minConstellation: 2 }] },
+    { name: "Fischl", elemento: "Electro", rol: "Sub-DPS", weaponType: "Bow", rarity: 4, region: "Mondstadt", imageUrl: null, mechanics: [{ value: "off_field_electro_dmg" }, { value: "battery" }, { value: "electro_application" }, { value: "snapshot" }, { value: "coordinated_attacks", minConstellation: 6 }, { value: "buff_attack", minAlignmentCount: 2 }, { value: "buff_elemental_mastery", minAlignmentCount: 2 }] },
+    { name: "Jean", elemento: "Anemo", rol: "Support", weaponType: "Sword", rarity: 4, region: "Mondstadt", imageUrl: null, mechanics: [{ value: "healer" }, { value: "anemo_application" }, { value: "crowd_control" }, { value: "buff_attack_speed", minConstellation: 2 }, { value: "debuff_anemo_res", minConstellation: 4 }] },
+    { name: "Kaeya", elemento: "Cryo", rol: "Sub-DPS", weaponType: "Sword", rarity: 4, region: "Mondstadt", imageUrl: null, mechanics: [{ value: "off_field_cryo_dmg" }, { value: "cryo_application" }, { value: "battery" }, { value: "shield", minConstellation: 4 }] },
+    { name: "Keqing", elemento: "Electro", rol: "Main DPS", weaponType: "Sword", rarity: 5, region: "Liyue", imageUrl: null, mechanics: [{ value: "electro_application" }] },
+    { name: "Klee", elemento: "Pyro", rol: "Main DPS", weaponType: "Catalyst", rarity: 5, region: "Mondstadt", alignmentClass: "Hexerei", imageUrl: null, mechanics: [{ value: "pyro_application" }, { value: "battery" }, { value: "coordinated_attacks" }] },
+    { name: "Lisa", elemento: "Electro", rol: "Sub-DPS", weaponType: "Catalyst", rarity: 4, region: "Mondstadt", imageUrl: null, mechanics: [{ value: "off_field_electro_dmg" }, { value: "electro_application" }, { value: "debuff_defense" }] },
+    { name: "Mona", elemento: "Hydro", rol: "Sub-DPS", weaponType: "Catalyst", rarity: 5, region: "Mondstadt", alignmentClass: "Hexerei", imageUrl: null, mechanics: [{ value: "off_field_hydro_dmg" }, { value: "hydro_application" }, { value: "taunt" }, { value: "crowd_control" }, { value: "buff_all_dmg" }, { value: "buff_vaporize_dmg", minConstellation: 1, minAlignmentCount: 2 }, { value: "buff_electrocharged_dmg", minConstellation: 1 }, { value: "buff_hydro_swirl_dmg", minConstellation: 1 }, { value: "extend_frozen_duration", minConstellation: 1 }] },
+    { name: "Ningguang", elemento: "Geo", rol: "Sub-DPS", weaponType: "Catalyst", rarity: 4, region: "Liyue", imageUrl: null, mechanics: [{ value: "geo_construct" }, { value: "buff_geo_dmg" }, { value: "battery", minConstellation: 2 }] },
+    { name: "Noelle", elemento: "Geo", rol: "Support", weaponType: "Claymore", rarity: 4, region: "Mondstadt", imageUrl: null, mechanics: [{ value: "shield" }, { value: "healer" }, { value: "geo_application" }, { value: "geo_infusion" }, { value: "cooldown_reduction" }] },
+    { name: "Qiqi", elemento: "Cryo", rol: "Healer", weaponType: "Sword", rarity: 5, region: "Liyue", alignmentClass: "Witch", imageUrl: null, mechanics: [{ value: "healer" }, { value: "cryo_application" }, { value: "coordinated_attacks" }, { value: "buff_superconduct_dmg", minAlignmentCount: 2 }, { value: "revive", minConstellation: 6 }] },
+    { name: "Razor", elemento: "Electro", rol: "Main DPS", weaponType: "Claymore", rarity: 4, region: "Mondstadt", alignmentClass: "Hexerei", imageUrl: null, mechanics: [{ value: "electro_application" }, { value: "debuff_defense", minConstellation: 4 }] },
+    { name: "Sucrose", elemento: "Anemo", rol: "Support", weaponType: "Catalyst", rarity: 4, region: "Mondstadt", alignmentClass: "Hexerei", imageUrl: null, mechanics: [{ value: "anemo_application" }, { value: "battery" }, { value: "buff_elemental_mastery" }, { value: "buff_all_dmg", minAlignmentCount: 2 }, { value: "buff_hexerei_dmg", minAlignmentCount: 2 }, { value: "buff_absorbed_elemental_dmg", minConstellation: 6 }] },
+    { name: "Venti", elemento: "Anemo", rol: "Support", weaponType: "Bow", rarity: 5, region: "Mondstadt", alignmentClass: "Hexerei", imageUrl: null, mechanics: [{ value: "off_field_anemo_dmg" }, { value: "anemo_application" }, { value: "battery" }, { value: "snapshot" }, { value: "debuff_anemo_res", minConstellation: 2 }, { value: "debuff_physical_res", minAlignmentCount: 2 }, { value: "debuff_absorbed_elemental_res", minConstellation: 6 }] },
+    { name: "Xiangling", elemento: "Pyro", rol: "Sub-DPS", weaponType: "Polearm", rarity: 4, region: "Liyue", imageUrl: null, mechanics: [{ value: "off_field_pyro_dmg" }, { value: "pyro_application" }, { value: "snapshot" }, { value: "buff_attack" }, { value: "debuff_pyro_res", minConstellation: 1 }, { value: "buff_pyro_dmg", minAlignmentCount: 6 }] },
+    { name: "Xingqiu", elemento: "Hydro", rol: "Sub-DPS", weaponType: "Sword", rarity: 4, region: "Liyue", imageUrl: null, mechanics: [{ value: "off_field_hydro_dmg" }, { value: "hydro_application" }, { value: "coordinated_attacks" }, { value: "damage_reduction" }, { value: "interruption_resistance" }, { value: "healer" }, { value: "debuff_hydro_res", minConstellation: 2 }] },
 ];
 
 
@@ -96,16 +96,35 @@ async function seed() {
     for (const c of ROSTER) {
         const [character] = await db
             .insert(characters)
-            .values({ gameId: game.id, name: c.name, element: c.elemento, weaponType: c.weaponType, rarity: c.rarity, region: c.region, alignmentClass: c.alignmentClass ?? null, imageUrl: c.imageUrl,})
+            .values({
+                gameId: game.id,
+                name: c.name,
+                element: c.elemento,
+                weaponType: c.weaponType,
+                rarity: c.rarity,
+                region: c.region,
+                alignmentClass: c.alignmentClass ?? null,
+                imageUrl: c.imageUrl,
+            })
             .returning();
 
         const rolTagId = await getOrCreateTag("rol", c.rol);
-        const mecanicaTagId = await getOrCreateTag("mecanica", c.mecanica);
 
-        await db.insert(characterTags).values([
+        const rows: (typeof characterTags.$inferInsert)[] = [
             { characterId: character.id, tagId: rolTagId },
-            { characterId: character.id, tagId: mecanicaTagId },
-        ]);
+        ];
+
+        for (const m of c.mechanics) {
+            const tagId = await getOrCreateTag("mecanica", m.value);
+            rows.push({
+                characterId: character.id,
+                tagId,
+                minConstellation: m.minConstellation ?? null,
+                minAlignmentCount: m.minAlignmentCount ?? null,
+            });
+        }
+
+        await db.insert(characterTags).values(rows);
     }
 
     // Llamada a la funcion de descripciones
