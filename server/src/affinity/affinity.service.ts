@@ -6,15 +6,14 @@ import {
   characterArtifactSets,
 } from "../shared/db/schema";
 import { eq } from "drizzle-orm";
+import { findOptimalTeams, MatchInput, TeamMatchResult } from "../shared/affinity-engine";
 
 /**
- * OJO: este servicio NO calcula sinergia ni match. Esa lógica vive en
- * `shared/affinity-engine/` y se ejecuta en el cliente.
+ * Servicio del Módulo de Afinidad — Epic 3.
  *
- * Lo único que hace este módulo del backend es servir los datos que el
- * cliente necesita para poder calcular ahí (la tabla de afinidad, los
- * presets y la matriz de soporte de artefactos) — es una extensión de
- * solo lectura del catálogo, específica para el motor de afinidad.
+ * Expone:
+ * 1. Endpoints de lectura de metadata (tags, presets, artefactos).
+ * 2. Endpoint de cálculo directo del motor en backend para pruebas de API (POST /affinity/match).
  */
 
 export async function getTagAffinityTable() {
@@ -39,4 +38,8 @@ export async function getCharacterArtifactSets() {
     })
     .from(characterArtifactSets)
     .innerJoin(artifactSets, eq(characterArtifactSets.artifactSetId, artifactSets.id));
+}
+
+export async function calculateMatch(input: MatchInput): Promise<TeamMatchResult[]> {
+  return findOptimalTeams(input);
 }
