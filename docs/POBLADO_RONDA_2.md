@@ -128,8 +128,8 @@ Siguiendo las decisiones arquitectónicas del motor de VGBuilder (`BITACORA_INVE
 * **Needs:** Ninguna (Soporte universal sin dependencias).
 * **Anti-Tags:** Ninguna.
 * **Sets de Soporte KQM:**
-  - *Tenacidad de la Geoarmada* (Prioridad: **10** — BiS indiscutible; los pulsos del pilar mantienen activo el +20% ATK y +30% de fuerza de escudo continuamente).
-  - *Petra Arcaica* (Prioridad: **9** — Al recoger el cristal elemental con Zhongli, otorga **+35% de Bono de Daño Elemental** al equipo durante 10s).
+  - *Petra Arcaica* (Prioridad: **10** — BiS ofensivo; al recoger el cristal elemental con Zhongli, otorga **+35% de Bono de Daño Elemental** al equipo durante 10s, superando con creces a Tenacidad en carrys que no escalan con ATK como Hu Tao o Neuvillette).
+  - *Tenacidad de la Geoarmada* (Prioridad: **9** — los pulsos del pilar mantienen activo el +20% ATK y +30% de fuerza de escudo continuamente).
   - *Ritual Antiguo de la Nobleza* (Prioridad: **8** — Definitiva de bajo coste: 40 pts).
   - *Instructor* (Prioridad: **8** — +120 EM tras cristalizar en campo).
   - *Pergamino del Héroe* (Prioridad: **7**).
@@ -217,7 +217,7 @@ Siguiendo las decisiones arquitectónicas del motor de VGBuilder (`BITACORA_INVE
   - `need_geo_partner` (Prioridad: **8**): En el arquetipo clásico *Doble Geo Doble Hydro* (Hu Tao + Xingqiu + Zhongli + Albedo).
 * **Anti-Tags:**
   - Su infusión Pyro en E es absoluta e inamovible.
-  - *Nota de conflicto KQM:* Hu Tao evita curadores masivos continuos que la mantengan al 100% de vida, prefiriendo escudos con mitigación de daño para conservar su bono $< 50\%$ HP.
+  - *Calibración de Curación (Soft Penalty -250 pts):* En equipos pre-Furina, Hu Tao prefiere jugar a $< 50\%$ HP para activar su Pasiva A4 (+33% Bono Pyro) y pasiva de Báculo de Homa. En lugar de una exclusión destructiva (-999 pts), el motor aplica una **penalización ligera (-250 pts) a curadores continuos masivos**, permitiendo que sanadores flexibles o composiciones futuras con **Furina** (donde la curación grupal es obligatoria para acumular *Algarabía*) sigan siendo viables y altamente competitivas.
 * **Sets de Soporte KQM:**
   - N/A (Main DPS de impacto propio).
 
@@ -270,23 +270,26 @@ Siguiendo las decisiones arquitectónicas del motor de VGBuilder (`BITACORA_INVE
 
 ### 11. Eula
 * **Rareza:** 5★ | **Elemento:** Cryo | **Arma:** Mandoble | **Región:** Mondstadt | **Alineamiento:** `None`
-* **Roles KQM:** `Main DPS` (La Reina del Nuke Físico)
+* **Roles KQM:** `Main DPS`, `Support` (Debuffer Físico y Cryo / Sub-DPS Nuke)
 * **Damage Profile:** Physical Melee (Espada Luminosa acumulativa)
 * **Offers (Aportes Colectivos al Equipo):**
-  - `debuff_physical_res`: Mantener pulsada su habilidad elemental reduce la **Resistencia Física enemiga hasta en un -25%** y la Resistencia Cryo en un -25%.
+  - `debuff_physical_res`: Al mantener pulsada su habilidad elemental (Hold E) consumiendo 2 cargas de Corazón Impasible, **reduce la Resistencia Física de los enemigos en un -25%** durante 7s (debuffer físico de alto calibre para Razor, Xinyan o carrys físicos cuando no se dispone de Rosaria $C_6$ o Zhongli).
+  - `debuff_cryo_res`: El mismo Hold E **reduce la Resistencia Cryo enemiga en un -25%**, habilitando soporte para carrys Cryo (Ganyu, Rosaria, Chongyun).
   - `interruption_resistance`: Las cargas de Corazón Impasible otorgan aplomo casi inquebrantable y bono de DEF.
   - `cryo_application`: Impactos de Cryo en E y Q para facilitar la reacción de Superconductor.
-  - `physical_nuke`: La explosión de su Definitiva inflige el daño físico plano más demoledor del juego base.
-* **Demandas del Carry (`needs`):**
+  - `physical_nuke`: La explosión de su Definitiva inflige un daño de ráfaga masivo incluso sin pasar 7s en campo (*quickswap burst*).
+* **Demandas del Carry (`needs` si actúa como Main DPS):**
   - `need_physical_shred` / `need_reaction_enabler` (Prioridad: **10**): Exige un aplicador Electro fuera de campo (Fischl, Beidou, Lisa, Raiden) para activar **Superconductor (-40% de Resistencia Física enemiga)**.
   - `need_battery_cryo` / `need_battery` (Prioridad: **10**): Su Definitiva cuesta 80 puntos de energía y su generación propia es muy baja. Demanda una batería Cryo especializada: Diona (con Sacrificio) o Rosaria (con Favonius).
   - `need_sustain` / `need_shield` (Prioridad: **9**): Durante los 7s de carga de la Espada Luminosa no puede cambiar de personaje ni esquivar en exceso para maximizar acumulaciones; un escudo o sanador continuo es crítico.
   - `need_attack_buff` (Prioridad: **8**): Bennett (si no es $C_6$), Rosaria con Nobleza o Tenacidad en escudero.
 * **Anti-Tags (Incompatibilidades Duras):**
-  - `pyro_infusion`: **Bennett $C_6$ destruye completamente a Eula**, convirtiendo sus ataques normales en Pyro e inutilizando todos sus cálices y bonos de daño físico (+100%+ Phys DMG).
+  - `pyro_infusion`: **Bennett $C_6$ destruye completamente a Eula como Carry**, convirtiendo sus ataques normales en Pyro e inutilizando todos sus cálices y bonos de daño físico (+100%+ Phys DMG).
   - `cryo_infusion`: **Chongyun convierte sus golpes normales en Cryo**, arruinando su daño físico sostenido.
-* **Sets de Soporte KQM:**
-  - N/A (Main DPS de impacto propio; viste *Llamas Albinas* 4pc).
+* **Sets de Soporte KQM (si actúa como Support/Sub-DPS):**
+  - *Ritual Antiguo de la Nobleza* (Prioridad: **8** — ráfaga en Q +20% ATK al carry).
+  - *Instructor* (Prioridad: **7**).
+  - *Tenacidad de la Geoarmada* (Prioridad: **6**).
 
 ---
 
@@ -297,14 +300,14 @@ Siguiendo las decisiones arquitectónicas del motor de VGBuilder (`BITACORA_INVE
 | **Diona** | Cryo | Arco | `Support`, `Healer` | Cryo Utility / Shield-Heal | `shield`, `healer`, `battery`, `cleanse`, `buff_elemental_mastery` ($C_6$ +200 EM), `buff_movement_speed` | - | - | *Nobleza* (9) / *Instructor* (8) |
 | **Tartaglia** | Hydro | Arco | `Main DPS` | Hydro Fast Melee / Riptide AoE | `hydro_application` (sin ICD), `buff_normal_attack_level` (+1), `interruption_power`, `coordinated_attacks` ($C_4$) | `need_offfield_pyro_dmg` (10), `need_attack_buff` (10), `need_resistance_shred` (9) | - | DPS Propio |
 | **Xinyan** | Pyro | Mandoble | `Support`, `Sub-DPS`, `Main DPS` ($C_6$) | Physical Melee / Pyro Shield | `shield`, `pyro_application`, `buff_physical_dmg` (+15%), `debuff_physical_res` ($C_4$ -15%), `cleanse` | Si DPS: `need_physical_shred` (10), `need_attack_buff` (8) | `cryo_infusion`, `pyro_infusion` | *Tenacidad* (8) / *Nobleza* (8) |
-| **Zhongli** | Geo | Lanza | `Support` | Geo Tank / Universal Shield | `shield` (supremo), `interruption_resistance` (total), `debuff_all_res` (-20% universal), `crowd_control`, `geo_construct`, `healer` ($C_6$) | - | - | *Tenacidad* (10) / *Petra* (9) |
+| **Zhongli** | Geo | Lanza | `Support` | Geo Tank / Universal Shield | `shield` (supremo), `interruption_resistance` (total), `debuff_all_res` (-20% universal), `crowd_control`, `geo_construct`, `healer` ($C_6$) | - | - | *Petra* (10) / *Tenacidad* (9) |
 | **Albedo** | Geo | Espada | `Sub-DPS`, `Support` | Geo Off-Field AoE DEF | `off_field_geo_dmg`, `geo_construct`, `battery`, `buff_elemental_mastery` (+125 EM), `buff_plunge_dmg` ($C_4$), `buff_all_dmg` ($C_6$) | - | - | *Tenacidad* (9) / *Petra* (9) |
 | **Ganyu** | Cryo | Arco | `Main DPS`, `Sub-DPS`, `Support` | Cryo Charged Ranged / AoE Rain | `off_field_cryo_dmg`, `cryo_application`, `buff_cryo_dmg` (+20%), `taunt`, `debuff_cryo_res` ($C_1$) | Si DPS Melt: `need_shield` (10), `need_pyro_app` (10)<br>Si Freeze: `need_hydro_app` (10), `need_crowd_control` (10) | - | *Nobleza* (9) (como Sub-DPS) |
 | **Xiao** | Anemo | Lanza | `Main DPS` | Anemo Melee Plunge AoE | `anemo_application`, `interruption_power` | `need_battery_anemo` (10), `need_sustain` (10), `need_resistance_shred` (9), `need_attack_buff` (8) | - | DPS Propio |
-| **Hu Tao** | Pyro | Lanza | `Main DPS` | Pyro Melee Fast | `buff_crit_rate` (A1 +12%), `pyro_application` | `need_hydro_app` (10 Xingqiu), `need_shield` (10), `need_resistance_shred` (9), `need_geo_partner` (8) | - | DPS Propio |
+| **Hu Tao** | Pyro | Lanza | `Main DPS` | Pyro Melee Fast | `buff_crit_rate` (A1 +12%), `pyro_application` | `need_hydro_app` (10 Xingqiu), `need_shield` (10), `need_resistance_shred` (9), `need_geo_partner` (8) | Curadores continuos (-250 soft penalty) | DPS Propio |
 | **Rosaria** | Cryo | Lanza | `Sub-DPS`, `Support` | Cryo Burst / Phys Buffer | `off_field_cryo_dmg`, `cryo_application`, `buff_crit_rate` (A4 +15%), `debuff_physical_res` ($C_6$ -20%), `battery` | Si DPS: `need_physical_shred` (10) | Si DPS: `cryo_infusion`, `pyro_infusion` | *Nobleza* (10) / *Instructor* (8) |
 | **Yanfei** | Pyro | Catalizador | `Main DPS`, `Support` ($C_4$) | Pyro Ranged AoE / Shielder | `pyro_application`, `catalyst_buffer` (TTDS), `shield` ($C_4$ 45% HP "Tankfei") | Si DPS: `need_hydro_app` (10), `need_shield` (10), `need_resistance_shred` (9) | - | *Nobleza* (9) / *Instructor* (9) (Tankfei) |
-| **Eula** | Cryo | Mandoble | `Main DPS` | Physical Melee Nuke | `debuff_physical_res` (-25%), `interruption_resistance`, `cryo_application`, `physical_nuke` | `need_physical_shred` (10 Superconductor), `need_battery_cryo` (10 Diona/Rosaria), `need_sustain` (9) | **`pyro_infusion`** (Bennett $C_6$), **`cryo_infusion`** (Chongyun) | DPS Propio |
+| **Eula** | Cryo | Mandoble | `Main DPS`, `Support` | Physical Melee Nuke / Debuffer | `debuff_physical_res` (-25%), `debuff_cryo_res` (-25%), `interruption_resistance`, `cryo_application`, `physical_nuke` | Si DPS: `need_physical_shred` (10), `need_battery_cryo` (10), `need_sustain` (9) | **`pyro_infusion`** (Bennett $C_6$), **`cryo_infusion`** (Chongyun) | *Nobleza* (8) / DPS Propio |
 
 ---
 
@@ -553,10 +556,11 @@ export const ROUND_2_CHARACTERS = [
     weaponType: "Claymore",
     rarity: 5,
     region: "Mondstadt",
-    roles: ["Main DPS"],
+    roles: ["Main DPS", "Support"],
     damageProfile: "Physical Melee",
     mechanics: [
       { category: "mecanica", value: "debuff_physical_res" },
+      { category: "mecanica", value: "debuff_cryo_res" },
       { category: "mecanica", value: "interruption_resistance" },
       { category: "mecanica", value: "cryo_application" },
       { category: "mecanica", value: "physical_nuke" },
@@ -568,8 +572,8 @@ export const ROUND_2_CHARACTERS = [
       { value: "need_attack_buff", priority: 8 },
     ],
     antiTags: [
-      { value: "pyro_infusion", reason: "Sobrescribe golpes normales a Pyro, destruyendo sus bonos de daño físico" },
-      { value: "cryo_infusion", reason: "Sobrescribe golpes normales a Cryo, destruyendo sus bonos de daño físico" },
+      { value: "pyro_infusion", reason: "Sobrescribe golpes normales a Pyro, destruyendo sus bonos de daño físico (si actúa como Carry)" },
+      { value: "cryo_infusion", reason: "Sobrescribe golpes normales a Cryo, destruyendo sus bonos de daño físico (si actúa como Carry)" },
     ],
   },
 ];
