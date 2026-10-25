@@ -59,7 +59,7 @@ describe("sugerirSetPorArquetipo (Legacy)", () => {
 
 describe("Motor de Matching v2.0 (Epic 3)", () => {
   // Inventario con los 21 personajes iniciales a constelación estándar
-  const fullInventory = DEFAULT_CHARACTERS.map((c) => ({
+  const fullInventory = DEFAULT_CHARACTERS.slice(0, 21).map((c) => ({
     characterId: c.id,
     constellation: c.name === "Bennett" ? 1 : c.name === "Xingqiu" ? 2 : 0,
   }));
@@ -404,5 +404,166 @@ describe("Motor de Matching v2.0 (Epic 3)", () => {
     const barbaraTeam = results.find((r) => r.team.some((m) => m.name === "Barbara"));
     expect(barbaraTeam).toBeDefined();
     expect(topTeam.totalScore).toBeGreaterThan(barbaraTeam!.totalScore);
+  });
+});
+
+
+describe("Ronda 2 — Expansión de Roster (11 nuevos personajes)", () => {
+  const fullInventory32 = DEFAULT_CHARACTERS.map((c) => ({
+    characterId: c.id,
+    constellation: c.name === "Bennett" ? 1 : c.name === "Xingqiu" ? 2 : 0,
+  }));
+
+  test("Ningguang: Con Zhongli disponible en Ronda 2, lo prioriza como socio Geo #1 sobre Noelle", () => {
+    const ningguangId = 14;
+    const results = findOptimalTeams({
+      targetCharacterId: ningguangId,
+      inventory: fullInventory32,
+    });
+
+    expect(results.length).toBeGreaterThanOrEqual(1);
+    const topTeam = results[0];
+    const memberNames = topTeam.team.map((m) => m.name);
+    expect(memberNames).toContain("Zhongli");
+    expect(memberNames).toContain("Bennett");
+    expect(topTeam.archetype).toContain("Doble Geo");
+  });
+
+  test("Hu Tao: Recomienda Doble Geo con Xingqiu, Zhongli y Albedo como Top 1 absoluto y valida sets KQM", () => {
+    const huTaoId = 29;
+    const results = findOptimalTeams({
+      targetCharacterId: huTaoId,
+      inventory: fullInventory32,
+    });
+
+    expect(results.length).toBeGreaterThanOrEqual(1);
+    const topTeam = results[0];
+
+    expect(topTeam.team[0].name).toBe("Hu Tao");
+    const memberNames = topTeam.team.map((m) => m.name);
+    expect(memberNames).toContain("Xingqiu");
+    expect(memberNames).toContain("Zhongli");
+    expect(memberNames).toContain("Albedo");
+    expect(topTeam.archetype).toBe("Hu Tao Doble Geo");
+
+    // Verificar asignación de sets: Zhongli Petra (10), Albedo Tenacidad (9), Xingqiu Nobleza (8)
+    const zhongliArt = topTeam.artifactAssignments.find((a) => a.characterName === "Zhongli");
+    const albedoArt = topTeam.artifactAssignments.find((a) => a.characterName === "Albedo");
+    expect(zhongliArt?.artifactSetName).toBe("Petra Arcaica");
+    expect(albedoArt?.artifactSetName).toBe("Tenacidad de la Geoarmada");
+  });
+
+  test("Hu Tao: Aplica soft penalty (-250 pts) a curadores continuos masivos sin romper viabilidad", () => {
+    const huTaoId = 29;
+    const resultsWithBarbara = findOptimalTeams({
+      targetCharacterId: huTaoId,
+      inventory: [
+        { characterId: 29, constellation: 0 }, // Hu Tao
+        { characterId: 21, constellation: 2 }, // Xingqiu
+        { characterId: 25, constellation: 0 }, // Zhongli
+        { characterId: 2, constellation: 0 },  // Barbara
+      ],
+    });
+
+    expect(resultsWithBarbara.length).toBeGreaterThanOrEqual(1);
+    const team = resultsWithBarbara[0];
+    const hasPenalty = team.explanations.some((e) =>
+      e.includes("Penalización leve: Curador continuo")
+    );
+    expect(hasPenalty).toBe(true);
+  });
+
+  test("Tartaglia: Recomienda Internacional con Xiangling, Bennett y Sucrose", () => {
+    const tartagliaId = 23;
+    const invWithoutZhongli = fullInventory32.filter((c) => c.characterId !== 25);
+    const results = findOptimalTeams({
+      targetCharacterId: tartagliaId,
+      inventory: invWithoutZhongli,
+    });
+
+    expect(results.length).toBeGreaterThanOrEqual(1);
+    const topTeam = results[0];
+    const memberNames = topTeam.team.map((m) => m.name);
+    expect(memberNames).toContain("Xiangling");
+    expect(memberNames).toContain("Bennett");
+    expect(memberNames).toContain("Sucrose");
+    expect(topTeam.archetype).toBe("Tartaglia Internacional");
+  });
+
+  test("Xiao: Recomienda Xiao Hypercarry con batería Anemo (Jean/Sucrose), Zhongli y Bennett", () => {
+    const xiaoId = 28;
+    const results = findOptimalTeams({
+      targetCharacterId: xiaoId,
+      inventory: fullInventory32,
+    });
+
+    expect(results.length).toBeGreaterThanOrEqual(1);
+    const topTeam = results[0];
+    expect(topTeam.team[0].name).toBe("Xiao");
+    const memberNames = topTeam.team.map((m) => m.name);
+    const hasAnemoBattery = memberNames.includes("Jean") || memberNames.includes("Sucrose");
+    expect(hasAnemoBattery).toBe(true);
+    expect(memberNames).toContain("Zhongli");
+    expect(memberNames).toContain("Bennett");
+    expect(topTeam.archetype).toBe("Xiao Hypercarry");
+  });
+
+  test("Eula: Recomienda Superconductor y descarta estrictamente a Chongyun y Bennett C6", () => {
+    const eulaId = 32;
+    const eulaInvWithC6Bennett = fullInventory32.map((c) => ({
+      ...c,
+      constellation: c.characterId === 4 ? 6 : c.constellation,
+    }));
+    const results = findOptimalTeams({
+      targetCharacterId: eulaId,
+      inventory: eulaInvWithC6Bennett,
+    });
+
+    expect(results.length).toBeGreaterThanOrEqual(1);
+    for (const r of results) {
+      const names = r.team.map((m) => m.name);
+      expect(names).not.toContain("Chongyun");
+      expect(names).not.toContain("Bennett");
+    }
+    const topTeam = results[0];
+    expect(topTeam.archetype).toBe("Eula Superconductor");
+  });
+
+  test("Eula: Desplegada como Soporte para Razor aportando debuff de RES Física y Superconductor", () => {
+    const razorId = 17;
+    const invRazorEula = [
+      { characterId: 17, constellation: 4 }, // Razor
+      { characterId: 4, constellation: 1 },  // Bennett
+      { characterId: 20, constellation: 4 }, // Xiangling
+      { characterId: 32, constellation: 0 }, // Eula C0 Soporte
+    ];
+    const results = findOptimalTeams({
+      targetCharacterId: razorId,
+      inventory: invRazorEula,
+    });
+
+    expect(results.length).toBeGreaterThanOrEqual(1);
+    const topTeam = results[0];
+    const memberNames = topTeam.team.map((m) => m.name);
+    expect(memberNames).toContain("Eula");
+
+    const eulaMember = topTeam.team.find((m) => m.name === "Eula");
+    expect(eulaMember?.role).toBe("Support");
+  });
+
+  test("Ganyu: Recomienda Melt Ganyu con Bennett, Xiangling y Zhongli", () => {
+    const ganyuId = 27;
+    const results = findOptimalTeams({
+      targetCharacterId: ganyuId,
+      inventory: fullInventory32,
+    });
+
+    expect(results.length).toBeGreaterThanOrEqual(1);
+    const topTeam = results[0];
+    const memberNames = topTeam.team.map((m) => m.name);
+    expect(memberNames).toContain("Bennett");
+    expect(memberNames).toContain("Xiangling");
+    expect(memberNames).toContain("Zhongli");
+    expect(topTeam.archetype).toBe("Melt Ganyu");
   });
 });

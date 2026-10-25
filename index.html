@@ -540,6 +540,7 @@
         <button id="btnSelectAll">Seleccionar Todos</button>
         <button id="btnDeselectAll">Deseleccionar Todos</button>
         <button id="btnPresetDiluc">Preset Diluc Vape</button>
+        <button id="btnPresetHuTao">Preset Hu Tao Doble Geo</button>
         <button id="btnPresetAllC0">Todos a C0</button>
       </div>
 
@@ -645,7 +646,18 @@
       { id: 18, name: "Sucrose", element: "Anemo", roles: ["Support"] },
       { id: 19, name: "Venti", element: "Anemo", roles: ["Support"] },
       { id: 20, name: "Xiangling", element: "Pyro", roles: ["Sub-DPS"] },
-      { id: 21, name: "Xingqiu", element: "Hydro", roles: ["Sub-DPS", "Support"] }
+      { id: 21, name: "Xingqiu", element: "Hydro", roles: ["Sub-DPS", "Support"] },
+      { id: 22, name: "Diona", element: "Cryo", roles: ["Support", "Healer"] },
+      { id: 23, name: "Tartaglia", element: "Hydro", roles: ["Main DPS"] },
+      { id: 24, name: "Xinyan", element: "Pyro", roles: ["Main DPS", "Support"] },
+      { id: 25, name: "Zhongli", element: "Geo", roles: ["Support"] },
+      { id: 26, name: "Albedo", element: "Geo", roles: ["Sub-DPS", "Support"] },
+      { id: 27, name: "Ganyu", element: "Cryo", roles: ["Main DPS", "Sub-DPS"] },
+      { id: 28, name: "Xiao", element: "Anemo", roles: ["Main DPS"] },
+      { id: 29, name: "Hu Tao", element: "Pyro", roles: ["Main DPS"] },
+      { id: 30, name: "Rosaria", element: "Cryo", roles: ["Sub-DPS", "Support"] },
+      { id: 31, name: "Yanfei", element: "Pyro", roles: ["Main DPS", "Support"] },
+      { id: 32, name: "Eula", element: "Cryo", roles: ["Main DPS", "Support"] }
     ];
 
     let currentCharacters = [...DEFAULT_ROSTER];
@@ -1020,6 +1032,19 @@
       updateInventoryCount();
       requestCarry(6);
     });
+
+    document.getElementById("btnPresetHuTao").addEventListener("click", () => {
+      // Hu Tao (29), Xingqiu (21) C2, Zhongli (25) C0, Albedo (26) C0, Mona (13) C0
+      document.querySelectorAll(".char-checkbox").forEach(cb => {
+        const id = Number(cb.dataset.id);
+        cb.checked = [13, 21, 25, 26, 29].includes(id);
+      });
+      const xingqiu = document.querySelector('.char-constellation[data-id="21"]');
+      if (xingqiu) xingqiu.value = "2";
+      updateInventoryCount();
+      requestCarry(29);
+    });
+
 
     // Cargar catálogo desde la API /catalog/characters si se desea
     document.getElementById("btnReloadCatalog").addEventListener("click", async () => {

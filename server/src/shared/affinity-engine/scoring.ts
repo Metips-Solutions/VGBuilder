@@ -1,10 +1,10 @@
-import {
+import type {
   CharacterData,
   ScoreBreakdown,
   TeamPreset,
   TagAffinity,
 } from "./types";
-import { CompanionEntry } from "./artifact-binder";
+import type { CompanionEntry } from "./artifact-binder";
 
 /**
  * Task 3.1.2: Algoritmo de Scoring Matemático v2.0
@@ -69,6 +69,32 @@ export function calculateTeamScore(
         if (hydroSources > 0) matchSources += hydroSources;
         else if (cryoSources > 0) matchSources += cryoSources;
         else if (pyroCount >= 3 && hasVV) matchSources += 1;
+      } else if (targetCarry.element === "Hydro") {
+        const pyroSources = companions.filter((c) =>
+          c.character.mechanics.some(
+            (m) =>
+              (m.value === "pyro_application" || m.value === "off_field_pyro_dmg") &&
+              (!m.minConstellation || c.constellation >= m.minConstellation)
+          )
+        ).length;
+        if (pyroSources > 0) matchSources += pyroSources * 2;
+      } else if (targetCarry.element === "Cryo") {
+        const pyroSources = companions.filter((c) =>
+          c.character.mechanics.some(
+            (m) =>
+              (m.value === "pyro_application" || m.value === "off_field_pyro_dmg") &&
+              (!m.minConstellation || c.constellation >= m.minConstellation)
+          )
+        ).length;
+        const hydroSources = companions.filter((c) =>
+          c.character.mechanics.some(
+            (m) =>
+              m.value === "hydro_application" &&
+              (!m.minConstellation || c.constellation >= m.minConstellation)
+          )
+        ).length;
+        if (pyroSources > 0) matchSources += pyroSources;
+        if (hydroSources > 0) matchSources += hydroSources;
       } else if (targetCarry.element === "Electro") {
         if (allActiveTags.has("hydro_application")) matchSources++;
         if (allActiveTags.has("cryo_application")) matchSources++;
@@ -80,6 +106,7 @@ export function calculateTeamScore(
     } else if (need.value === "need_resistance_shred") {
       if (allActiveTags.has("need_resistance_shred")) matchSources++;
       if (allActiveTags.has("debuff_elemental_res")) matchSources++;
+      if (allActiveTags.has("debuff_all_res")) matchSources++;
       if (allActiveTags.has(`debuff_${targetCarry.element.toLowerCase()}_res`)) matchSources++;
       if (allActiveTags.has("debuff_defense")) matchSources++;
     } else if (need.value === "need_attack_buff") {
@@ -99,9 +126,27 @@ export function calculateTeamScore(
         (c) => c.character.element === "Geo" && (c.character.name === "Ningguang" && c.constellation >= 2)
       );
       if (geoBatteries.length > 0) matchSources += 2;
+    } else if (need.value === "need_battery_cryo") {
+      const cryoBatteries = companions.filter(
+        (c) => c.character.element === "Cryo" && (c.character.name === "Diona" || c.character.name === "Rosaria" || c.character.name === "Kaeya")
+      );
+      if (cryoBatteries.length > 0) matchSources += 2;
+    } else if (need.value === "need_battery_anemo") {
+      const anemoBatteries = companions.filter(
+        (c) => c.character.element === "Anemo" && (c.character.name === "Sucrose" || c.character.name === "Jean" || c.character.name === "Venti")
+      );
+      if (anemoBatteries.length > 0) matchSources += 2;
     } else if (need.value === "need_physical_shred") {
-      if (allActiveTags.has("cryo_application") && targetCarry.element === "Electro") matchSources += 2; // Superconductor
+      if (allActiveTags.has("cryo_application") && (targetCarry.element === "Electro" || allActiveTags.has("electro_application"))) matchSources += 2; // Superconductor
+      if (allActiveTags.has("debuff_physical_res")) matchSources += 2; // Eula / Rosaria C6 / Xinyan C4
+      if (allActiveTags.has("debuff_all_res")) matchSources++; // Zhongli
       if (allActiveTags.has("debuff_defense")) matchSources++;
+    } else if (need.value === "need_hydro_app" || need.value === "need_offfield_hydro_dmg") {
+      if (allActiveTags.has("off_field_hydro_dmg") || allActiveTags.has("coordinated_attacks")) matchSources += 2;
+      else if (allActiveTags.has("hydro_application")) matchSources += 1;
+    } else if (need.value === "need_offfield_pyro_dmg" || need.value === "need_pyro_app") {
+      if (allActiveTags.has("off_field_pyro_dmg")) matchSources += 2;
+      else if (allActiveTags.has("pyro_application")) matchSources += 1;
     } else if (need.value === "need_sustain") {
       if (allActiveTags.has("healer") || allActiveTags.has("shield")) matchSources++;
     } else if (need.value === "need_crowd_control") {
@@ -111,6 +156,7 @@ export function calculateTeamScore(
       if (allActiveTags.has("off_field_hydro_dmg")) matchSources++;
       if (allActiveTags.has("off_field_electro_dmg")) matchSources++;
       if (allActiveTags.has("off_field_cryo_dmg")) matchSources++;
+      if (allActiveTags.has("off_field_geo_dmg")) matchSources++;
     } else {
       if (allActiveTags.has(need.value)) matchSources++;
     }
@@ -152,13 +198,20 @@ export function calculateTeamScore(
       ) {
         vapeScore += 200; // Presagio C1 / Rito de Mona
       }
+      if (
+        allActiveTags.has("coordinated_attacks") ||
+        allActiveTags.has("raincutter") ||
+        allActiveTags.has("off_field_hydro_dmg")
+      ) {
+        vapeScore += 250; // Hidro-aplicación continua de alta frecuencia para sostener vaporizados
+      }
     }
 
     if (hasCryo) {
       meltScore = 900;
-      // Proximidad cuerpo a cuerpo favorece a Kaeya
-      const hasKaeya = companions.some((c) => c.character.name === "Kaeya");
-      if (hasKaeya) meltScore += 100;
+      // Proximidad cuerpo a cuerpo favorece a Kaeya / Rosaria
+      const hasCloseCryo = companions.some((c) => c.character.name === "Kaeya" || c.character.name === "Rosaria");
+      if (hasCloseCryo) meltScore += 100;
     }
 
     const pyroCount = fullTeam.filter((c) => c.element === "Pyro").length;
@@ -179,11 +232,53 @@ export function calculateTeamScore(
       detectedArchetype = "Mono Pyro Hipercarry";
       explanations.push(`Multiplicador ofensivo: Mono Pyro concentrado (+${monoPyroScore} pts)`);
     }
-  } else if (targetCarry.damageProfile === "Physical Melee" || targetCarry.name === "Razor") {
+  } else if (
+    targetCarry.damageProfile === "Physical Melee" ||
+    targetCarry.name === "Razor" ||
+    targetCarry.name === "Eula" ||
+    targetCarry.name === "Xinyan"
+  ) {
     if (hasCryo && hasElectro) {
       sAmplification = 1000;
       detectedArchetype = "Superconductor Físico";
       explanations.push(`Multiplicador físico: Superconductor (-40% RES Física enemigo -> +1000 pts)`);
+    }
+  } else if (targetCarry.element === "Hydro") {
+    // Tartaglia (Childe)
+    if (hasPyro || allActiveTags.has("off_field_pyro_dmg")) {
+      sAmplification = 1000;
+      detectedArchetype = "Vaporizados (Internacional)";
+      explanations.push(`Multiplicador ofensivo: Vaporizado inverso continuo con Pyro (+1000 pts)`);
+    } else if (hasElectro) {
+      sAmplification = 800;
+      detectedArchetype = "Electro-Charged / Taser";
+      explanations.push(`Multiplicador elemental: Electrocargado continuo (+800 pts)`);
+    }
+  } else if (targetCarry.element === "Cryo") {
+    // Ganyu
+    let meltScore = 0;
+    let freezeScore = 0;
+    if (hasPyro || allActiveTags.has("off_field_pyro_dmg")) {
+      meltScore = 1000;
+    }
+    if (hasHydro && allActiveTags.has("crowd_control")) {
+      freezeScore = 1000;
+    }
+    if (meltScore >= freezeScore && meltScore > 0) {
+      sAmplification = meltScore;
+      detectedArchetype = "Derretidos (Melt Ganyu)";
+      explanations.push(`Multiplicador ofensivo: Derretido cargado (+${meltScore} pts)`);
+    } else if (freezeScore > 0) {
+      sAmplification = freezeScore;
+      detectedArchetype = "Permafrost / Morgana";
+      explanations.push(`Multiplicador ofensivo: Congelamiento permanente con CC (+${freezeScore} pts)`);
+    }
+  } else if (targetCarry.element === "Anemo") {
+    // Xiao
+    if (allActiveTags.has("battery")) {
+      sAmplification = 1000;
+      detectedArchetype = "Xiao Hypercarry";
+      explanations.push(`Multiplicador Anemo: Rotación fluida de Ataques Descendentes (+1000 pts)`);
     }
   } else if (targetCarry.element === "Geo") {
     const geoCount = fullTeam.filter((c) => c.element === "Geo").length;
@@ -212,6 +307,18 @@ export function calculateTeamScore(
   // 3. S_blueprint (Pattern Matching con Presets Meta)
   let sBlueprint = 0;
   for (const preset of presets) {
+    if (
+      preset.composition.targetCarryName &&
+      preset.composition.targetCarryName !== targetCarry.name
+    ) {
+      continue;
+    }
+    if (
+      preset.composition.carryElement &&
+      preset.composition.carryElement !== targetCarry.element
+    ) {
+      continue;
+    }
     let matches = 0;
     const reqTags = preset.composition.requiredTags ?? [];
     for (const rt of reqTags) {
@@ -359,14 +466,17 @@ export function calculateTeamScore(
     explanations.push("Micro-afinidad: Buffer de Maestría Elemental potenciando reacciones de amplificación (+300 pts)");
   }
 
-  // Ataques Coordinados en sincronía con Carry de Ataques Normales (Diluc, Keqing, Razor, Klee)
+  // Ataques Coordinados en sincronía con Carry de Ataques Normales (Diluc, Keqing, Razor, Klee, Tartaglia, Hu Tao)
   const hasCoordinated = allActiveTags.has("coordinated_attacks");
   if (
     hasCoordinated &&
     (targetCarry.damageProfile === "Pyro Melee" ||
+      targetCarry.damageProfile === "Pyro Melee Fast" ||
       targetCarry.damageProfile === "Electro Fast Melee" ||
       targetCarry.damageProfile === "Electro Fast" ||
-      targetCarry.damageProfile === "Physical Melee")
+      targetCarry.damageProfile === "Physical Melee" ||
+      targetCarry.damageProfile === "Hydro Fast Melee" ||
+      targetCarry.name === "Hu Tao")
   ) {
     sMicroAffinities += 350;
     explanations.push("Micro-afinidad: Ataques coordinados activados fluidamente por el Carry (+350 pts)");
@@ -378,6 +488,18 @@ export function calculateTeamScore(
   if (hasNingguang && hasOtherGeo && targetCarry.element === "Geo") {
     sMicroAffinities += 300;
     explanations.push("Micro-afinidad: Pantalla de Jade otorga +12% Bono Geo a aliado (+300 pts)");
+  }
+
+  // Escudo de Jade de Zhongli (Universal Shred -20%)
+  if (allActiveTags.has("debuff_all_res")) {
+    sMicroAffinities += 300;
+    explanations.push("Micro-afinidad: Escudo de Jade de Zhongli tritura -20% todas las resistencias enemigas (+300 pts)");
+  }
+
+  // Búfer de Prob. Crítico (Rosaria / Hu Tao)
+  if (allActiveTags.has("buff_crit_rate") && targetCarry.name !== "Rosaria") {
+    sMicroAffinities += 250;
+    explanations.push("Micro-afinidad: Bono de Probabilidad de Crítico compartido al Carry (+250 pts)");
   }
 
   // Hexerei Rite: 2 o más miembros Hexerei
@@ -412,6 +534,22 @@ export function calculateTeamScore(
   if (!hasHealer && !hasShield) {
     pPenalties += 1500;
     explanations.push("Penalización crítica: Ausencia total de sustain (sin curador ni escudo -> -1500 pts)");
+  }
+
+  // Hu Tao con curación continua/dedicada (pierde pasiva A4 <50% HP si no hay mecánica de consumo como Furina)
+  // Excluye a Xingqiu cuya micro-curación pasiva al romperse espadas es ideal para mantener a Hu Tao <50% HP
+  const hasDedicatedHealer = companions.some(
+    (c) =>
+      c.character.name !== "Xingqiu" &&
+      c.character.mechanics.some(
+        (m) =>
+          (m.value === "healer" || m.value === "continuous_healing") &&
+          (!m.minConstellation || c.constellation >= m.minConstellation)
+      )
+  );
+  if (targetCarry.name === "Hu Tao" && hasDedicatedHealer) {
+    pPenalties += 250;
+    explanations.push("Penalización leve: Curador continuo eleva vida por encima del 50% reduciendo bono A4 (-250 pts)");
   }
 
   // Sobrecarga cuerpo a cuerpo indeseada (Pyro Melee + Electro dispersa enemigos pequeños)

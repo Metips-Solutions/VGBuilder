@@ -1,4 +1,4 @@
-import {
+import type {
   CharacterData,
   SupportArtifactSet,
   CharacterArtifactBind,
@@ -15,7 +15,7 @@ export type CompanionEntry = {
  * - "Instructor" exige provocar reacciones que amplifiquen el daño del carry vía Maestría Elemental.
  *   Queda descalificado si:
  *   1. El Carry es Geo (Ningguang, Noelle) ya que no amplifica su daño con EM.
- *   2. El Carry es Físico (Razor / Physical Melee).
+ *   2. El Carry es Físico (Razor, Eula, Xinyan) o Anemo Hipercarry (Xiao) que no amplifica su daño con EM.
  *   3. El equipo es Mono-Elemento (>= 3 personajes del mismo elemento sin reacciones amplificadoras).
  */
 export function isSupportSetViableForTeam(
@@ -27,8 +27,13 @@ export function isSupportSetViableForTeam(
     // 1. Carries Geo no escalan su daño con EM
     if (targetCarry.element === "Geo") return false;
 
-    // 2. Carries Físicos no escalan su daño con EM
-    if (targetCarry.damageProfile === "Physical Melee" || targetCarry.name === "Razor") {
+    // 2. Carries Físicos o Anemo Hipercarry no escalan su daño principal con EM
+    if (
+      targetCarry.damageProfile === "Physical Melee" ||
+      targetCarry.name === "Razor" ||
+      targetCarry.name === "Eula" ||
+      targetCarry.name === "Xiao"
+    ) {
       return false;
     }
 
@@ -103,7 +108,7 @@ export function bindSupportArtifacts(
     );
 
     for (const b of binds) {
-      // Filtrar sets no viables tácticamente para el equipo (ej. Instructor en Mono-Elemento)
+      // Filtrar sets no viables tácticamente para el equipo (ej. Instructor en Mono-Elemento o Carry Físico/Xiao)
       if (!isSupportSetViableForTeam(b.artifactName, targetCarry, companions)) {
         continue;
       }

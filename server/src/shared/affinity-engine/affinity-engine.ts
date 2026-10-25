@@ -13,7 +13,7 @@ export * from "./artifact-binder";
 export * from "./scoring";
 export * from "./matcher";
 
-import { Tag, TagAffinity } from "./types";
+import type { Tag, TagAffinity } from "./types";
 
 export type CharacterWithTags = {
   id: number;

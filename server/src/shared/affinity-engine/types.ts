@@ -59,6 +59,8 @@ export type TeamPreset = {
   name: string;
   description?: string | null;
   composition: {
+    targetCarryName?: string;
+    carryElement?: string;
     roles?: string[];
     elements?: string[];
     requiredTags?: string[];

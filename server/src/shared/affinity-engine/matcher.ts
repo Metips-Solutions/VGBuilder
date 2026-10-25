@@ -1,11 +1,11 @@
-import {
+import type {
   MatchInput,
   CatalogData,
   TeamMatchResult,
   CharacterData,
 } from "./types";
 import { DEFAULT_CATALOG } from "./roster-data";
-import { bindSupportArtifacts, CompanionEntry } from "./artifact-binder";
+import { bindSupportArtifacts, type CompanionEntry } from "./artifact-binder";
 import { calculateTeamScore } from "./scoring";
 
 /**

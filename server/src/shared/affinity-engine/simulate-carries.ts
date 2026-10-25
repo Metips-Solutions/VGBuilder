@@ -15,9 +15,15 @@ const testCarries = [
   { id: 14, name: "Ningguang", constellation: 2 },
   { id: 15, name: "Noelle", constellation: 6 },
   { id: 17, name: "Razor", constellation: 4 },
+  { id: 23, name: "Tartaglia", constellation: 0 },
+  { id: 27, name: "Ganyu", constellation: 0 },
+  { id: 28, name: "Xiao", constellation: 0 },
+  { id: 29, name: "Hu Tao", constellation: 0 },
+  { id: 31, name: "Yanfei", constellation: 0 },
+  { id: 32, name: "Eula", constellation: 0 },
 ];
 
-// Inventario con los 21 personajes desbloqueados a constelaciones estándar
+// Inventario con los 32 personajes desbloqueados a constelaciones estándar
 const baseInventory = DEFAULT_CHARACTERS.map((c) => ({
   characterId: c.id,
   constellation:
