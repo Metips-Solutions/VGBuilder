@@ -43,7 +43,7 @@ const ROSTER: CharacterSeed[] = [
         weaponType: "Bow",
         rarity: 4,
         region: "Mondstadt",
-        roles: ["Support", "Sub-DPS"],
+        roles: ["Sub-DPS"],
         imageUrl: null,
         mechanics: [
             { value: "taunt" },
@@ -227,7 +227,7 @@ const ROSTER: CharacterSeed[] = [
         rarity: 5,
         region: "Mondstadt",
         alignmentClass: "Hexerei",
-        roles: ["Main DPS", "Support"],
+        roles: ["Main DPS"],
         damageProfile: "Pyro AoE Ranged",
         imageUrl: null,
         mechanics: [
@@ -348,7 +348,7 @@ const ROSTER: CharacterSeed[] = [
         rarity: 4,
         region: "Mondstadt",
         alignmentClass: "Hexerei",
-        roles: ["Main DPS", "Support"],
+        roles: ["Main DPS"],
         damageProfile: "Physical Melee",
         imageUrl: null,
         mechanics: [
@@ -534,6 +534,8 @@ const ARTIFACT_BINDINGS: Array<{
             { name: "Chongyun", priority: 8 },
             { name: "Lisa", priority: 8 },
             { name: "Xingqiu", priority: 8 },
+            { name: "Xiangling", priority: 8 },
+            { name: "Razor", priority: 7 },
         ],
     },
     {
@@ -554,6 +556,8 @@ const ARTIFACT_BINDINGS: Array<{
             { name: "Lisa", priority: 8 },
             { name: "Amber", priority: 9 },
             { name: "Chongyun", priority: 8 },
+            { name: "Xiangling", priority: 7 },
+            { name: "Razor", priority: 7 },
             { name: "Barbara", priority: 6 },
         ],
     },
@@ -579,6 +583,12 @@ const ARTIFACT_BINDINGS: Array<{
             { name: "Mona", priority: 7 },
             { name: "Fischl", priority: 7 },
             { name: "Kaeya", priority: 7 },
+            { name: "Xiangling", priority: 7 },
+            { name: "Amber", priority: 7 },
+            { name: "Lisa", priority: 7 },
+            { name: "Chongyun", priority: 7 },
+            { name: "Razor", priority: 7 },
+            { name: "Barbara", priority: 6 },
         ],
     },
     {

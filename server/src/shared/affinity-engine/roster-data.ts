@@ -8,7 +8,7 @@ export const DEFAULT_CHARACTERS: CharacterData[] = [
     weaponType: "Bow",
     rarity: 4,
     region: "Mondstadt",
-    roles: ["Support", "Sub-DPS"],
+    roles: ["Sub-DPS"],
     mechanics: [
       { category: "mecanica", value: "taunt" },
       { category: "mecanica", value: "pyro_application" },
@@ -187,7 +187,7 @@ export const DEFAULT_CHARACTERS: CharacterData[] = [
     region: "Mondstadt",
     alignmentClass: "Hexerei",
     damageProfile: "Pyro Melee",
-    roles: ["Main DPS", "Support"],
+    roles: ["Main DPS"],
     mechanics: [
       { category: "mecanica", value: "pyro_application" },
       { category: "mecanica", value: "battery" },
@@ -491,6 +491,8 @@ export const DEFAULT_ARTIFACT_BINDS: CharacterArtifactBind[] = [
   { characterName: "Chongyun", artifactName: "Ritual Antiguo de la Nobleza", priority: 8 },
   { characterName: "Lisa", artifactName: "Ritual Antiguo de la Nobleza", priority: 8 },
   { characterName: "Xingqiu", artifactName: "Ritual Antiguo de la Nobleza", priority: 8 },
+  { characterName: "Xiangling", artifactName: "Ritual Antiguo de la Nobleza", priority: 8 },
+  { characterName: "Razor", artifactName: "Ritual Antiguo de la Nobleza", priority: 7 },
 
   // Tenacidad de la Geoarmada
   { characterName: "Fischl", artifactName: "Tenacidad de la Geoarmada", priority: 10 },
@@ -505,6 +507,8 @@ export const DEFAULT_ARTIFACT_BINDS: CharacterArtifactBind[] = [
   { characterName: "Kaeya", artifactName: "Instructor", priority: 8 },
   { characterName: "Lisa", artifactName: "Instructor", priority: 8 },
   { characterName: "Chongyun", artifactName: "Instructor", priority: 8 },
+  { characterName: "Xiangling", artifactName: "Instructor", priority: 7 },
+  { characterName: "Razor", artifactName: "Instructor", priority: 7 },
   { characterName: "Barbara", artifactName: "Instructor", priority: 6 },
 
   // Son de Antaño
@@ -521,6 +525,12 @@ export const DEFAULT_ARTIFACT_BINDS: CharacterArtifactBind[] = [
   { characterName: "Mona", artifactName: "Pergamino del Héroe", priority: 7 },
   { characterName: "Fischl", artifactName: "Pergamino del Héroe", priority: 7 },
   { characterName: "Kaeya", artifactName: "Pergamino del Héroe", priority: 7 },
+  { characterName: "Xiangling", artifactName: "Pergamino del Héroe", priority: 7 },
+  { characterName: "Amber", artifactName: "Pergamino del Héroe", priority: 7 },
+  { characterName: "Lisa", artifactName: "Pergamino del Héroe", priority: 7 },
+  { characterName: "Chongyun", artifactName: "Pergamino del Héroe", priority: 7 },
+  { characterName: "Razor", artifactName: "Pergamino del Héroe", priority: 7 },
+  { characterName: "Barbara", artifactName: "Pergamino del Héroe", priority: 6 },
 
   // Recuerdos del Bosque
   { characterName: "Lisa", artifactName: "Recuerdos del Bosque", priority: 6 },

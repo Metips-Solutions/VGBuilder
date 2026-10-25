@@ -9,6 +9,52 @@ import { bindSupportArtifacts, CompanionEntry } from "./artifact-binder";
 import { calculateTeamScore } from "./scoring";
 
 /**
+ * Determina los roles tácticos efectivos de un personaje en función de su constelación:
+ * - Klee: Solo desbloquea "Support" a C2+ (minas con -23% DEF debuff).
+ * - Razor: Solo desbloquea "Support" a C4+ (E pulsada con -15% DEF debuff).
+ * - Amber: Solo desbloquea "Support" a C6+ (+15% ATK y Vel. Mov. al equipo).
+ */
+export function getEffectiveRoles(
+  character: CharacterData,
+  constellation: number = 0
+): string[] {
+  let roles = [...character.roles];
+
+  // Klee: Main DPS en C0/C1; a C2+ desbloquea soporte debuffer de DEF
+  if (character.name === "Klee") {
+    if (constellation < 2) {
+      roles = roles.filter((r) => r.toLowerCase() !== "support");
+    } else if (!roles.some((r) => r.toLowerCase() === "support")) {
+      roles.push("Support");
+    }
+  }
+
+  // Razor: Main DPS en C0-C3; a C4+ desbloquea soporte debuffer de DEF
+  if (character.name === "Razor") {
+    if (constellation >= 4) {
+      if (!roles.some((r) => r.toLowerCase() === "support")) {
+        roles.push("Support");
+      }
+    } else {
+      roles = roles.filter((r) => r.toLowerCase() !== "support");
+    }
+  }
+
+  // Amber: Sub-DPS en C0-C5; a C6+ desbloquea soporte grupal
+  if (character.name === "Amber") {
+    if (constellation >= 6) {
+      if (!roles.some((r) => r.toLowerCase() === "support")) {
+        roles.push("Support");
+      }
+    } else {
+      roles = roles.filter((r) => r.toLowerCase() !== "support");
+    }
+  }
+
+  return roles;
+}
+
+/**
  * Task 3.1.1 & 3.1.2: Motor de Matching Óptimo para Carry.
  *
  * Evalúa todas las combinaciones C(K, 3) de acompañantes del inventario del jugador,
@@ -41,16 +87,18 @@ export function findOptimalTeams(
     );
     if (!charData) continue;
 
-    // Acompañante debe poder actuar como Sub-DPS, Soporte o Curador
+    // Acompañante debe poder actuar como Sub-DPS, Soporte o Curador según su constelación
     const eligibleRoles = ["sub-dps", "support", "healer"];
-    const hasEligibleRole = charData.roles.some((r) =>
+    const charConstellation = item.constellation ?? 0;
+    const effectiveRoles = getEffectiveRoles(charData, charConstellation);
+    const hasEligibleRole = effectiveRoles.some((r) =>
       eligibleRoles.includes(r.toLowerCase())
     );
 
     if (hasEligibleRole) {
       candidateEntries.push({
         character: charData,
-        constellation: item.constellation ?? 0,
+        constellation: charConstellation,
       });
     }
   }
@@ -161,13 +209,20 @@ export function findOptimalTeams(
               role: "Main DPS",
               constellation: carryConstellation,
             },
-            ...trio.map((c) => ({
-              id: c.character.id,
-              name: c.character.name,
-              element: c.character.element,
-              role: c.character.roles[0] ?? "Support",
-              constellation: c.constellation,
-            })),
+            ...trio.map((c) => {
+              const compRoles = getEffectiveRoles(c.character, c.constellation);
+              const displayRole =
+                compRoles.find((r) => r.toLowerCase() !== "main dps") ??
+                compRoles[0] ??
+                "Support";
+              return {
+                id: c.character.id,
+                name: c.character.name,
+                element: c.character.element,
+                role: displayRole,
+                constellation: c.constellation,
+              };
+            }),
           ],
           scoreBreakdown: scoreResult.breakdown,
           artifactAssignments: assignments,

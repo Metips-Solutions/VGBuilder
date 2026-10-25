@@ -11,6 +11,55 @@ export type CompanionEntry = {
 };
 
 /**
+ * Determina si un set de soporte es tácticamente viable para la composición del equipo.
+ * - "Instructor" exige provocar reacciones que amplifiquen el daño del carry vía Maestría Elemental.
+ *   Queda descalificado si:
+ *   1. El Carry es Geo (Ningguang, Noelle) ya que no amplifica su daño con EM.
+ *   2. El Carry es Físico (Razor / Physical Melee).
+ *   3. El equipo es Mono-Elemento (>= 3 personajes del mismo elemento sin reacciones amplificadoras).
+ */
+export function isSupportSetViableForTeam(
+  setName: string,
+  targetCarry: CharacterData,
+  companions: CompanionEntry[]
+): boolean {
+  if (setName === "Instructor") {
+    // 1. Carries Geo no escalan su daño con EM
+    if (targetCarry.element === "Geo") return false;
+
+    // 2. Carries Físicos no escalan su daño con EM
+    if (targetCarry.damageProfile === "Physical Melee" || targetCarry.name === "Razor") {
+      return false;
+    }
+
+    // 3. Equipos Mono-Elemento sin reacciones amplificadoras
+    const fullTeam = [targetCarry, ...companions.map((c) => c.character)];
+    const elementCounts = new Map<string, number>();
+    for (const c of fullTeam) {
+      elementCounts.set(c.element, (elementCounts.get(c.element) ?? 0) + 1);
+    }
+
+    const carryCount = elementCounts.get(targetCarry.element) ?? 0;
+    if (carryCount >= 3) {
+      if (targetCarry.element === "Pyro") {
+        const hasReaction = fullTeam.some((c) => c.element === "Hydro" || c.element === "Cryo");
+        if (!hasReaction) return false;
+      } else if (targetCarry.element === "Cryo") {
+        const hasReaction = fullTeam.some((c) => c.element === "Pyro");
+        if (!hasReaction) return false;
+      } else if (targetCarry.element === "Electro") {
+        const hasReaction = fullTeam.some((c) => c.element === "Hydro" || c.element === "Dendro" || c.element === "Pyro");
+        if (!hasReaction) return false;
+      } else if (targetCarry.element === "Geo" || targetCarry.element === "Anemo") {
+        return false;
+      }
+    }
+  }
+
+  return true;
+}
+
+/**
  * Task 3.3.2 / Fase 3: Support Artifact Binder.
  *
  * Asigna de forma no duplicada los 11 sets de soporte universal a los
@@ -44,11 +93,21 @@ export function bindSupportArtifacts(
   const allCandidates: Candidate[] = [];
 
   for (const comp of companions) {
+    // Razor solo equipa sets de soporte universales cuando actúa en su rol de soporte (C4+)
+    if (comp.character.name === "Razor" && comp.constellation < 4) {
+      continue;
+    }
+
     const binds = artifactBinds.filter(
       (b) => b.characterName.toLowerCase() === comp.character.name.toLowerCase()
     );
 
     for (const b of binds) {
+      // Filtrar sets no viables tácticamente para el equipo (ej. Instructor en Mono-Elemento)
+      if (!isSupportSetViableForTeam(b.artifactName, targetCarry, companions)) {
+        continue;
+      }
+
       const setObj = setByName.get(b.artifactName);
       if (setObj) {
         allCandidates.push({

@@ -103,8 +103,7 @@ export function calculateTeamScore(
       if (allActiveTags.has("cryo_application") && targetCarry.element === "Electro") matchSources += 2; // Superconductor
       if (allActiveTags.has("debuff_defense")) matchSources++;
     } else if (need.value === "need_sustain") {
-      if (allActiveTags.has("healer")) matchSources++;
-      if (allActiveTags.has("shield")) matchSources++;
+      if (allActiveTags.has("healer") || allActiveTags.has("shield")) matchSources++;
     } else if (need.value === "need_crowd_control") {
       if (allActiveTags.has("crowd_control")) matchSources++;
     } else if (need.value === "need_offfield_dps") {
@@ -219,7 +218,7 @@ export function calculateTeamScore(
       if (allActiveTags.has(rt)) matches++;
     }
 
-    const teamElems = fullTeam.map((c) => c.element).sort();
+    const teamElems: string[] = fullTeam.map((c) => c.element).sort();
     const presetElems = preset.composition.elements
       ? [...preset.composition.elements].sort()
       : [];
@@ -276,8 +275,14 @@ export function calculateTeamScore(
   }
 
   if ((elementCounts.get("Geo") ?? 0) >= 2) {
-    sResonance += 500;
-    explanations.push(`Resonancia Geo (+15% Daño protegido por escudo -> +500 pts)`);
+    const isGeoCarry = targetCarry.element === "Geo";
+    const val = isGeoCarry ? 500 : 300;
+    sResonance += val;
+    explanations.push(
+      isGeoCarry
+        ? `Resonancia Geo (+15% Daño protegido por escudo y -20% RES Geo -> +500 pts)`
+        : `Resonancia Geo (+15% Daño protegido por escudo -> +300 pts)`
+    );
   }
 
   if ((elementCounts.get("Cryo") ?? 0) >= 2) {
@@ -326,6 +331,27 @@ export function calculateTeamScore(
     explanations.push("Micro-afinidad: Batería Bennett alimentando al Carry Pyro (+300 pts)");
   }
 
+  // Bennett Buffer de ATK masivo para Carry en campo que escala con ATK (no-Pyro)
+  if (
+    hasBennett &&
+    targetCarry.element !== "Pyro" &&
+    scalesWithAtk &&
+    targetCarry.name !== "Bennett"
+  ) {
+    sMicroAffinities += 300;
+    explanations.push(
+      `Micro-afinidad: Viaje Fantástico de Bennett hiperbufa el ATK base de ${targetCarry.name} en campo (+300 pts)`
+    );
+  }
+
+  // Batería Electro: Fischl alimentando a Carry Electro
+  if (hasFischl && targetCarry.element === "Electro" && targetCarry.name !== "Fischl") {
+    sMicroAffinities += 300;
+    explanations.push(
+      `Micro-afinidad: Batería Electro (Oz de Fischl) recargando la Definitiva de ${targetCarry.name} (+300 pts)`
+    );
+  }
+
   // Buffer de Maestría Elemental (EM) para amplificación de reacciones
   const hasEMBuffer = allActiveTags.has("buff_elemental_mastery");
   if (hasEMBuffer && (hasHydro || hasCryo) && targetCarry.element === "Pyro") {
@@ -333,22 +359,23 @@ export function calculateTeamScore(
     explanations.push("Micro-afinidad: Buffer de Maestría Elemental potenciando reacciones de amplificación (+300 pts)");
   }
 
-  // Ataques Coordinados en sincronía con Carry de Ataques Normales (Diluc, Keqing, Razor)
+  // Ataques Coordinados en sincronía con Carry de Ataques Normales (Diluc, Keqing, Razor, Klee)
   const hasCoordinated = allActiveTags.has("coordinated_attacks");
   if (
     hasCoordinated &&
     (targetCarry.damageProfile === "Pyro Melee" ||
       targetCarry.damageProfile === "Electro Fast Melee" ||
+      targetCarry.damageProfile === "Electro Fast" ||
       targetCarry.damageProfile === "Physical Melee")
   ) {
-    sMicroAffinities += 200;
-    explanations.push("Micro-afinidad: Ataques coordinados activados fluidamente por el Carry melee (+200 pts)");
+    sMicroAffinities += 350;
+    explanations.push("Micro-afinidad: Ataques coordinados activados fluidamente por el Carry (+350 pts)");
   }
 
-  // Pantalla de Jade Geo Buff con compañero Geo
+  // Pantalla de Jade Geo Buff con compañero Geo (solo si el Carry es Geo)
   const hasNingguang = fullTeam.some((c) => c.name === "Ningguang");
   const hasOtherGeo = fullTeam.some((c) => c.name !== "Ningguang" && c.element === "Geo");
-  if (hasNingguang && hasOtherGeo) {
+  if (hasNingguang && hasOtherGeo && targetCarry.element === "Geo") {
     sMicroAffinities += 300;
     explanations.push("Micro-afinidad: Pantalla de Jade otorga +12% Bono Geo a aliado (+300 pts)");
   }
@@ -358,6 +385,22 @@ export function calculateTeamScore(
   if (hexereiCount >= 2) {
     sMicroAffinities += 300;
     explanations.push(`Micro-afinidad: Rito Hexerei activo (${hexereiCount} brujas en equipo -> +300 pts)`);
+  }
+
+  // Bono de Daño Elemental / Universal (Pergamino del Héroe, Petra Arcaica)
+  const hasDmgBonus =
+    allActiveTags.has("buff_all_dmg") ||
+    allActiveTags.has("buff_elemental_dmg") ||
+    allActiveTags.has(`buff_${targetCarry.element.toLowerCase()}_dmg`);
+  if (hasDmgBonus) {
+    sMicroAffinities += 400;
+    explanations.push("Multiplicador de Daño: Bono de Daño Elemental / Universal al equipo (+400 pts)");
+  }
+
+  // Daño Plano Adicional (Son de Antaño)
+  if (allActiveTags.has("buff_flat_dmg")) {
+    sMicroAffinities += 300;
+    explanations.push("Daño Plano Adicional: Son de Antaño convierte curación acumulada en daño de impacto (+300 pts)");
   }
 
   // 6. P_penalties (Penalizaciones por Fallas Estructurales)
@@ -377,10 +420,11 @@ export function calculateTeamScore(
     explanations.push("Penalización táctica: Sobrecarga empuja enemigos fuera del rango cuerpo a cuerpo (-600 pts)");
   }
 
-  // Xiangling sin Bennett (hambre de energía extrema)
-  if (hasXiangling && !hasBennett) {
-    pPenalties += 800;
-    explanations.push("Penalización energética: Xiangling sin Bennett como batería (-800 pts)");
+  // Xiangling sin batería en el equipo (hambre de energía moderada, compensable con Favonius/ER)
+  const hasBattery = allActiveTags.has("battery");
+  if (hasXiangling && !hasBattery) {
+    pPenalties += 250;
+    explanations.push("Penalización energética moderada: Xiangling sin batería en el equipo (-250 pts)");
   }
 
   // Noelle Main DPS sin batería Geo

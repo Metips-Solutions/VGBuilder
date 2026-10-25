@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VGBuilder — Comprobación de Endpoint Affinity Match</title>
+  <style>
+    :root {
+      --bg: #121214;
+      --card-bg: #1a1a1e;
+      --border: #33333a;
+      --text: #e1e1e6;
+      --text-muted: #a0a0b0;
+      --primary: #6366f1;
+      --primary-hover: #4f46e5;
+      --success: #10b981;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 14px;
+      line-height: 1.4;
+      padding: 16px;
+    }
+
+    header {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin-bottom: 16px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .header-title h1 {
+      font-size: 18px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .header-title p {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .config-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+
+    input[type="text"], input[type="number"], select {
+      background: #202026;
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 6px 10px;
+      border-radius: 4px;
+      font-size: 13px;
+    }
+
+    input[type="text"]:focus, select:focus {
+      outline: 1px solid var(--primary);
+    }
+
+    button {
+      background: #2a2a32;
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      transition: background 0.15s ease;
+    }
+
+    button:hover {
+      background: #363640;
+    }
+
+    button.btn-primary {
+      background: var(--primary);
+      border-color: var(--primary);
+    }
+    button.btn-primary:hover {
+      background: var(--primary-hover);
+    }
+
+    button.btn-dps {
+      background: #dc2626;
+      border-color: #ef4444;
+      color: white;
+      font-weight: 600;
+      padding: 4px 10px;
+      font-size: 12px;
+    }
+    button.btn-dps:hover {
+      background: #b91c1c;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+
+    @media (max-width: 1100px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .panel {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+    }
+
+    .panel h2 {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 8px;
+    }
+
+    .badge-count {
+      background: #2c2c36;
+      color: var(--text-muted);
+      font-size: 11px;
+      padding: 2px 6px;
+      border-radius: 10px;
+      font-weight: normal;
+    }
+
+    .section-label {
+      font-size: 13px;
+      font-weight: 700;
+      margin: 16px 0 8px 0;
+      padding: 4px 8px;
+      border-radius: 4px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .section-main-dps {
+      background: rgba(239, 68, 68, 0.15);
+      border-left: 3px solid #ef4444;
+      color: #fca5a5;
+    }
+
+    .section-supports {
+      background: rgba(99, 102, 241, 0.15);
+      border-left: 3px solid #6366f1;
+      color: #a5b4fc;
+    }
+
+    .char-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 12px;
+    }
+
+    .char-table tr {
+      border-bottom: 1px solid #272730;
+    }
+
+    .char-table tr:hover {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .char-table td {
+      padding: 6px 8px;
+      vertical-align: middle;
+    }
+
+    .col-check {
+      width: 28px;
+    }
+
+    .col-name {
+      font-weight: 500;
+    }
+
+    .element-tag {
+      font-size: 11px;
+      padding: 2px 5px;
+      border-radius: 3px;
+      font-weight: 600;
+      margin-left: 4px;
+    }
+
+    .elem-Pyro { background: #7f1d1d; color: #fca5a5; }
+    .elem-Hydro { background: #1e3a8a; color: #93c5fd; }
+    .elem-Electro { background: #581c87; color: #e9d5ff; }
+    .elem-Cryo { background: #164e63; color: #a5f3fc; }
+    .elem-Anemo { background: #064e3b; color: #6ee7b7; }
+    .elem-Geo { background: #78350f; color: #fde68a; }
+    .elem-Dendro { background: #14532d; color: #86efac; }
+
+    .role-tag {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-left: 6px;
+    }
+
+    .col-const {
+      width: 90px;
+      text-align: right;
+    }
+
+    .col-const select {
+      padding: 3px 6px;
+      font-size: 12px;
+    }
+
+    .col-action {
+      width: 130px;
+      text-align: right;
+    }
+
+    /* Inspectores */
+    .inspector-block {
+      margin-bottom: 16px;
+    }
+
+    .inspector-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .inspector-header span {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .status-badge {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-family: var(--font-mono);
+    }
+    .status-badge.ok { background: #065f46; color: #a7f3d0; }
+    .status-badge.error { background: #7f1d1d; color: #fecaca; }
+    .status-badge.loading { background: #854d0e; color: #fef08a; }
+
+    pre {
+      background: #09090b;
+      border: 1px solid #272730;
+      border-radius: 6px;
+      padding: 10px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      max-height: 240px;
+      overflow: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
+      color: #38bdf8;
+    }
+
+    /* Contenedor y Tarjetas de los 5 Equipos */
+    .teams-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .team-card {
+      background: #1e1e26;
+      border: 1px solid #2d2d3a;
+      border-radius: 8px;
+      padding: 12px 14px;
+      transition: border-color 0.15s ease;
+    }
+
+    .team-card:hover {
+      border-color: #3e3e50;
+    }
+
+    .team-card.rank-1 {
+      border-left: 4px solid #f59e0b;
+      background: linear-gradient(90deg, rgba(245, 158, 11, 0.05) 0%, #1e1e26 30%);
+    }
+
+    .team-card.rank-2 {
+      border-left: 4px solid #94a3b8;
+    }
+
+    .team-card.rank-3 {
+      border-left: 4px solid #d97706;
+    }
+
+    .team-card.rank-4, .team-card.rank-5 {
+      border-left: 4px solid #4b5563;
+    }
+
+    .team-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .team-title-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .rank-pill {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-family: var(--font-mono);
+    }
+    .rank-pill-1 { background: #f59e0b; color: #000; }
+    .rank-pill-2 { background: #94a3b8; color: #000; }
+    .rank-pill-3 { background: #d97706; color: #fff; }
+    .rank-pill-4, .rank-pill-5 { background: #374151; color: #d1d5db; }
+
+    .team-archetype {
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .team-score-badge {
+      font-size: 14px;
+      font-weight: 700;
+      color: #fbbf24;
+      font-family: var(--font-mono);
+    }
+
+    .team-members-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+
+    @media (max-width: 600px) {
+      .team-members-row {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .member-pill {
+      background: #252530;
+      border: 1px solid #323242;
+      border-radius: 5px;
+      padding: 6px 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .member-pill-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .member-name {
+      font-weight: 600;
+      font-size: 12px;
+      color: #f3f4f6;
+    }
+
+    .member-const {
+      font-size: 11px;
+      color: #93c5fd;
+      font-family: var(--font-mono);
+      font-weight: 600;
+    }
+
+    .member-role {
+      font-size: 10px;
+      color: var(--text-muted);
+    }
+
+    .team-artifacts-box {
+      background: #181820;
+      border: 1px solid #272733;
+      border-radius: 5px;
+      padding: 6px 10px;
+      font-size: 11px;
+      margin-bottom: 6px;
+    }
+
+    .artifact-entry {
+      margin-bottom: 2px;
+      color: #cbd5e1;
+    }
+
+    .artifact-entry em {
+      color: #a5b4fc;
+      font-style: normal;
+      font-weight: 500;
+    }
+
+    .artifact-alert {
+      color: #f87171;
+      font-size: 11px;
+      margin-top: 4px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .team-details {
+      margin-top: 6px;
+      border-top: 1px dashed #2c2c3a;
+      padding-top: 6px;
+    }
+
+    .team-details summary {
+      cursor: pointer;
+      font-size: 11px;
+      color: var(--text-muted);
+      user-select: none;
+    }
+
+    .team-details summary:hover {
+      color: #e2e8f0;
+    }
+
+    .score-breakdown-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin: 8px 0 6px 0;
+      font-size: 10px;
+      font-family: var(--font-mono);
+    }
+
+    .chip {
+      background: #23232f;
+      padding: 2px 6px;
+      border-radius: 3px;
+      border: 1px solid #333342;
+      color: #94a3b8;
+    }
+
+    .explanations-list {
+      margin-left: 16px;
+      margin-top: 6px;
+      font-size: 11px;
+      color: #94a3b8;
+      line-height: 1.5;
+    }
+
+    .explanations-list li {
+      margin-bottom: 2px;
+    }
+
+    .quick-toolbar {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .quick-toolbar button {
+      padding: 4px 8px;
+      font-size: 12px;
+    }
+
+    .details-toggle-bar {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .details-toggle-bar a {
+      color: var(--primary);
+      font-size: 11px;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .details-toggle-bar a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-title">
+      <h1>VGBuilder — Probador de Endpoint POST /affinity/match</h1>
+      <p>Selecciona personajes para el inventario y solicita con un clic el Carry Main DPS</p>
+    </div>
+    <div class="config-bar">
+      <label for="endpointUrl" style="font-size:12px; color:var(--text-muted);">Endpoint:</label>
+      <input type="text" id="endpointUrl" value="http://localhost:3000/affinity/match" style="width: 280px;">
+      <button id="btnReloadCatalog" title="Cargar personajes desde /catalog/characters">🔄 Cargar API</button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <!-- PANEL IZQUIERDO: Inventario y Selección -->
+    <div class="panel">
+      <h2>
+        <span>Inventario del Jugador</span>
+        <span class="badge-count" id="inventoryCount">0 seleccionados</span>
+      </h2>
+
+      <div class="quick-toolbar">
+        <button id="btnSelectAll">Seleccionar Todos</button>
+        <button id="btnDeselectAll">Deseleccionar Todos</button>
+        <button id="btnPresetDiluc">Preset Diluc Vape</button>
+        <button id="btnPresetAllC0">Todos a C0</button>
+      </div>
+
+      <!-- SECCIÓN: Main DPS -->
+      <div class="section-label section-main-dps">
+        <span>⚔️ Personajes MAIN DPS (tag: main_dps / rol: Main DPS)</span>
+        <span style="font-size:11px; font-weight:normal;">Usa el botón para solicitar este carry</span>
+      </div>
+      <table class="char-table">
+        <tbody id="listMainDps">
+          <!-- Renderizado dinámico -->
+        </tbody>
+      </table>
+
+      <!-- SECCIÓN: No Main DPS (Supports / Sub-DPS / Healers) -->
+      <div class="section-label section-supports">
+        <span>🛡️ Personajes Sub-DPS, Soportes y Curadores (Sin tag main_dps)</span>
+        <span style="font-size:11px; font-weight:normal;">Se añadirán al array 'inventory'</span>
+      </div>
+      <table class="char-table">
+        <tbody id="listSupports">
+          <!-- Renderizado dinámico -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- PANEL DERECHO: Lo que se envía y lo que se responde -->
+    <div class="panel">
+      <h2>
+        <span>Resultados e Inspección HTTP</span>
+        <span id="timingBadge" style="font-size: 11px; color: var(--text-muted);">Listo</span>
+      </h2>
+
+      <!-- LO QUE SE ENVÍA -->
+      <div class="inspector-block">
+        <div class="inspector-header">
+          <span>📤 Lo que envío (Request Payload)</span>
+          <button id="btnCopyRequest" style="padding: 2px 8px; font-size: 11px;">Copiar JSON</button>
+        </div>
+        <pre id="requestViewer">// Haz clic en "🎯 Solicitar Carry" en cualquier Main DPS para enviar...</pre>
+      </div>
+
+      <!-- LOS 5 EQUIPOS DEVUELTOS -->
+      <div class="inspector-block">
+        <div class="inspector-header">
+          <span>🏆 Equipos Recomendados por Afinidad</span>
+          <div style="display: flex; gap: 6px; align-items: center;">
+            <span id="responseStatus" class="status-badge" style="display: none;"></span>
+            <span id="teamsCountBadge" class="badge-count" style="display: none;">0 equipos</span>
+          </div>
+        </div>
+
+        <div id="teamsToggleBar" class="details-toggle-bar" style="display: none;">
+          <a id="btnExpandAllDetails">Desplegar todos los detalles</a>
+          <span>•</span>
+          <a id="btnCollapseAllDetails">Colapsar detalles</a>
+        </div>
+
+        <!-- Contenedor dinámico de las 5 tarjetas de equipos -->
+        <div id="teamsContainer" class="teams-container">
+          <div style="color: var(--text-muted); font-size: 13px; padding: 12px; text-align: center; background: #16161b; border-radius: 6px;">
+            Elige un personaje Main DPS de la izquierda y haz clic en <strong>🎯 Solicitar Carry</strong> para ver los 5 mejores equipos sugeridos aquí.
+          </div>
+        </div>
+      </div>
+
+      <!-- LO QUE SE RECIBE (JSON RAW COMPLETO) -->
+      <div class="inspector-block">
+        <details>
+          <summary style="cursor: pointer; font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; user-select: none;">
+            📥 Ver Respuesta JSON Raw Completa
+          </summary>
+          <div class="inspector-header" style="margin-top: 6px;">
+            <span>JSON de respuesta bruta</span>
+            <button id="btnCopyResponse" style="padding: 2px 8px; font-size: 11px;">Copiar Respuesta</button>
+          </div>
+          <pre id="responseViewer">// Esperando solicitud...</pre>
+        </details>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Catálogo inicial con los 21 personajes estándar (IDs 1-21) compatibles con affinity-engine
+    const DEFAULT_ROSTER = [
+      { id: 1, name: "Amber", element: "Pyro", roles: ["Sub-DPS"] },
+      { id: 2, name: "Barbara", element: "Hydro", roles: ["Healer", "Support"] },
+      { id: 3, name: "Beidou", element: "Electro", roles: ["Sub-DPS", "Support"] },
+      { id: 4, name: "Bennett", element: "Pyro", roles: ["Support", "Healer"] },
+      { id: 5, name: "Chongyun", element: "Cryo", roles: ["Sub-DPS", "Support"] },
+      { id: 6, name: "Diluc", element: "Pyro", roles: ["Main DPS"] },
+      { id: 7, name: "Fischl", element: "Electro", roles: ["Sub-DPS", "Support"] },
+      { id: 8, name: "Jean", element: "Anemo", roles: ["Support", "Healer"] },
+      { id: 9, name: "Kaeya", element: "Cryo", roles: ["Sub-DPS", "Support"] },
+      { id: 10, name: "Keqing", element: "Electro", roles: ["Main DPS"] },
+      { id: 11, name: "Klee", element: "Pyro", roles: ["Main DPS"] },
+      { id: 12, name: "Lisa", element: "Electro", roles: ["Sub-DPS", "Support"] },
+      { id: 13, name: "Mona", element: "Hydro", roles: ["Support", "Sub-DPS"] },
+      { id: 14, name: "Ningguang", element: "Geo", roles: ["Main DPS", "Sub-DPS"] },
+      { id: 15, name: "Noelle", element: "Geo", roles: ["Main DPS", "Support", "Healer"] },
+      { id: 16, name: "Qiqi", element: "Cryo", roles: ["Healer", "Support"] },
+      { id: 17, name: "Razor", element: "Electro", roles: ["Main DPS"] },
+      { id: 18, name: "Sucrose", element: "Anemo", roles: ["Support"] },
+      { id: 19, name: "Venti", element: "Anemo", roles: ["Support"] },
+      { id: 20, name: "Xiangling", element: "Pyro", roles: ["Sub-DPS"] },
+      { id: 21, name: "Xingqiu", element: "Hydro", roles: ["Sub-DPS", "Support"] }
+    ];
+
+    let currentCharacters = [...DEFAULT_ROSTER];
+    let selectedCarryId = null;
+    let lastSentPayload = null;
+    let lastReceivedData = null;
+
+    // Detectar si un personaje tiene tag / rol de main_dps
+    function isMainDps(char) {
+      if (char.roles && Array.isArray(char.roles)) {
+        if (char.roles.some(r => r.toLowerCase().replace(/[\s-_]+/g, '') === 'maindps')) return true;
+      }
+      if (char.tags && Array.isArray(char.tags)) {
+        if (char.tags.some(t => {
+          const val = (t.value || '').toLowerCase().replace(/[\s-_]+/g, '');
+          return val === 'maindps';
+        })) return true;
+      }
+      return false;
+    }
+
+    // Inicializar o renderizar tablas
+    function renderLists() {
+      const listMainDps = document.getElementById("listMainDps");
+      const listSupports = document.getElementById("listSupports");
+
+      listMainDps.innerHTML = "";
+      listSupports.innerHTML = "";
+
+      const mainDpsList = currentCharacters.filter(isMainDps);
+      const supportsList = currentCharacters.filter(c => !isMainDps(c));
+
+      // Renderizar Main DPS
+      mainDpsList.forEach(c => {
+        const tr = document.createElement("tr");
+        tr.id = `row-char-${c.id}`;
+        tr.innerHTML = `
+          <td class="col-check">
+            <input type="checkbox" class="char-checkbox" data-id="${c.id}" checked>
+          </td>
+          <td class="col-name">
+            <span>${c.name}</span>
+            <span class="element-tag elem-${c.element}">${c.element}</span>
+            <span style="font-size:11px; color:var(--text-muted); margin-left:4px;">#${c.id}</span>
+          </td>
+          <td class="col-const">
+            <select class="char-constellation" data-id="${c.id}">
+              <option value="0">C0</option>
+              <option value="1">C1</option>
+              <option value="2">C2</option>
+              <option value="3">C3</option>
+              <option value="4">C4</option>
+              <option value="5">C5</option>
+              <option value="6">C6</option>
+            </select>
+          </td>
+          <td class="col-action">
+            <button class="btn-dps" onclick="requestCarry(${c.id})">🎯 Solicitar Carry</button>
+          </td>
+        `;
+        listMainDps.appendChild(tr);
+      });
+
+      // Renderizar Soportes / Sub-DPS
+      supportsList.forEach(c => {
+        const tr = document.createElement("tr");
+        tr.id = `row-char-${c.id}`;
+        const rolesText = (c.roles || []).join(", ");
+        tr.innerHTML = `
+          <td class="col-check">
+            <input type="checkbox" class="char-checkbox" data-id="${c.id}" checked>
+          </td>
+          <td class="col-name">
+            <span>${c.name}</span>
+            <span class="element-tag elem-${c.element}">${c.element}</span>
+            <span class="role-tag">${rolesText}</span>
+            <span style="font-size:11px; color:var(--text-muted); margin-left:4px;">#${c.id}</span>
+          </td>
+          <td class="col-const">
+            <select class="char-constellation" data-id="${c.id}">
+              <option value="0">C0</option>
+              <option value="1">C1</option>
+              <option value="2">C2</option>
+              <option value="3">C3</option>
+              <option value="4">C4</option>
+              <option value="5">C5</option>
+              <option value="6">C6</option>
+            </select>
+          </td>
+          <td class="col-action"></td>
+        `;
+        listSupports.appendChild(tr);
+      });
+
+      attachListeners();
+      updateInventoryCount();
+    }
+
+    function attachListeners() {
+      document.querySelectorAll(".char-checkbox").forEach(cb => {
+        cb.addEventListener("change", updateInventoryCount);
+      });
+    }
+
+    // Construye el payload del inventario a partir de los checkboxes
+    function buildInventoryPayload() {
+      const inventory = [];
+      document.querySelectorAll(".char-checkbox:checked").forEach(cb => {
+        const charId = Number(cb.dataset.id);
+        const constSelect = document.querySelector(`.char-constellation[data-id="${charId}"]`);
+        const constellation = constSelect ? Number(constSelect.value) : 0;
+        inventory.push({
+          characterId: charId,
+          constellation: constellation
+        });
+      });
+      return inventory;
+    }
+
+    function updateInventoryCount() {
+      const count = document.querySelectorAll(".char-checkbox:checked").length;
+      document.getElementById("inventoryCount").textContent = `${count} seleccionados`;
+    }
+
+    // Acción principal: Solicitar un Carry Main DPS específico
+    async function requestCarry(carryId) {
+      selectedCarryId = carryId;
+
+      // Asegurar que el carry seleccionado esté marcado en el inventario
+      const carryCb = document.querySelector(`.char-checkbox[data-id="${carryId}"]`);
+      if (carryCb && !carryCb.checked) {
+        carryCb.checked = true;
+        updateInventoryCount();
+      }
+
+      const inventory = buildInventoryPayload();
+      const payload = {
+        targetCharacterId: Number(carryId),
+        inventory: inventory
+      };
+
+      lastSentPayload = payload;
+
+      // Mostrar lo que se envía de inmediato
+      const endpoint = document.getElementById("endpointUrl").value.trim();
+      document.getElementById("requestViewer").textContent = JSON.stringify(payload, null, 2);
+
+      // Estado de carga
+      const timingBadge = document.getElementById("timingBadge");
+      const statusBadge = document.getElementById("responseStatus");
+      const teamsCountBadge = document.getElementById("teamsCountBadge");
+      const teamsContainer = document.getElementById("teamsContainer");
+      const teamsToggleBar = document.getElementById("teamsToggleBar");
+      const responseViewer = document.getElementById("responseViewer");
+
+      statusBadge.style.display = "inline-block";
+      statusBadge.className = "status-badge loading";
+      statusBadge.textContent = "ENVIANDO...";
+      teamsCountBadge.style.display = "none";
+      teamsToggleBar.style.display = "none";
+      timingBadge.textContent = "Petición en curso...";
+      responseViewer.textContent = "// Esperando respuesta del servidor...";
+
+      teamsContainer.innerHTML = `
+        <div style="color: var(--warning); font-size: 13px; padding: 12px; text-align: center; background: #16161b; border-radius: 6px;">
+          ⏳ Calculando combinaciones óptimas C(K, 3) y puntuación de afinidad...
+        </div>
+      `;
+
+      const startTime = performance.now();
+
+      try {
+        const res = await fetch(endpoint, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const elapsed = (performance.now() - startTime).toFixed(1);
+        timingBadge.textContent = `${elapsed} ms`;
+
+        let data;
+        const text = await res.text();
+        try {
+          data = JSON.parse(text);
+        } catch {
+          data = text;
+        }
+
+        lastReceivedData = data;
+
+        if (res.ok) {
+          statusBadge.className = "status-badge ok";
+          statusBadge.textContent = `${res.status} OK`;
+        } else {
+          statusBadge.className = "status-badge error";
+          statusBadge.textContent = `${res.status} ${res.statusText || 'Error'}`;
+        }
+
+        responseViewer.textContent = typeof data === "object" ? JSON.stringify(data, null, 2) : data;
+
+        // Renderizar los 5 equipos devueltos
+        if (Array.isArray(data)) {
+          renderTeamsList(data);
+        } else {
+          teamsContainer.innerHTML = `
+            <div style="color: var(--danger); font-size: 13px; padding: 12px; background: #1a1416; border: 1px solid #7f1d1d; border-radius: 6px;">
+              ${data?.message || 'La respuesta no devolvió una lista de equipos.'}
+            </div>
+          `;
+        }
+
+      } catch (err) {
+        const elapsed = (performance.now() - startTime).toFixed(1);
+        timingBadge.textContent = `${elapsed} ms`;
+        statusBadge.className = "status-badge error";
+        statusBadge.textContent = "CONEXIÓN FALLIDA";
+        responseViewer.textContent = `Error de red o conexión:\n${err.message}\n\nAsegúrate de que el servidor esté corriendo en: ${endpoint}`;
+        teamsContainer.innerHTML = `
+          <div style="color: var(--danger); font-size: 13px; padding: 12px; background: #1a1416; border: 1px solid #7f1d1d; border-radius: 6px;">
+            Error de conexión con el endpoint: ${err.message}
+          </div>
+        `;
+      }
+    }
+
+    // Renderizar los 5 equipos devueltos por el endpoint
+    function renderTeamsList(teams) {
+      const teamsContainer = document.getElementById("teamsContainer");
+      const teamsCountBadge = document.getElementById("teamsCountBadge");
+      const teamsToggleBar = document.getElementById("teamsToggleBar");
+
+      teamsContainer.innerHTML = "";
+
+      if (!teams || teams.length === 0) {
+        teamsCountBadge.style.display = "none";
+        teamsToggleBar.style.display = "none";
+        teamsContainer.innerHTML = `
+          <div style="color: var(--text-muted); font-size: 13px; padding: 12px; text-align: center; background: #16161b; border-radius: 6px;">
+            ⚠️ No se pudieron generar combinaciones válidas con los acompañantes seleccionados.
+          </div>
+        `;
+        return;
+      }
+
+      teamsCountBadge.textContent = `${teams.length} equipos devueltos`;
+      teamsCountBadge.style.display = "inline-block";
+      teamsToggleBar.style.display = "flex";
+
+      teams.forEach((t) => {
+        const card = document.createElement("div");
+        card.className = `team-card rank-${t.rank}`;
+
+        // 1. Integrantes del equipo
+        const membersHtml = (t.team || []).map(m => `
+          <div class="member-pill">
+            <div class="member-pill-top">
+              <span class="member-name">${m.name}</span>
+              <span class="member-const">C${m.constellation ?? 0}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 2px;">
+              <span class="member-role">${m.role || 'Miembro'}</span>
+              <span class="element-tag elem-${m.element}">${m.element}</span>
+            </div>
+          </div>
+        `).join("");
+
+        // 2. Artefactos de soporte asignados
+        let artifactsHtml = "";
+        if (t.artifactAssignments && t.artifactAssignments.length > 0) {
+          const entriesHtml = t.artifactAssignments.map(a => `
+            <div class="artifact-entry">
+              • <strong>${a.characterName}</strong>: <em>${a.artifactSetName}</em>
+              ${a.providedTag ? `<span style="color:var(--text-muted); font-size:10px;">(${a.providedTag})</span>` : ''}
+              ${a.alert ? `<div class="artifact-alert">⚠️ ${a.alert}</div>` : ''}
+            </div>
+          `).join("");
+
+          artifactsHtml = `
+            <div class="team-artifacts-box">
+              <div style="font-weight:600; font-size:11px; color:#94a3b8; margin-bottom:4px;">Asignación de Artefactos de Soporte:</div>
+              ${entriesHtml}
+            </div>
+          `;
+        }
+
+        // 3. Desglose de puntuación (chips)
+        let breakdownChips = "";
+        if (t.scoreBreakdown) {
+          const sb = t.scoreBreakdown;
+          breakdownChips = `
+            <div class="score-breakdown-chips">
+              <span class="chip" title="Scaling Buffs">Buffs: +${sb.scalingBuffs || 0}</span>
+              <span class="chip" title="Amplification">Reacciones: +${sb.amplification || 0}</span>
+              <span class="chip" title="Blueprint">Blueprint: +${sb.blueprint || 0}</span>
+              <span class="chip" title="Resonance">Resonancia: +${sb.resonance || 0}</span>
+              <span class="chip" title="Micro Affinities">Micro: +${sb.microAffinities || 0}</span>
+              ${sb.penalties ? `<span class="chip" style="color:var(--danger)">Penalización: -${sb.penalties}</span>` : ''}
+            </div>
+          `;
+        }
+
+        // 4. Explicaciones
+        const explanationsHtml = (t.explanations || []).map(exp => `<li>${exp}</li>`).join("");
+
+        card.innerHTML = `
+          <div class="team-header">
+            <div class="team-title-group">
+              <span class="rank-pill rank-pill-${t.rank}">#${t.rank}</span>
+              <span class="team-archetype">${t.archetype || 'Equipo Sugerido'}</span>
+            </div>
+            <div class="team-score-badge">${t.totalScore.toLocaleString()} pts</div>
+          </div>
+
+          <div class="team-members-row">
+            ${membersHtml}
+          </div>
+
+          ${artifactsHtml}
+
+          <details class="team-details">
+            <summary>Ver sinergias y desglose de puntuación (${(t.explanations || []).length} items)</summary>
+            ${breakdownChips}
+            <ul class="explanations-list">
+              ${explanationsHtml}
+            </ul>
+          </details>
+        `;
+
+        teamsContainer.appendChild(card);
+      });
+    }
+
+    // Expandir / colapsar todos los detalles de los equipos
+    document.getElementById("btnExpandAllDetails").addEventListener("click", () => {
+      document.querySelectorAll("#teamsContainer details").forEach(d => d.open = true);
+    });
+
+    document.getElementById("btnCollapseAllDetails").addEventListener("click", () => {
+      document.querySelectorAll("#teamsContainer details").forEach(d => d.open = false);
+    });
+
+    // Botones de acción rápida en inventario
+    document.getElementById("btnSelectAll").addEventListener("click", () => {
+      document.querySelectorAll(".char-checkbox").forEach(cb => cb.checked = true);
+      updateInventoryCount();
+    });
+
+    document.getElementById("btnDeselectAll").addEventListener("click", () => {
+      document.querySelectorAll(".char-checkbox").forEach(cb => cb.checked = false);
+      updateInventoryCount();
+    });
+
+    document.getElementById("btnPresetAllC0").addEventListener("click", () => {
+      document.querySelectorAll(".char-constellation").forEach(sel => sel.value = "0");
+    });
+
+    document.getElementById("btnPresetDiluc").addEventListener("click", () => {
+      // Diluc (6), Bennett (4) C1, Xingqiu (21) C2, Sucrose (18) C0, Xiangling (20) C4, Jean (8) C0, Mona (13) C0
+      document.querySelectorAll(".char-checkbox").forEach(cb => {
+        const id = Number(cb.dataset.id);
+        cb.checked = [4, 6, 8, 13, 18, 20, 21].includes(id);
+      });
+      const bennett = document.querySelector('.char-constellation[data-id="4"]');
+      if (bennett) bennett.value = "1";
+      const xingqiu = document.querySelector('.char-constellation[data-id="21"]');
+      if (xingqiu) xingqiu.value = "2";
+      const xiangling = document.querySelector('.char-constellation[data-id="20"]');
+      if (xiangling) xiangling.value = "4";
+      updateInventoryCount();
+      requestCarry(6);
+    });
+
+    // Cargar catálogo desde la API /catalog/characters si se desea
+    document.getElementById("btnReloadCatalog").addEventListener("click", async () => {
+      const endpoint = document.getElementById("endpointUrl").value.trim();
+      const baseUrl = endpoint.replace(/\/affinity\/match.*$/, "");
+      const catalogUrl = `${baseUrl}/catalog/characters`;
+
+      const btn = document.getElementById("btnReloadCatalog");
+      const origText = btn.textContent;
+      btn.textContent = "⏳...";
+
+      try {
+        const res = await fetch(catalogUrl);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0) {
+          currentCharacters = data.map(c => ({
+            id: Number(c.id),
+            name: c.name,
+            element: c.element,
+            roles: (c.tags || []).filter(t => t.category === "rol").map(t => t.value),
+            tags: c.tags
+          }));
+          renderLists();
+          alert(`¡Catálogo actualizado con éxito desde API! (${data.length} personajes cargados)`);
+        }
+      } catch (err) {
+        alert(`No se pudo cargar desde ${catalogUrl}: ${err.message}\nSe mantiene el catálogo por defecto.`);
+      } finally {
+        btn.textContent = origText;
+      }
+    });
+
+    // Copiar JSON
+    document.getElementById("btnCopyRequest").addEventListener("click", () => {
+      if (!lastSentPayload) return;
+      navigator.clipboard.writeText(JSON.stringify(lastSentPayload, null, 2));
+      alert("Payload copiado al portapapeles");
+    });
+
+    document.getElementById("btnCopyResponse").addEventListener("click", () => {
+      if (!lastReceivedData) return;
+      navigator.clipboard.writeText(JSON.stringify(lastReceivedData, null, 2));
+      alert("Respuesta copiada al portapapeles");
+    });
+
+    // Inicialización al cargar la página
+    renderLists();
+  </script>
+</body>
+</html>

@@ -191,4 +191,218 @@ describe("Motor de Matching v2.0 (Epic 3)", () => {
     expect(injectedTags).toContain("need_attack_buff");
     expect(injectedTags).toContain("buff_elemental_mastery");
   });
+
+  test("Xiangling C0 vs Amber C0: Sin Bennett, Xiangling es priorizada por Guoba ATK buff y daño off-field", () => {
+    const dilucId = 6;
+    const inv = [
+      { characterId: 6, constellation: 0 },  // Diluc
+      { characterId: 21, constellation: 0 }, // Xingqiu
+      { characterId: 18, constellation: 0 }, // Sucrose (batería Anemo)
+      { characterId: 20, constellation: 0 }, // Xiangling C0
+      { characterId: 1, constellation: 0 },  // Amber C0
+    ];
+
+    const results = findOptimalTeams({
+      targetCharacterId: dilucId,
+      inventory: inv,
+    });
+
+    expect(results.length).toBeGreaterThanOrEqual(1);
+    const topTeam = results[0];
+    const memberNames = topTeam.team.map((m) => m.name);
+
+    // Xiangling debe ganar el puesto sobre Amber C0
+    expect(memberNames).toContain("Xiangling");
+    expect(memberNames).not.toContain("Amber");
+  });
+
+  test("Klee: Excluida como soporte a C0; habilitada a C2+ con debuff de defensa", () => {
+    const dilucId = 6;
+
+    // A C0: Klee no debe aparecer en los equipos de Diluc
+    const invC0 = [
+      { characterId: 6, constellation: 0 },
+      { characterId: 21, constellation: 0 },
+      { characterId: 18, constellation: 0 },
+      { characterId: 11, constellation: 0 }, // Klee C0
+      { characterId: 4, constellation: 0 },  // Bennett
+    ];
+    const resultsC0 = findOptimalTeams({ targetCharacterId: dilucId, inventory: invC0 });
+    const hasKleeInC0 = resultsC0.some((r) => r.team.some((m) => m.name === "Klee"));
+    expect(hasKleeInC0).toBe(false);
+
+    // A C2: Klee se habilita como soporte con -23% DEF debuff
+    const invC2 = [
+      { characterId: 6, constellation: 0 },
+      { characterId: 21, constellation: 0 },
+      { characterId: 18, constellation: 0 },
+      { characterId: 11, constellation: 2 }, // Klee C2
+      { characterId: 4, constellation: 0 },  // Bennett
+    ];
+    const resultsC2 = findOptimalTeams({ targetCharacterId: dilucId, inventory: invC2 });
+    const hasKleeInC2 = resultsC2.some((r) => r.team.some((m) => m.name === "Klee"));
+    expect(hasKleeInC2).toBe(true);
+  });
+
+  test("Razor: Excluido como soporte a C0-C3; a C4+ se habilita como soporte con debuff de defensa y artefactos", () => {
+    const keqingId = 10;
+
+    // A C0: Razor no debe aparecer como soporte
+    const invC0 = [
+      { characterId: 10, constellation: 0 }, // Keqing
+      { characterId: 7, constellation: 0 },  // Fischl
+      { characterId: 16, constellation: 0 }, // Qiqi
+      { characterId: 17, constellation: 0 }, // Razor C0
+    ];
+    const resultsC0 = findOptimalTeams({ targetCharacterId: keqingId, inventory: invC0 });
+    const hasRazorInC0 = resultsC0.some((r) => r.team.some((m) => m.name === "Razor"));
+    expect(hasRazorInC0).toBe(false);
+
+    // A C4: Razor se habilita como soporte con -15% DEF debuff
+    const invC4 = [
+      { characterId: 10, constellation: 0 },
+      { characterId: 7, constellation: 0 },
+      { characterId: 16, constellation: 0 },
+      { characterId: 17, constellation: 4 }, // Razor C4
+    ];
+    const resultsC4 = findOptimalTeams({ targetCharacterId: keqingId, inventory: invC4 });
+    const razorTeam = resultsC4.find((r) => r.team.some((m) => m.name === "Razor"));
+    expect(razorTeam).toBeDefined();
+
+    // Razor debe tener rol Support en el equipo y poder equipar set universal
+    const razorMember = razorTeam!.team.find((m) => m.name === "Razor");
+    expect(razorMember?.role).toBe("Support");
+
+    const razorArt = razorTeam!.artifactAssignments.find((a) => a.characterName === "Razor");
+    expect(razorArt).toBeDefined();
+    expect(razorArt?.artifactSetName).toBe("Ritual Antiguo de la Nobleza");
+  });
+
+  test("Artifact Binder: Descalifica Instructor en Mono Pyro y asigna Pergamino del Héroe", () => {
+    const dilucId = 6;
+    const invMonoPyro = [
+      { characterId: 6, constellation: 0 },  // Diluc
+      { characterId: 4, constellation: 1 },  // Bennett
+      { characterId: 20, constellation: 4 }, // Xiangling
+      { characterId: 8, constellation: 0 },  // Jean
+    ];
+
+    const results = findOptimalTeams({
+      targetCharacterId: dilucId,
+      inventory: invMonoPyro,
+    });
+
+    expect(results.length).toBeGreaterThanOrEqual(1);
+    const topTeam = results[0];
+
+    // Ningún acompañante en Mono Pyro debe portar Instructor
+    const instructorAssignment = topTeam.artifactAssignments.find(
+      (a) => a.artifactSetName === "Instructor"
+    );
+    expect(instructorAssignment).toBeUndefined();
+
+    // Xiangling debe portar Pergamino del Héroe (+12%/+24% Pyro DMG)
+    const xianglingArt = topTeam.artifactAssignments.find(
+      (a) => a.characterName === "Xiangling"
+    );
+    expect(xianglingArt?.artifactSetName).toBe("Pergamino del Héroe");
+    expect(xianglingArt?.providedTag).toBe("buff_all_dmg");
+  });
+
+  test("Artifact Binder: Descalifica Instructor para Carries Geo y asigna Pergamino del Héroe", () => {
+    const ningguangId = 14;
+    const invGeo = [
+      { characterId: 14, constellation: 2 }, // Ningguang
+      { characterId: 15, constellation: 6 }, // Noelle
+      { characterId: 4, constellation: 1 },  // Bennett
+      { characterId: 20, constellation: 0 }, // Xiangling
+    ];
+
+    const results = findOptimalTeams({
+      targetCharacterId: ningguangId,
+      inventory: invGeo,
+    });
+
+    expect(results.length).toBeGreaterThanOrEqual(1);
+    const topTeam = results[0];
+
+    // No debe haber Instructor
+    const instructorAssignment = topTeam.artifactAssignments.find(
+      (a) => a.artifactSetName === "Instructor"
+    );
+    expect(instructorAssignment).toBeUndefined();
+
+    // Xiangling debe equipar Pergamino del Héroe
+    const xianglingArt = topTeam.artifactAssignments.find(
+      (a) => a.characterName === "Xiangling"
+    );
+    expect(xianglingArt?.artifactSetName).toBe("Pergamino del Héroe");
+  });
+
+  test("Razor: Con Bennett no-C6 (C1), prioriza sinergias ofensivas de Bennett y Superconductor sobre Doble Geo", () => {
+    const razorId = 17;
+    const inv = DEFAULT_CHARACTERS.map((c) => ({
+      characterId: c.id,
+      constellation:
+        c.name === "Bennett"
+          ? 1
+          : c.name === "Ningguang"
+          ? 2
+          : c.name === "Noelle"
+          ? 6
+          : c.name === "Razor"
+          ? 4
+          : 0,
+    }));
+
+    const results = findOptimalTeams({
+      targetCharacterId: razorId,
+      inventory: inv,
+    });
+
+    expect(results.length).toBeGreaterThanOrEqual(1);
+    const topTeam = results[0];
+    const topMembers = topTeam.team.map((m) => m.name);
+
+    // Top 1 debe incluir a Bennett (no C6) y Superconductor
+    expect(topMembers).toContain("Bennett");
+    const hasCryo = topMembers.includes("Qiqi") || topMembers.includes("Kaeya");
+    expect(hasCryo).toBe(true);
+
+    // Doble Geo (Ningguang + Noelle) no debe superar a los equipos óptimos con Bennett
+    const hasDobleGeo = topMembers.includes("Ningguang") && topMembers.includes("Noelle");
+    expect(hasDobleGeo).toBe(false);
+
+    // El puntaje del Top 1 debe ser claramente superior a la variante Doble Geo (~7600 pts)
+    expect(topTeam.totalScore).toBeGreaterThan(8300);
+  });
+
+  test("Klee: Prioriza a Xingqiu sobre Barbara en Vaporizados gracias a ataques coordinados", () => {
+    const kleeId = 11;
+    const inv = [
+      { characterId: 11, constellation: 0 }, // Klee
+      { characterId: 4, constellation: 1 },  // Bennett
+      { characterId: 13, constellation: 0 }, // Mona
+      { characterId: 21, constellation: 2 }, // Xingqiu
+      { characterId: 2, constellation: 0 },  // Barbara
+    ];
+
+    const results = findOptimalTeams({
+      targetCharacterId: kleeId,
+      inventory: inv,
+    });
+
+    expect(results.length).toBeGreaterThanOrEqual(2);
+    const topTeam = results[0];
+    const topMembers = topTeam.team.map((m) => m.name);
+
+    // El Top 1 debe tener a Xingqiu (ataques coordinados ofensivos)
+    expect(topMembers).toContain("Xingqiu");
+    expect(topMembers).not.toContain("Barbara");
+
+    // Verificar que el equipo con Xingqiu supera al equipo con Barbara
+    const barbaraTeam = results.find((r) => r.team.some((m) => m.name === "Barbara"));
+    expect(barbaraTeam).toBeDefined();
+    expect(topTeam.totalScore).toBeGreaterThan(barbaraTeam!.totalScore);
+  });
 });
