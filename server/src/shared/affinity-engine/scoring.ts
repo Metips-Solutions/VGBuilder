@@ -47,16 +47,40 @@ export function calculateTeamScore(
 
     // Verificar fuentes que satisfacen esta necesidad
     if (need.value === "need_reaction_enabler") {
-      if (allActiveTags.has("hydro_application")) matchSources++;
-      if (allActiveTags.has("cryo_application")) matchSources++;
-      if (allActiveTags.has("pyro_application")) matchSources++;
-      if (allActiveTags.has("electro_application")) matchSources++;
+      if (targetCarry.element === "Pyro") {
+        const hydroSources = companions.filter((c) =>
+          c.character.mechanics.some(
+            (m) =>
+              m.value === "hydro_application" &&
+              (!m.minConstellation || c.constellation >= m.minConstellation)
+          )
+        ).length;
+        const cryoSources = companions.filter((c) =>
+          c.character.mechanics.some(
+            (m) =>
+              m.value === "cryo_application" &&
+              (!m.minConstellation || c.constellation >= m.minConstellation)
+          )
+        ).length;
+        const pyroCount = fullTeam.filter((c) => c.element === "Pyro").length;
+        const hasVV =
+          allActiveTags.has("need_resistance_shred") ||
+          allActiveTags.has("debuff_elemental_res");
+        if (hydroSources > 0) matchSources += hydroSources;
+        else if (cryoSources > 0) matchSources += cryoSources;
+        else if (pyroCount >= 3 && hasVV) matchSources += 1;
+      } else if (targetCarry.element === "Electro") {
+        if (allActiveTags.has("hydro_application")) matchSources++;
+        if (allActiveTags.has("cryo_application")) matchSources++;
+        if (allActiveTags.has("pyro_application")) matchSources++;
+      } else {
+        if (allActiveTags.has("hydro_application")) matchSources++;
+        if (allActiveTags.has("cryo_application")) matchSources++;
+      }
     } else if (need.value === "need_resistance_shred") {
       if (allActiveTags.has("need_resistance_shred")) matchSources++;
       if (allActiveTags.has("debuff_elemental_res")) matchSources++;
-      if (allActiveTags.has("debuff_anemo_res")) matchSources++;
-      if (allActiveTags.has("debuff_pyro_res")) matchSources++;
-      if (allActiveTags.has("debuff_cryo_res")) matchSources++;
+      if (allActiveTags.has(`debuff_${targetCarry.element.toLowerCase()}_res`)) matchSources++;
       if (allActiveTags.has("debuff_defense")) matchSources++;
     } else if (need.value === "need_attack_buff") {
       if (allActiveTags.has("buff_attack")) matchSources++;
@@ -123,7 +147,12 @@ export function calculateTeamScore(
 
     if (hasHydro) {
       vapeScore = 1000;
-      if (allActiveTags.has("buff_all_dmg")) vapeScore += 200; // Presagio de Mona
+      if (
+        allActiveTags.has("buff_vaporize_dmg") ||
+        allActiveTags.has("hexerei_vaporize_bonus")
+      ) {
+        vapeScore += 200; // Presagio C1 / Rito de Mona
+      }
     }
 
     if (hasCryo) {
@@ -140,7 +169,7 @@ export function calculateTeamScore(
 
     if (vapeScore >= meltScore && vapeScore >= monoPyroScore && vapeScore > 0) {
       sAmplification = vapeScore;
-      detectedArchetype = "Vaporizados Clásico";
+      detectedArchetype = "Vaporizados";
       explanations.push(`Multiplicador ofensivo: Vaporizado continuo (+${vapeScore} pts)`);
     } else if (meltScore >= vapeScore && meltScore >= monoPyroScore && meltScore > 0) {
       sAmplification = meltScore;
@@ -190,12 +219,35 @@ export function calculateTeamScore(
       if (allActiveTags.has(rt)) matches++;
     }
 
+    const teamElems = fullTeam.map((c) => c.element).sort();
+    const presetElems = preset.composition.elements
+      ? [...preset.composition.elements].sort()
+      : [];
+    let elemsMatch = false;
+    if (presetElems.length === 4) {
+      elemsMatch = teamElems.every((el, idx) => el === presetElems[idx]);
+    } else if (presetElems.length > 0) {
+      elemsMatch = presetElems.every((el) => teamElems.includes(el));
+    } else {
+      elemsMatch = true;
+    }
+
     if (reqTags.length > 0 && matches === reqTags.length) {
-      const bonus = 1500;
-      if (bonus > sBlueprint) {
-        sBlueprint = bonus;
-        if (preset.composition.archetype) {
-          detectedArchetype = preset.composition.archetype;
+      if (elemsMatch) {
+        const bonus = 1500;
+        if (bonus > sBlueprint) {
+          sBlueprint = bonus;
+          if (preset.composition.archetype) {
+            detectedArchetype = preset.composition.archetype;
+          }
+        }
+      } else {
+        const partial = 1000;
+        if (partial > sBlueprint) {
+          sBlueprint = partial;
+          if (detectedArchetype === "Sinergia Balanceada" && preset.composition.archetype) {
+            detectedArchetype = preset.composition.archetype;
+          }
         }
       }
     } else if (reqTags.length > 0 && matches >= reqTags.length - 1) {
@@ -250,8 +302,8 @@ export function calculateTeamScore(
   const hasJean = companions.some((c) => c.character.name === "Jean");
   const hasBennett = companions.some((c) => c.character.name === "Bennett");
   if (hasJean && hasBennett) {
-    sMicroAffinities += 500;
-    explanations.push("Micro-afinidad: Motor Sunfire (Jean Q + Bennett Q) remolinos Pyro continuos (+500 pts)");
+    sMicroAffinities += 300;
+    explanations.push("Micro-afinidad: Motor Sunfire (Jean Q + Bennett Q) remolinos Pyro continuos (+300 pts)");
   }
 
   // Batería Pyro: Bennett + Xiangling
@@ -266,6 +318,31 @@ export function calculateTeamScore(
   if ((hasFischl || hasXiangling) && hasBennett) {
     sMicroAffinities += 300;
     explanations.push("Micro-afinidad: Habilidad Snapshot fijando el buff de ATK (+300 pts)");
+  }
+
+  // Batería Pyro de Bennett para el Carry Pyro
+  if (hasBennett && targetCarry.element === "Pyro" && targetCarry.name !== "Bennett") {
+    sMicroAffinities += 300;
+    explanations.push("Micro-afinidad: Batería Bennett alimentando al Carry Pyro (+300 pts)");
+  }
+
+  // Buffer de Maestría Elemental (EM) para amplificación de reacciones
+  const hasEMBuffer = allActiveTags.has("buff_elemental_mastery");
+  if (hasEMBuffer && (hasHydro || hasCryo) && targetCarry.element === "Pyro") {
+    sMicroAffinities += 300;
+    explanations.push("Micro-afinidad: Buffer de Maestría Elemental potenciando reacciones de amplificación (+300 pts)");
+  }
+
+  // Ataques Coordinados en sincronía con Carry de Ataques Normales (Diluc, Keqing, Razor)
+  const hasCoordinated = allActiveTags.has("coordinated_attacks");
+  if (
+    hasCoordinated &&
+    (targetCarry.damageProfile === "Pyro Melee" ||
+      targetCarry.damageProfile === "Electro Fast Melee" ||
+      targetCarry.damageProfile === "Physical Melee")
+  ) {
+    sMicroAffinities += 200;
+    explanations.push("Micro-afinidad: Ataques coordinados activados fluidamente por el Carry melee (+200 pts)");
   }
 
   // Pantalla de Jade Geo Buff con compañero Geo
