@@ -155,11 +155,11 @@ describe("Motor de Matching v2.0 (Epic 3)", () => {
       expect(memberNames).not.toContain("Bennett");
     }
 
-    // El Top 1 debe incluir Superconductor (Kaeya / Qiqi)
+    // El Top 1 debe incluir Superconductor (habilitador Cryo: Diona / Eula / Rosaria / Kaeya / Qiqi)
     const topTeam = results[0];
-    const memberNames = topTeam.team.map((m) => m.name);
-    const hasCryo = memberNames.includes("Kaeya") || memberNames.includes("Qiqi");
+    const hasCryo = topTeam.team.some((m) => m.element === "Cryo");
     expect(hasCryo).toBe(true);
+    expect(topTeam.archetype).toContain("Superconductor");
   });
 
   test("Support Artifact Binder: Cascada táctica cuando Bennett y Mona compiten por Nobleza", () => {
@@ -366,8 +366,9 @@ describe("Motor de Matching v2.0 (Epic 3)", () => {
 
     // Top 1 debe incluir a Bennett (no C6) y Superconductor
     expect(topMembers).toContain("Bennett");
-    const hasCryo = topMembers.includes("Qiqi") || topMembers.includes("Kaeya");
+    const hasCryo = topTeam.team.some((m) => m.element === "Cryo");
     expect(hasCryo).toBe(true);
+    expect(topTeam.archetype).toContain("Superconductor");
 
     // Doble Geo (Ningguang + Noelle) no debe superar a los equipos óptimos con Bennett
     const hasDobleGeo = topMembers.includes("Ningguang") && topMembers.includes("Noelle");
@@ -565,5 +566,199 @@ describe("Ronda 2 — Expansión de Roster (11 nuevos personajes)", () => {
     expect(memberNames).toContain("Xiangling");
     expect(memberNames).toContain("Zhongli");
     expect(topTeam.archetype).toBe("Melt Ganyu");
+  });
+
+  test("Xinyan: Recomienda Superconductor Físico como Top 1 y descarta arquetipos de reacción elemental (Vaporizados/Derretidos)", () => {
+    const xinyanId = 24;
+    const results = findOptimalTeams({
+      targetCharacterId: xinyanId,
+      inventory: fullInventory32,
+    });
+
+    expect(results.length).toBeGreaterThanOrEqual(1);
+    const topTeam = results[0];
+
+    // Xinyan debe ser reconocida como Carry Físico con Superconductor
+    expect(topTeam.archetype).toContain("Superconductor Físico");
+
+    // Debe contener habilitador Cryo y Electro
+    const hasCryo = topTeam.team.some((m) => m.element === "Cryo");
+    const hasElectro = topTeam.team.some((m) => m.element === "Electro");
+    expect(hasCryo).toBe(true);
+    expect(hasElectro).toBe(true);
+
+    // Ningún equipo del Top 5 debe ser Vaporizados o Derretidos
+    for (const res of results) {
+      expect(res.archetype).not.toBe("Vaporizados");
+      expect(res.archetype).not.toBe("Vaporizados Clásico");
+      expect(res.archetype).not.toBe("Derretidos");
+    }
+  });
+});
+
+describe("Ronda 3 — Expansión de Roster (10 personajes de Inazuma & Colaboración)", () => {
+  const fullInventory42 = DEFAULT_CHARACTERS.map((c) => ({
+    characterId: c.id,
+    constellation: c.name === "Bennett" ? 1 : c.name === "Xingqiu" ? 2 : 0,
+  }));
+
+  test("Shogun Raiden: Recomienda Raiden National con Bennett, Xiangling y Xingqiu como Top 1 absoluto", () => {
+    const raidenId = 39;
+    const results = findOptimalTeams({
+      targetCharacterId: raidenId,
+      inventory: fullInventory42,
+    });
+
+    expect(results.length).toBeGreaterThanOrEqual(1);
+    const topTeam = results[0];
+    expect(topTeam.team[0].name).toBe("Shogun Raiden");
+
+    const memberNames = topTeam.team.map((m) => m.name);
+    expect(memberNames).toContain("Bennett");
+    expect(memberNames).toContain("Xiangling");
+    expect(memberNames).toContain("Xingqiu");
+    expect(topTeam.archetype).toBe("Raiden National");
+
+    // Verificar asignación táctica de sets de soporte
+    const bennettArt = topTeam.artifactAssignments.find((a) => a.characterName === "Bennett");
+    expect(bennettArt?.artifactSetName).toBe("Ritual Antiguo de la Nobleza");
+  });
+
+  test("Kamisato Ayaka: Recomienda Ayaka Permafrost y descarta estrictamente a Electro por romper congelación", () => {
+    const ayakaId = 34;
+    const results = findOptimalTeams({
+      targetCharacterId: ayakaId,
+      inventory: fullInventory42,
+    });
+
+    expect(results.length).toBeGreaterThanOrEqual(1);
+    const topTeam = results[0];
+    expect(topTeam.team[0].name).toBe("Kamisato Ayaka");
+    expect(topTeam.archetype).toContain("Ayaka Permafrost");
+
+    // Ningún equipo óptimo del Top 3 debe contener Electro (destruiría la congelación)
+    for (const res of results.slice(0, 3)) {
+      const hasElectro = res.team.some((m) => m.element === "Electro");
+      expect(hasElectro).toBe(false);
+      const hasHydro = res.team.some((m) => m.element === "Hydro");
+      expect(hasHydro).toBe(true);
+    }
+  });
+
+  test("Yoimiya: Recomienda Vaporizado con Xingqiu y Zhongli como núcleo protector", () => {
+    const yoimiyaId = 36;
+    const results = findOptimalTeams({
+      targetCharacterId: yoimiyaId,
+      inventory: fullInventory42,
+    });
+
+    expect(results.length).toBeGreaterThanOrEqual(1);
+    const topTeam = results[0];
+    expect(topTeam.team[0].name).toBe("Yoimiya");
+
+    const memberNames = topTeam.team.map((m) => m.name);
+    expect(memberNames).toContain("Xingqiu");
+    expect(memberNames).toContain("Zhongli");
+    expect(topTeam.archetype).toContain("Vaporizado");
+
+    // Verificar que un equipo de Yoimiya sin escudo sufra penalización de interrupción
+    const resultsNoShield = findOptimalTeams({
+      targetCharacterId: yoimiyaId,
+      inventory: [
+        { characterId: 36, constellation: 0 }, // Yoimiya
+        { characterId: 21, constellation: 2 }, // Xingqiu
+        { characterId: 4, constellation: 1 },  // Bennett
+        { characterId: 2, constellation: 0 },  // Barbara
+      ],
+    });
+    const hasPenalty = resultsNoShield[0].explanations.some((e) =>
+      e.includes("Yoimiya sin escudo sufre interrupciones")
+    );
+    expect(hasPenalty).toBe(true);
+  });
+
+  test("Sangonomiya Kokomi: Recomienda Kokomi Taser y su Anti-tag descarta estrictamente a buffers de Prob. Crítico", () => {
+    const kokomiId = 40;
+    const results = findOptimalTeams({
+      targetCharacterId: kokomiId,
+      inventory: fullInventory42,
+    });
+
+    expect(results.length).toBeGreaterThanOrEqual(1);
+    const topTeam = results[0];
+    expect(topTeam.team[0].name).toBe("Sangonomiya Kokomi");
+    expect(topTeam.archetype).toBe("Kokomi Taser");
+
+    // Hard Constraint: Rosaria (buff_crit_rate) debe ser descartada de todos los equipos generados
+    for (const res of results) {
+      const memberNames = res.team.map((m) => m.name);
+      expect(memberNames).not.toContain("Rosaria");
+    }
+  });
+
+  test("Shogun Raiden: Con Kujou Sara C6 en inventario, activa bono crítico Electro e impulsa Raiden Hypercarry", () => {
+    const raidenId = 39;
+    const invWithSaraC6 = DEFAULT_CHARACTERS.map((c) => ({
+      characterId: c.id,
+      constellation: c.name === "Kujou Sara" ? 6 : c.name === "Bennett" ? 1 : 0,
+    }));
+
+    // Blacklist de Xingqiu y Xiangling para forzar la rama de Hypercarry
+    const xingqiuId = 21;
+    const xianglingId = 20;
+    const results = findOptimalTeams({
+      targetCharacterId: raidenId,
+      inventory: invWithSaraC6,
+      blacklist: [xingqiuId, xianglingId],
+    });
+
+    expect(results.length).toBeGreaterThanOrEqual(1);
+    const topTeam = results[0];
+    const memberNames = topTeam.team.map((m) => m.name);
+    expect(memberNames).toContain("Kujou Sara");
+    expect(memberNames).toContain("Bennett");
+    expect(topTeam.archetype).toBe("Raiden Hypercarry");
+
+    const hasSaraCritBonus = topTeam.explanations.some((e) =>
+      e.includes("Danza Tengu C6 otorga +60% Daño Crítico Electro")
+    );
+    expect(hasSaraCritBonus).toBe(true);
+  });
+
+  test("Noelle C6 con Gorou C6: Recomienda Triple Geo Hiperdefensa con asignación de Petra Arcaica a Gorou", () => {
+    const noelleId = 15;
+    const invWithGorou = DEFAULT_CHARACTERS.map((c) => ({
+      characterId: c.id,
+      constellation: c.name === "Noelle" ? 6 : c.name === "Gorou" ? 6 : 0,
+    }));
+
+    const results = findOptimalTeams({
+      targetCharacterId: noelleId,
+      inventory: invWithGorou,
+    });
+
+    expect(results.length).toBeGreaterThanOrEqual(1);
+    const topTeam = results[0];
+    const memberNames = topTeam.team.map((m) => m.name);
+    expect(memberNames).toContain("Gorou");
+    expect(memberNames).toContain("Albedo");
+    expect(topTeam.archetype).toBe("Triple Geo");
+
+    // Validar asignación de Petra Arcaica a Gorou
+    const gorouArt = topTeam.artifactAssignments.find((a) => a.characterName === "Gorou");
+    expect(gorouArt?.artifactSetName).toBe("Petra Arcaica");
+  });
+
+  test("Kaedehara Kazuha: Asigna Sombra Verde Esmeralda con prioridad máxima y bufa daño elemental", () => {
+    const kazuhaId = 33;
+    const kazuhaData = DEFAULT_CHARACTERS.find((c) => c.id === kazuhaId);
+    expect(kazuhaData).toBeDefined();
+    expect(kazuhaData?.mechanics.some((m) => m.value === "buff_elemental_dmg")).toBe(true);
+
+    // Verificar que Kazuha esté en primer lugar de prioridad (10) para VV
+    const topVV = DEFAULT_CATALOG.artifactBinds.find(
+      (b) => b.artifactName === "Sombra Verde Esmeralda" && b.characterName === "Kaedehara Kazuha"
+    );
+    expect(topVV?.priority).toBe(10);
   });
 });

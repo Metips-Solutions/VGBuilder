@@ -87,7 +87,7 @@
       cursor: pointer;
       font-size: 13px;
       font-weight: 500;
-      transition: background 0.15s ease;
+      transition: background 0.15s ease, border-color 0.15s ease;
     }
 
     button:hover {
@@ -112,6 +112,19 @@
     }
     button.btn-dps:hover {
       background: #b91c1c;
+    }
+
+    button.btn-subdps {
+      background: #2a2a35;
+      border-color: #4b5563;
+      color: #cbd5e1;
+      padding: 3px 8px;
+      font-size: 11px;
+    }
+    button.btn-subdps:hover {
+      background: #374151;
+      color: #fff;
+      border-color: #6366f1;
     }
 
     .layout {
@@ -152,6 +165,29 @@
       padding: 2px 6px;
       border-radius: 10px;
       font-weight: normal;
+    }
+
+    .preset-selector-bar {
+      background: #181822;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 10px 12px;
+      margin-bottom: 14px;
+    }
+
+    .preset-selector-bar .title {
+      font-size: 12px;
+      font-weight: 700;
+      color: #a5b4fc;
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .preset-selector-bar .controls {
+      display: flex;
+      gap: 8px;
     }
 
     .section-label {
@@ -472,6 +508,12 @@
       color: #94a3b8;
     }
 
+    .chip-synergy {
+      color: #67e8f9;
+      background: #102330;
+      border-color: #1a4568;
+    }
+
     .explanations-list {
       margin-left: 16px;
       margin-top: 6px;
@@ -519,12 +561,12 @@
   <header>
     <div class="header-title">
       <h1>VGBuilder — Probador de Endpoint POST /affinity/match</h1>
-      <p>Selecciona personajes para el inventario y solicita con un clic el Carry Main DPS</p>
+      <p>Simulador KQM v2.0 • 42 Personajes (Rondas 1-3 Inazuma) • 18 Presets Meta • 11 Sets de Soporte</p>
     </div>
     <div class="config-bar">
       <label for="endpointUrl" style="font-size:12px; color:var(--text-muted);">Endpoint:</label>
       <input type="text" id="endpointUrl" value="http://localhost:3000/affinity/match" style="width: 280px;">
-      <button id="btnReloadCatalog" title="Cargar personajes desde /catalog/characters">🔄 Cargar API</button>
+      <button id="btnReloadCatalog" title="Cargar personajes desde /catalog/characters">🔄 Cargar API (42)</button>
     </div>
   </header>
 
@@ -536,18 +578,59 @@
         <span class="badge-count" id="inventoryCount">0 seleccionados</span>
       </h2>
 
+      <!-- SELECTOR DESPLEGABLE DE PRESETS META -->
+      <div class="preset-selector-bar">
+        <div class="title">
+          <span>⚡ Presets Meta KQM (Rondas 1, 2 y 3 — Inazuma)</span>
+          <span style="font-size:10px; color:var(--text-muted);">Carga equipo, constelaciones y calcula al instante</span>
+        </div>
+        <div class="controls">
+          <select id="presetDropdown" style="flex: 1;">
+            <option value="">-- Elige un Preset Meta para probar --</option>
+            <optgroup label="⚡ Ronda 3 — Inazuma Meta">
+              <option value="raiden-national">⚡ Raiden National (Raiden C0, Xiangling C4, Xingqiu C2, Bennett C1)</option>
+              <option value="ayaka-freeze">❄️ Ayaka Permafrost (Ayaka C0, Kokomi C0, Kazuha C0, Rosaria C2)</option>
+              <option value="yoimiya-vape">🔥 Yoimiya Vaporizado (Yoimiya C0, Xingqiu C2, Zhongli C0, Bennett C1)</option>
+              <option value="kokomi-taser">🌊 Kokomi Taser (Kokomi C0, Fischl C6, Beidou C2, Kazuha C0)</option>
+              <option value="raiden-hyper">💜 Raiden Hypercarry (Raiden C2, Sara C6, Bennett C1, Kazuha C0)</option>
+              <option value="triple-geo">🪨 Triple Geo Hiperdefensa (Noelle C6, Gorou C6, Albedo C0, Zhongli C0)</option>
+            </optgroup>
+            <optgroup label="🏛️ Rondas 1 y 2 Meta">
+              <option value="childe-international">🌊 Tartaglia Internacional (Childe C0, Xiangling C4, Bennett C1, Kazuha C0)</option>
+              <option value="hu-tao-double-geo">🔥 Hu Tao Doble Geo (Hu Tao C0, Xingqiu C2, Zhongli C0, Albedo C0)</option>
+              <option value="morgana-freeze">❄️ Morgana Freeze (Ganyu C0, Mona C0, Venti C0, Diona C6)</option>
+              <option value="xiao-hyper">🌪️ Xiao Hypercarry (Xiao C0, Jean C0, Zhongli C0, Bennett C1)</option>
+              <option value="eula-superconduct">⚔️ Eula Superconductor (Eula C0, Raiden C0, Rosaria C6, Zhongli C0)</option>
+              <option value="diluc-vape">🔥 Diluc Vaporizado (Diluc C0, Xingqiu C2, Bennett C1, Sucrose C0)</option>
+            </optgroup>
+          </select>
+          <button id="btnApplyPreset" class="btn-primary">⚡ Cargar y Ejecutar</button>
+        </div>
+      </div>
+
+      <!-- BOTONES DE ACCIÓN RÁPIDA -->
       <div class="quick-toolbar">
-        <button id="btnSelectAll">Seleccionar Todos</button>
+        <button id="btnSelectAll">Seleccionar Todos (42)</button>
         <button id="btnDeselectAll">Deseleccionar Todos</button>
-        <button id="btnPresetDiluc">Preset Diluc Vape</button>
-        <button id="btnPresetHuTao">Preset Hu Tao Doble Geo</button>
         <button id="btnPresetAllC0">Todos a C0</button>
+        <button id="btnQuickRaidenNat" title="Raiden National">⚡ Raiden Nat</button>
+        <button id="btnQuickAyaka" title="Ayaka Permafrost">❄️ Ayaka Freeze</button>
+        <button id="btnQuickYoimiya" title="Yoimiya Vape">🔥 Yoimiya Vape</button>
+        <button id="btnQuickKokomi" title="Kokomi Taser">🌊 Kokomi Taser</button>
+        <button id="btnQuickHuTao" title="Hu Tao Doble Geo">🔥 Hu Tao Geo</button>
+        <button id="btnQuickChilde" title="Tartaglia Internacional">🌊 Childe Inter</button>
+      </div>
+
+      <!-- BUSCADOR / FILTRO DE PERSONAJES -->
+      <div style="display: flex; gap: 8px; margin-bottom: 12px; align-items: center;">
+        <input type="text" id="charSearchInput" placeholder="🔍 Filtrar por nombre o elemento (ej. Electro, Inazuma, Kazuha)..." style="flex: 1;">
+        <button id="btnClearSearch" style="padding: 6px 10px; font-size: 12px;">Limpiar</button>
       </div>
 
       <!-- SECCIÓN: Main DPS -->
       <div class="section-label section-main-dps">
-        <span>⚔️ Personajes MAIN DPS (tag: main_dps / rol: Main DPS)</span>
-        <span style="font-size:11px; font-weight:normal;">Usa el botón para solicitar este carry</span>
+        <span id="labelMainDps">⚔️ Personajes MAIN DPS</span>
+        <span style="font-size:11px; font-weight:normal;">Usa "🎯 Solicitar Carry" para calcular su equipo</span>
       </div>
       <table class="char-table">
         <tbody id="listMainDps">
@@ -557,7 +640,7 @@
 
       <!-- SECCIÓN: No Main DPS (Supports / Sub-DPS / Healers) -->
       <div class="section-label section-supports">
-        <span>🛡️ Personajes Sub-DPS, Soportes y Curadores (Sin tag main_dps)</span>
+        <span id="labelSupports">🛡️ Sub-DPS, Soportes y Curadores</span>
         <span style="font-size:11px; font-weight:normal;">Se añadirán al array 'inventory'</span>
       </div>
       <table class="char-table">
@@ -580,7 +663,7 @@
           <span>📤 Lo que envío (Request Payload)</span>
           <button id="btnCopyRequest" style="padding: 2px 8px; font-size: 11px;">Copiar JSON</button>
         </div>
-        <pre id="requestViewer">// Haz clic en "🎯 Solicitar Carry" en cualquier Main DPS para enviar...</pre>
+        <pre id="requestViewer">// Haz clic en "🎯 Solicitar Carry" en cualquier personaje para enviar...</pre>
       </div>
 
       <!-- LOS 5 EQUIPOS DEVUELTOS -->
@@ -602,7 +685,7 @@
         <!-- Contenedor dinámico de las 5 tarjetas de equipos -->
         <div id="teamsContainer" class="teams-container">
           <div style="color: var(--text-muted); font-size: 13px; padding: 12px; text-align: center; background: #16161b; border-radius: 6px;">
-            Elige un personaje Main DPS de la izquierda y haz clic en <strong>🎯 Solicitar Carry</strong> para ver los 5 mejores equipos sugeridos aquí.
+            Elige un personaje Main DPS de la izquierda o haz clic en <strong>⚡ Cargar Preset</strong> para ver los 5 mejores equipos sugeridos aquí.
           </div>
         </div>
       </div>
@@ -624,7 +707,7 @@
   </div>
 
   <script>
-    // Catálogo inicial con los 21 personajes estándar (IDs 1-21) compatibles con affinity-engine
+    // Catálogo completo con los 42 personajes (IDs 1-42, Rondas 1 a 3 Inazuma)
     const DEFAULT_ROSTER = [
       { id: 1, name: "Amber", element: "Pyro", roles: ["Sub-DPS"] },
       { id: 2, name: "Barbara", element: "Hydro", roles: ["Healer", "Support"] },
@@ -657,8 +740,155 @@
       { id: 29, name: "Hu Tao", element: "Pyro", roles: ["Main DPS"] },
       { id: 30, name: "Rosaria", element: "Cryo", roles: ["Sub-DPS", "Support"] },
       { id: 31, name: "Yanfei", element: "Pyro", roles: ["Main DPS", "Support"] },
-      { id: 32, name: "Eula", element: "Cryo", roles: ["Main DPS", "Support"] }
+      { id: 32, name: "Eula", element: "Cryo", roles: ["Main DPS", "Support"] },
+      { id: 33, name: "Kaedehara Kazuha", element: "Anemo", roles: ["Support", "Sub-DPS"] },
+      { id: 34, name: "Kamisato Ayaka", element: "Cryo", roles: ["Main DPS"] },
+      { id: 35, name: "Sayu", element: "Anemo", roles: ["Support", "Healer"] },
+      { id: 36, name: "Yoimiya", element: "Pyro", roles: ["Main DPS"] },
+      { id: 37, name: "Aloy", element: "Cryo", roles: ["Sub-DPS", "Support"] },
+      { id: 38, name: "Kujou Sara", element: "Electro", roles: ["Support", "Sub-DPS"] },
+      { id: 39, name: "Shogun Raiden", element: "Electro", roles: ["Main DPS", "Sub-DPS", "Support"] },
+      { id: 40, name: "Sangonomiya Kokomi", element: "Hydro", roles: ["Main DPS", "Support", "Healer"] },
+      { id: 41, name: "Thoma", element: "Pyro", roles: ["Support", "Sub-DPS"] },
+      { id: 42, name: "Gorou", element: "Geo", roles: ["Support"] }
     ];
+
+    // Presets Meta KQM con constelaciones e inventario calibrado
+    const PRESETS = {
+      "raiden-national": {
+        name: "Raiden National",
+        carryId: 39,
+        inventory: [
+          { id: 39, c: 0 }, // Raiden C0
+          { id: 4, c: 1 },  // Bennett C1
+          { id: 20, c: 4 }, // Xiangling C4
+          { id: 21, c: 2 }, // Xingqiu C2
+          { id: 18, c: 0 }, // Sucrose
+          { id: 33, c: 0 }  // Kazuha
+        ]
+      },
+      "ayaka-freeze": {
+        name: "Ayaka Permafrost",
+        carryId: 34,
+        inventory: [
+          { id: 34, c: 0 }, // Ayaka C0
+          { id: 40, c: 0 }, // Kokomi C0
+          { id: 33, c: 0 }, // Kazuha C0
+          { id: 30, c: 2 }, // Rosaria C2
+          { id: 22, c: 6 }, // Diona C6
+          { id: 13, c: 0 }, // Mona C0
+          { id: 19, c: 0 }  // Venti C0
+        ]
+      },
+      "yoimiya-vape": {
+        name: "Yoimiya Vaporizado",
+        carryId: 36,
+        inventory: [
+          { id: 36, c: 0 }, // Yoimiya C0
+          { id: 21, c: 2 }, // Xingqiu C2
+          { id: 25, c: 0 }, // Zhongli C0
+          { id: 4, c: 1 },  // Bennett C1
+          { id: 41, c: 6 }, // Thoma C6
+          { id: 33, c: 0 }  // Kazuha C0
+        ]
+      },
+      "kokomi-taser": {
+        name: "Kokomi Taser",
+        carryId: 40,
+        inventory: [
+          { id: 40, c: 0 }, // Kokomi C0
+          { id: 7, c: 6 },  // Fischl C6
+          { id: 3, c: 2 },  // Beidou C2
+          { id: 33, c: 0 }, // Kazuha C0
+          { id: 18, c: 0 }  // Sucrose C0
+        ]
+      },
+      "raiden-hyper": {
+        name: "Raiden Hypercarry",
+        carryId: 39,
+        inventory: [
+          { id: 39, c: 2 }, // Raiden C2
+          { id: 38, c: 6 }, // Kujou Sara C6
+          { id: 4, c: 1 },  // Bennett C1
+          { id: 33, c: 0 }, // Kazuha C0
+          { id: 25, c: 0 }  // Zhongli C0
+        ]
+      },
+      "triple-geo": {
+        name: "Triple Geo Hiperdefensa",
+        carryId: 15,
+        inventory: [
+          { id: 15, c: 6 }, // Noelle C6
+          { id: 42, c: 6 }, // Gorou C6
+          { id: 26, c: 0 }, // Albedo C0
+          { id: 25, c: 0 }, // Zhongli C0
+          { id: 7, c: 6 }   // Fischl C6
+        ]
+      },
+      "childe-international": {
+        name: "Tartaglia Internacional",
+        carryId: 23,
+        inventory: [
+          { id: 23, c: 0 }, // Childe C0
+          { id: 20, c: 4 }, // Xiangling C4
+          { id: 4, c: 1 },  // Bennett C1
+          { id: 33, c: 0 }, // Kazuha C0
+          { id: 18, c: 0 }  // Sucrose C0
+        ]
+      },
+      "hu-tao-double-geo": {
+        name: "Hu Tao Doble Geo",
+        carryId: 29,
+        inventory: [
+          { id: 29, c: 0 }, // Hu Tao C0
+          { id: 21, c: 2 }, // Xingqiu C2
+          { id: 25, c: 0 }, // Zhongli C0
+          { id: 26, c: 0 }, // Albedo C0
+          { id: 13, c: 0 }  // Mona C0
+        ]
+      },
+      "morgana-freeze": {
+        name: "Morgana Freeze",
+        carryId: 27,
+        inventory: [
+          { id: 27, c: 0 }, // Ganyu C0
+          { id: 13, c: 0 }, // Mona C0
+          { id: 19, c: 0 }, // Venti C0
+          { id: 22, c: 6 }  // Diona C6
+        ]
+      },
+      "xiao-hyper": {
+        name: "Xiao Hypercarry",
+        carryId: 28,
+        inventory: [
+          { id: 28, c: 0 }, // Xiao C0
+          { id: 8, c: 0 },  // Jean C0
+          { id: 25, c: 0 }, // Zhongli C0
+          { id: 4, c: 1 }   // Bennett C1
+        ]
+      },
+      "eula-superconduct": {
+        name: "Eula Superconductor",
+        carryId: 32,
+        inventory: [
+          { id: 32, c: 0 }, // Eula C0
+          { id: 39, c: 0 }, // Raiden C0
+          { id: 30, c: 6 }, // Rosaria C6
+          { id: 25, c: 0 }  // Zhongli C0
+        ]
+      },
+      "diluc-vape": {
+        name: "Diluc Vaporizado",
+        carryId: 6,
+        inventory: [
+          { id: 6, c: 0 },  // Diluc C0
+          { id: 21, c: 2 }, // Xingqiu C2
+          { id: 4, c: 1 },  // Bennett C1
+          { id: 18, c: 0 }, // Sucrose C0
+          { id: 20, c: 4 }  // Xiangling C4
+        ]
+      }
+    };
 
     let currentCharacters = [...DEFAULT_ROSTER];
     let selectedCarryId = null;
@@ -689,6 +919,9 @@
 
       const mainDpsList = currentCharacters.filter(isMainDps);
       const supportsList = currentCharacters.filter(c => !isMainDps(c));
+
+      document.getElementById("labelMainDps").textContent = `⚔️ Personajes MAIN DPS (${mainDpsList.length})`;
+      document.getElementById("labelSupports").textContent = `🛡️ Sub-DPS, Soportes y Curadores (${supportsList.length})`;
 
       // Renderizar Main DPS
       mainDpsList.forEach(c => {
@@ -747,13 +980,16 @@
               <option value="6">C6</option>
             </select>
           </td>
-          <td class="col-action"></td>
+          <td class="col-action">
+            <button class="btn-subdps" onclick="requestCarry(${c.id})" title="Probar este personaje como Carry">🎯 Carry</button>
+          </td>
         `;
         listSupports.appendChild(tr);
       });
 
       attachListeners();
       updateInventoryCount();
+      applyCharFilter();
     }
 
     function attachListeners() {
@@ -781,6 +1017,26 @@
       const count = document.querySelectorAll(".char-checkbox:checked").length;
       document.getElementById("inventoryCount").textContent = `${count} seleccionados`;
     }
+
+    // Filtrar personajes por nombre o elemento
+    function applyCharFilter() {
+      const q = (document.getElementById("charSearchInput")?.value || "").toLowerCase().trim();
+      document.querySelectorAll(".char-table tr").forEach(tr => {
+        if (!q) {
+          tr.style.display = "";
+          return;
+        }
+        const text = tr.textContent.toLowerCase();
+        tr.style.display = text.includes(q) ? "" : "none";
+      });
+    }
+
+    document.getElementById("charSearchInput")?.addEventListener("input", applyCharFilter);
+    document.getElementById("btnClearSearch")?.addEventListener("click", () => {
+      const input = document.getElementById("charSearchInput");
+      if (input) input.value = "";
+      applyCharFilter();
+    });
 
     // Acción principal: Solicitar un Carry Main DPS específico
     async function requestCarry(carryId) {
@@ -965,6 +1221,21 @@
         // 4. Explicaciones
         const explanationsHtml = (t.explanations || []).map(exp => `<li>${exp}</li>`).join("");
 
+        // 5. Tags y Mecánicas Activas en Equipo
+        let synergyHtml = "";
+        if (t.synergyTags && t.synergyTags.length > 0) {
+          synergyHtml = `
+            <div style="margin-top: 8px; padding-top: 6px; border-top: 1px dashed #2c2c3a;">
+              <div style="font-size: 10px; font-weight: 600; color: #a5b4fc; margin-bottom: 4px; text-transform: uppercase;">
+                Tags y Mecánicas Activas en Equipo (${t.synergyTags.length}):
+              </div>
+              <div class="score-breakdown-chips">
+                ${t.synergyTags.map(tag => `<span class="chip chip-synergy">${tag}</span>`).join("")}
+              </div>
+            </div>
+          `;
+        }
+
         card.innerHTML = `
           <div class="team-header">
             <div class="team-title-group">
@@ -986,6 +1257,7 @@
             <ul class="explanations-list">
               ${explanationsHtml}
             </ul>
+            ${synergyHtml}
           </details>
         `;
 
@@ -1002,7 +1274,48 @@
       document.querySelectorAll("#teamsContainer details").forEach(d => d.open = false);
     });
 
-    // Botones de acción rápida en inventario
+    // Función unificada para aplicar Presets Meta
+    function applyPreset(presetKey) {
+      const p = PRESETS[presetKey];
+      if (!p) return;
+
+      const targetIds = new Set(p.inventory.map(item => item.id));
+
+      // Ajustar selección de personajes
+      document.querySelectorAll(".char-checkbox").forEach(cb => {
+        const id = Number(cb.dataset.id);
+        cb.checked = targetIds.has(id);
+      });
+
+      // Configurar constelaciones del preset
+      p.inventory.forEach(item => {
+        const constSelect = document.querySelector(`.char-constellation[data-id="${item.id}"]`);
+        if (constSelect) {
+          constSelect.value = String(item.c);
+        }
+      });
+
+      // Sincronizar select si existe
+      const dropdown = document.getElementById("presetDropdown");
+      if (dropdown && dropdown.value !== presetKey) {
+        dropdown.value = presetKey;
+      }
+
+      updateInventoryCount();
+      requestCarry(p.carryId);
+    }
+
+    // Listener para el botón "Cargar y Ejecutar" del dropdown
+    document.getElementById("btnApplyPreset").addEventListener("click", () => {
+      const val = document.getElementById("presetDropdown").value;
+      if (!val) {
+        alert("Por favor selecciona un preset de la lista.");
+        return;
+      }
+      applyPreset(val);
+    });
+
+    // Listeners para botones de acción rápida
     document.getElementById("btnSelectAll").addEventListener("click", () => {
       document.querySelectorAll(".char-checkbox").forEach(cb => cb.checked = true);
       updateInventoryCount();
@@ -1017,36 +1330,14 @@
       document.querySelectorAll(".char-constellation").forEach(sel => sel.value = "0");
     });
 
-    document.getElementById("btnPresetDiluc").addEventListener("click", () => {
-      // Diluc (6), Bennett (4) C1, Xingqiu (21) C2, Sucrose (18) C0, Xiangling (20) C4, Jean (8) C0, Mona (13) C0
-      document.querySelectorAll(".char-checkbox").forEach(cb => {
-        const id = Number(cb.dataset.id);
-        cb.checked = [4, 6, 8, 13, 18, 20, 21].includes(id);
-      });
-      const bennett = document.querySelector('.char-constellation[data-id="4"]');
-      if (bennett) bennett.value = "1";
-      const xingqiu = document.querySelector('.char-constellation[data-id="21"]');
-      if (xingqiu) xingqiu.value = "2";
-      const xiangling = document.querySelector('.char-constellation[data-id="20"]');
-      if (xiangling) xiangling.value = "4";
-      updateInventoryCount();
-      requestCarry(6);
-    });
+    document.getElementById("btnQuickRaidenNat")?.addEventListener("click", () => applyPreset("raiden-national"));
+    document.getElementById("btnQuickAyaka")?.addEventListener("click", () => applyPreset("ayaka-freeze"));
+    document.getElementById("btnQuickYoimiya")?.addEventListener("click", () => applyPreset("yoimiya-vape"));
+    document.getElementById("btnQuickKokomi")?.addEventListener("click", () => applyPreset("kokomi-taser"));
+    document.getElementById("btnQuickHuTao")?.addEventListener("click", () => applyPreset("hu-tao-double-geo"));
+    document.getElementById("btnQuickChilde")?.addEventListener("click", () => applyPreset("childe-international"));
 
-    document.getElementById("btnPresetHuTao").addEventListener("click", () => {
-      // Hu Tao (29), Xingqiu (21) C2, Zhongli (25) C0, Albedo (26) C0, Mona (13) C0
-      document.querySelectorAll(".char-checkbox").forEach(cb => {
-        const id = Number(cb.dataset.id);
-        cb.checked = [13, 21, 25, 26, 29].includes(id);
-      });
-      const xingqiu = document.querySelector('.char-constellation[data-id="21"]');
-      if (xingqiu) xingqiu.value = "2";
-      updateInventoryCount();
-      requestCarry(29);
-    });
-
-
-    // Cargar catálogo desde la API /catalog/characters si se desea
+    // Cargar catálogo desde la API /catalog/characters
     document.getElementById("btnReloadCatalog").addEventListener("click", async () => {
       const endpoint = document.getElementById("endpointUrl").value.trim();
       const baseUrl = endpoint.replace(/\/affinity\/match.*$/, "");

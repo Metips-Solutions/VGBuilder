@@ -33,6 +33,33 @@ export function calculateTeamScore(
     allActiveTags.add(t);
   }
 
+  const hasHydro = allActiveTags.has("hydro_application");
+  const hasCryo = allActiveTags.has("cryo_application");
+  const hasPyro = allActiveTags.has("pyro_application");
+  const hasElectro = allActiveTags.has("electro_application");
+  const hasAnemo = allActiveTags.has("anemo_application");
+  const hasGeo = allActiveTags.has("geo_application");
+  const hasVV = allActiveTags.has("need_resistance_shred") || allActiveTags.has("debuff_elemental_res");
+
+  // Ataques coordinados aportados por un Acompañante fuera de campo
+  const hasCompanionCoordinated = companions.some((c) =>
+    c.character.mechanics.some(
+      (m) =>
+        m.value === "coordinated_attacks" &&
+        (!m.minConstellation || c.constellation >= m.minConstellation)
+    )
+  );
+
+  // Ataques coordinados aportados por un Acompañante Hydro fuera de campo
+  const hasHydroCoordinated = companions.some((c) =>
+    c.character.element === "Hydro" &&
+    c.character.mechanics.some(
+      (m) =>
+        (m.value === "coordinated_attacks" || m.value === "raincutter") &&
+        (!m.minConstellation || c.constellation >= m.minConstellation)
+    )
+  );
+
   // 1. S_scaling_buffs (Demandas del Carry con Diminishing Returns)
   let sScalingBuffs = 0;
   const carryNeeds = targetCarry.needs ?? [
@@ -63,9 +90,6 @@ export function calculateTeamScore(
           )
         ).length;
         const pyroCount = fullTeam.filter((c) => c.element === "Pyro").length;
-        const hasVV =
-          allActiveTags.has("need_resistance_shred") ||
-          allActiveTags.has("debuff_elemental_res");
         if (hydroSources > 0) matchSources += hydroSources;
         else if (cryoSources > 0) matchSources += cryoSources;
         else if (pyroCount >= 3 && hasVV) matchSources += 1;
@@ -121,21 +145,35 @@ export function calculateTeamScore(
     } else if (need.value === "need_geo_partner") {
       const geoCount = fullTeam.filter((c) => c.element === "Geo").length;
       if (geoCount >= 2) matchSources += geoCount - 1;
-    } else if (need.value === "need_battery_geo") {
-      const geoBatteries = companions.filter(
-        (c) => c.character.element === "Geo" && (c.character.name === "Ningguang" && c.constellation >= 2)
+    } else if (need.value === "need_freeze") {
+      if (hasHydro && (hasCryo || targetCarry.element === "Cryo")) matchSources += 2;
+    } else if (need.value === "need_defense_buff") {
+      if (allActiveTags.has("buff_defense")) matchSources += 2;
+    } else if (need.value === "need_offfield_electro_dmg") {
+      if (allActiveTags.has("off_field_electro_dmg") || allActiveTags.has("coordinated_attacks")) matchSources += 2;
+      else if (allActiveTags.has("electro_application")) matchSources += 1;
+    } else if (need.value.startsWith("need_battery")) {
+      const neededElement = need.value.replace("need_battery_", "").toLowerCase();
+      const sameElementBatteries = companions.filter(
+        (c) =>
+          c.character.element.toLowerCase() === neededElement &&
+          (c.character.mechanics.some((m) => m.value === "battery") ||
+            (c.character.name === "Ningguang" && c.constellation >= 2) ||
+            c.character.name === "Diona" ||
+            c.character.name === "Rosaria" ||
+            c.character.name === "Kaeya" ||
+            c.character.name === "Aloy" ||
+            c.character.name === "Sucrose" ||
+            c.character.name === "Jean" ||
+            c.character.name === "Venti" ||
+            c.character.name === "Fischl" ||
+            c.character.name === "Kujou Sara")
       );
-      if (geoBatteries.length > 0) matchSources += 2;
-    } else if (need.value === "need_battery_cryo") {
-      const cryoBatteries = companions.filter(
-        (c) => c.character.element === "Cryo" && (c.character.name === "Diona" || c.character.name === "Rosaria" || c.character.name === "Kaeya")
-      );
-      if (cryoBatteries.length > 0) matchSources += 2;
-    } else if (need.value === "need_battery_anemo") {
-      const anemoBatteries = companions.filter(
-        (c) => c.character.element === "Anemo" && (c.character.name === "Sucrose" || c.character.name === "Jean" || c.character.name === "Venti")
-      );
-      if (anemoBatteries.length > 0) matchSources += 2;
+      if (sameElementBatteries.length > 0) {
+        matchSources += 2;
+      } else if (allActiveTags.has("universal_battery")) {
+        matchSources += 2;
+      }
     } else if (need.value === "need_physical_shred") {
       if (allActiveTags.has("cryo_application") && (targetCarry.element === "Electro" || allActiveTags.has("electro_application"))) matchSources += 2; // Superconductor
       if (allActiveTags.has("debuff_physical_res")) matchSources += 2; // Eula / Rosaria C6 / Xinyan C4
@@ -152,6 +190,7 @@ export function calculateTeamScore(
     } else if (need.value === "need_crowd_control") {
       if (allActiveTags.has("crowd_control")) matchSources++;
     } else if (need.value === "need_offfield_dps") {
+      if (allActiveTags.has("buff_electro_crit_dmg")) matchSources += 2; // Hiper-buffeo crítico reemplaza DPS off-field en Hypercarry
       if (allActiveTags.has("off_field_pyro_dmg")) matchSources++;
       if (allActiveTags.has("off_field_hydro_dmg")) matchSources++;
       if (allActiveTags.has("off_field_electro_dmg")) matchSources++;
@@ -179,13 +218,25 @@ export function calculateTeamScore(
   let sAmplification = 0;
   let detectedArchetype = "Sinergia Balanceada";
 
-  const hasHydro = allActiveTags.has("hydro_application");
-  const hasCryo = allActiveTags.has("cryo_application");
-  const hasPyro = allActiveTags.has("pyro_application");
-  const hasElectro = allActiveTags.has("electro_application");
-  const hasVV = allActiveTags.has("need_resistance_shred") || allActiveTags.has("debuff_elemental_res");
-
-  if (targetCarry.element === "Pyro") {
+  if (
+    targetCarry.damageProfile === "Physical Melee" ||
+    targetCarry.name === "Razor" ||
+    targetCarry.name === "Eula" ||
+    targetCarry.name === "Xinyan"
+  ) {
+    const hasCryoApp = hasCryo || targetCarry.element === "Cryo";
+    const hasElectroApp = hasElectro || targetCarry.element === "Electro";
+    if (hasCryoApp && hasElectroApp) {
+      sAmplification = 1000;
+      if (allActiveTags.has("buff_superconduct_dmg")) {
+        sAmplification += 200; // Superconductor Estelar (Witch Revelation)
+        explanations.push(`Multiplicador físico: Superconductor Estelar mejorado (-40% RES Física + daño de reacción aumentado -> +${sAmplification} pts)`);
+      } else {
+        explanations.push(`Multiplicador físico: Superconductor (-40% RES Física enemigo -> +1000 pts)`);
+      }
+      detectedArchetype = "Superconductor Físico";
+    }
+  } else if (targetCarry.element === "Pyro") {
     let vapeScore = 0;
     let meltScore = 0;
     let monoPyroScore = 0;
@@ -198,12 +249,10 @@ export function calculateTeamScore(
       ) {
         vapeScore += 200; // Presagio C1 / Rito de Mona
       }
-      if (
-        allActiveTags.has("coordinated_attacks") ||
-        allActiveTags.has("raincutter") ||
-        allActiveTags.has("off_field_hydro_dmg")
-      ) {
-        vapeScore += 250; // Hidro-aplicación continua de alta frecuencia para sostener vaporizados
+      if (hasHydroCoordinated) {
+        vapeScore += 350; // Hidro-aplicación coordinada de alta frecuencia para sostener vaporizados en cada golpe
+      } else if (allActiveTags.has("off_field_hydro_dmg")) {
+        vapeScore += 150; // Hidro-aplicación off-field intermitente
       }
     }
 
@@ -232,39 +281,33 @@ export function calculateTeamScore(
       detectedArchetype = "Mono Pyro Hipercarry";
       explanations.push(`Multiplicador ofensivo: Mono Pyro concentrado (+${monoPyroScore} pts)`);
     }
-  } else if (
-    targetCarry.damageProfile === "Physical Melee" ||
-    targetCarry.name === "Razor" ||
-    targetCarry.name === "Eula" ||
-    targetCarry.name === "Xinyan"
-  ) {
-    if (hasCryo && hasElectro) {
-      sAmplification = 1000;
-      detectedArchetype = "Superconductor Físico";
-      explanations.push(`Multiplicador físico: Superconductor (-40% RES Física enemigo -> +1000 pts)`);
-    }
   } else if (targetCarry.element === "Hydro") {
-    // Tartaglia (Childe)
+    // Tartaglia (Childe) / Kokomi
     if (hasPyro || allActiveTags.has("off_field_pyro_dmg")) {
       sAmplification = 1000;
       detectedArchetype = "Vaporizados (Internacional)";
       explanations.push(`Multiplicador ofensivo: Vaporizado inverso continuo con Pyro (+1000 pts)`);
     } else if (hasElectro) {
-      sAmplification = 800;
-      detectedArchetype = "Electro-Charged / Taser";
-      explanations.push(`Multiplicador elemental: Electrocargado continuo (+800 pts)`);
+      sAmplification = 850;
+      detectedArchetype = targetCarry.name === "Sangonomiya Kokomi" ? "Kokomi Taser" : "Electro-Charged / Taser";
+      explanations.push(`Multiplicador elemental: Electrocargado continuo (+850 pts)`);
     }
   } else if (targetCarry.element === "Cryo") {
-    // Ganyu
+    // Ganyu / Ayaka
     let meltScore = 0;
     let freezeScore = 0;
     if (hasPyro || allActiveTags.has("off_field_pyro_dmg")) {
       meltScore = 1000;
     }
-    if (hasHydro && allActiveTags.has("crowd_control")) {
+    if (hasHydro && (allActiveTags.has("crowd_control") || allActiveTags.has("need_freeze") || targetCarry.name === "Kamisato Ayaka")) {
       freezeScore = 1000;
+      if (allActiveTags.has("crowd_control")) freezeScore += 100;
     }
-    if (meltScore >= freezeScore && meltScore > 0) {
+    if (targetCarry.name === "Kamisato Ayaka" && freezeScore > 0) {
+      sAmplification = freezeScore;
+      detectedArchetype = "Ayaka Permafrost";
+      explanations.push(`Multiplicador ofensivo: Permafrost permanente para Soumetsu (+${freezeScore} pts)`);
+    } else if (meltScore >= freezeScore && meltScore > 0) {
       sAmplification = meltScore;
       detectedArchetype = "Derretidos (Melt Ganyu)";
       explanations.push(`Multiplicador ofensivo: Derretido cargado (+${meltScore} pts)`);
@@ -282,7 +325,11 @@ export function calculateTeamScore(
     }
   } else if (targetCarry.element === "Geo") {
     const geoCount = fullTeam.filter((c) => c.element === "Geo").length;
-    if (geoCount >= 2) {
+    if (geoCount >= 3 && allActiveTags.has("buff_defense")) {
+      sAmplification = 1100;
+      detectedArchetype = "Triple Geo";
+      explanations.push("Multiplicador Geo: Triple Geo con Gorou + Hiperdefensa escalada (+1100 pts)");
+    } else if (geoCount >= 2) {
       sAmplification = 900;
       if (allActiveTags.has("shield")) sAmplification += 100;
       const pyroCount = fullTeam.filter((c) => c.element === "Pyro").length;
@@ -294,7 +341,27 @@ export function calculateTeamScore(
       explanations.push(`Multiplicador Geo: Resonancia Geo + Daño de cristalización (+${sAmplification} pts)`);
     }
   } else if (targetCarry.element === "Electro") {
-    if (hasHydro) {
+    // Raiden / Keqing / Lisa
+    if (targetCarry.name === "Shogun Raiden") {
+      if (hasPyro && hasHydro) {
+        sAmplification = 1100;
+        if (hasCompanionCoordinated) {
+          sAmplification += 300;
+          explanations.push("Multiplicador elemental: Sobrecarga y Electro-Vaporizado continuo coordinado en equipo Nacional (+1400 pts)");
+        } else {
+          explanations.push("Multiplicador elemental: Sobrecarga y Electro-Vaporizado en equipo Nacional (+1100 pts)");
+        }
+        detectedArchetype = "Raiden National";
+      } else if (allActiveTags.has("buff_electro_crit_dmg") || hasVV) {
+        sAmplification = 1000;
+        detectedArchetype = "Raiden Hypercarry";
+        explanations.push("Multiplicador elemental: Electro Hipercarry concentrado (+1000 pts)");
+      } else if (hasHydro) {
+        sAmplification = 850;
+        detectedArchetype = "Electro-Charged / Taser";
+        explanations.push("Multiplicador elemental: Electrocargado continuo (+850 pts)");
+      }
+    } else if (hasHydro) {
       sAmplification = 800;
       detectedArchetype = "Electro-Charged / Taser";
       explanations.push(`Multiplicador elemental: Electrocargado continuo (+800 pts)`);
@@ -313,6 +380,17 @@ export function calculateTeamScore(
     ) {
       continue;
     }
+    // Carries físicos no deben emparejarse con presets de reacciones elementales ofensivas
+    if (
+      (targetCarry.damageProfile === "Physical Melee" || targetCarry.name === "Xinyan") &&
+      (preset.composition.archetype === "Vaporizados Clásico" ||
+        preset.composition.archetype === "Vaporizados" ||
+        preset.composition.archetype === "Derretidos" ||
+        preset.composition.archetype === "Mono Pyro Hipercarry" ||
+        preset.composition.archetype === "Sunfire Pyro Vaporizado")
+    ) {
+      continue;
+    }
     if (
       preset.composition.carryElement &&
       preset.composition.carryElement !== targetCarry.element
@@ -322,7 +400,15 @@ export function calculateTeamScore(
     let matches = 0;
     const reqTags = preset.composition.requiredTags ?? [];
     for (const rt of reqTags) {
-      if (allActiveTags.has(rt)) matches++;
+      if (rt === "coordinated_attacks") {
+        if (targetCarry.element === "Pyro" && preset.composition.archetype.includes("Vaporizado")) {
+          if (hasHydroCoordinated) matches++;
+        } else if (hasCompanionCoordinated) {
+          matches++;
+        }
+      } else if (allActiveTags.has(rt)) {
+        matches++;
+      }
     }
 
     const teamElems: string[] = fullTeam.map((c) => c.element).sort();
@@ -452,7 +538,7 @@ export function calculateTeamScore(
   }
 
   // Batería Electro: Fischl alimentando a Carry Electro
-  if (hasFischl && targetCarry.element === "Electro" && targetCarry.name !== "Fischl") {
+  if (hasFischl && targetCarry.element === "Electro" && targetCarry.name !== "Fischl" && targetCarry.name !== "Shogun Raiden") {
     sMicroAffinities += 300;
     explanations.push(
       `Micro-afinidad: Batería Electro (Oz de Fischl) recargando la Definitiva de ${targetCarry.name} (+300 pts)`
@@ -461,25 +547,100 @@ export function calculateTeamScore(
 
   // Buffer de Maestría Elemental (EM) para amplificación de reacciones
   const hasEMBuffer = allActiveTags.has("buff_elemental_mastery");
-  if (hasEMBuffer && (hasHydro || hasCryo) && targetCarry.element === "Pyro") {
+  if (
+    hasEMBuffer &&
+    (hasHydro || hasCryo) &&
+    targetCarry.element === "Pyro" &&
+    targetCarry.damageProfile !== "Physical Melee"
+  ) {
     sMicroAffinities += 300;
     explanations.push("Micro-afinidad: Buffer de Maestría Elemental potenciando reacciones de amplificación (+300 pts)");
   }
 
-  // Ataques Coordinados en sincronía con Carry de Ataques Normales (Diluc, Keqing, Razor, Klee, Tartaglia, Hu Tao)
-  const hasCoordinated = allActiveTags.has("coordinated_attacks");
+  // Ataques Coordinados en sincronía con Carry de Ataques Normales (Diluc, Keqing, Razor, Klee, Tartaglia, Hu Tao, Yoimiya, Raiden)
   if (
-    hasCoordinated &&
+    hasCompanionCoordinated &&
     (targetCarry.damageProfile === "Pyro Melee" ||
       targetCarry.damageProfile === "Pyro Melee Fast" ||
+      targetCarry.damageProfile === "Pyro Ranged Fast" ||
       targetCarry.damageProfile === "Electro Fast Melee" ||
       targetCarry.damageProfile === "Electro Fast" ||
       targetCarry.damageProfile === "Physical Melee" ||
       targetCarry.damageProfile === "Hydro Fast Melee" ||
-      targetCarry.name === "Hu Tao")
+      targetCarry.name === "Hu Tao" ||
+      targetCarry.name === "Yoimiya" ||
+      targetCarry.name === "Shogun Raiden")
   ) {
     sMicroAffinities += 350;
     explanations.push("Micro-afinidad: Ataques coordinados activados fluidamente por el Carry (+350 pts)");
+  }
+
+  // Batería Universal (Musou Isshin de Raiden)
+  if (allActiveTags.has("universal_battery")) {
+    sMicroAffinities += 350;
+    explanations.push("Micro-afinidad: Batería Universal (Musou Isshin de Raiden) recargando energía de todo el equipo (+350 pts)");
+  }
+
+  // Bono de Daño a Habilidades Definitivas (Ojo del Castigo Atronador de Raiden)
+  const teamHasBurstDamage =
+    targetCarry.damageProfile?.includes("Burst") ||
+    targetCarry.name === "Shogun Raiden" ||
+    targetCarry.name === "Kamisato Ayaka" ||
+    targetCarry.name === "Eula" ||
+    targetCarry.name === "Tartaglia" ||
+    fullTeam.some(
+      (c) =>
+        c.name === "Xiangling" ||
+        c.name === "Xingqiu" ||
+        c.name === "Beidou" ||
+        c.name === "Rosaria"
+    );
+  if (allActiveTags.has("buff_burst_dmg") && teamHasBurstDamage) {
+    sMicroAffinities += 300;
+    explanations.push("Micro-afinidad: Ojo del Castigo Atronador potencia el daño de las Definitivas (+300 pts)");
+  }
+
+  // Daño Crítico Electro (Kujou Sara C6)
+  if (allActiveTags.has("buff_electro_crit_dmg") && (targetCarry.element === "Electro" || hasElectro)) {
+    sMicroAffinities += 500;
+    explanations.push("Micro-afinidad: Danza Tengu C6 otorga +60% Daño Crítico Electro (+500 pts)");
+  }
+
+  // Dúo Hiperbuffer para Raiden Hypercarry (Bennett ATK plano + Sara C6 CRIT Electro)
+  if (targetCarry.name === "Shogun Raiden" && hasBennett && allActiveTags.has("buff_electro_crit_dmg")) {
+    sMicroAffinities += 400;
+    explanations.push("Micro-afinidad: Dúo Hiperbuffer insustituible (Bennett ATK + Sara C6 CRIT Electro) (+400 pts)");
+  }
+
+  // Daño Crítico Geo (Gorou C6)
+  if (allActiveTags.has("buff_geo_crit_dmg") && (targetCarry.element === "Geo" || fullTeam.filter((c) => c.element === "Geo").length >= 2)) {
+    sMicroAffinities += 400;
+    explanations.push("Micro-afinidad: Colmillo del General C6 otorga hasta +40% Daño Crítico Geo (+400 pts)");
+  }
+
+  // Bono Plano de Defensa (Estandarte de Gorou)
+  if (allActiveTags.has("buff_defense") && (targetCarry.name === "Noelle" || targetCarry.element === "Geo")) {
+    sMicroAffinities += 300;
+    explanations.push("Micro-afinidad: Estandarte de Gorou otorga Bono de Defensa y Resistencia a Interrupción (+300 pts)");
+  }
+
+  // Succión magnética de fragmentos de Cristalización (Gorou Q)
+  if (allActiveTags.has("magnetize_crystallize")) {
+    sMicroAffinities += 200;
+    explanations.push("Micro-afinidad: Succión magnética de fragmentos de Cristalización garantizando uptime de escudos (+200 pts)");
+  }
+
+  // Bono de Daño a Ataques Normales (Thoma C6 / Yoimiya)
+  if (
+    allActiveTags.has("buff_normal_attack_dmg") &&
+    (targetCarry.damageProfile === "Pyro Ranged Fast" ||
+      targetCarry.damageProfile === "Physical Melee" ||
+      targetCarry.name === "Yoimiya" ||
+      targetCarry.name === "Razor" ||
+      targetCarry.name === "Noelle")
+  ) {
+    sMicroAffinities += 250;
+    explanations.push("Micro-afinidad: Bono de Daño a Ataques Normales en Carry rápido (+250 pts)");
   }
 
   // Pantalla de Jade Geo Buff con compañero Geo (solo si el Carry es Geo)
@@ -525,6 +686,12 @@ export function calculateTeamScore(
     explanations.push("Daño Plano Adicional: Son de Antaño convierte curación acumulada en daño de impacto (+300 pts)");
   }
 
+  // Torbellino Estelar (Witch Revelation con Anemo)
+  if (allActiveTags.has("buff_swirl_dmg") && fullTeam.some((c) => c.element === "Anemo")) {
+    sMicroAffinities += 200;
+    explanations.push("Micro-afinidad: Torbellino Estelar amplificado (Witch Revelation + Dispersión Cryo/Anemo) (+200 pts)");
+  }
+
   // 6. P_penalties (Penalizaciones por Fallas Estructurales)
   let pPenalties = 0;
 
@@ -567,13 +734,54 @@ export function calculateTeamScore(
 
   // Noelle Main DPS sin batería Geo
   if (targetCarry.name === "Noelle") {
-    const hasGeoBattery = companions.some(
-      (c) => c.character.name === "Ningguang" && c.constellation >= 2
-    );
+    const hasGeoBattery =
+      companions.some(
+        (c) =>
+          (c.character.name === "Ningguang" && c.constellation >= 2) ||
+          c.character.name === "Gorou" ||
+          c.character.name === "Albedo" ||
+          c.character.name === "Shogun Raiden"
+      ) || allActiveTags.has("universal_battery");
     if (!hasGeoBattery) {
       pPenalties += 600;
       explanations.push("Penalización de rotación: Noelle sin batería Geo de recarga rápida (-600 pts)");
     }
+  }
+
+  // Tartaglia con doble Hydro redundante que satura auras y elimina el control Anemo VV
+  const hasOtherHydro = companions.some((c) => c.character.element === "Hydro");
+  if (targetCarry.name === "Tartaglia" && hasOtherHydro) {
+    pPenalties += 600;
+    explanations.push("Penalización táctica: Doble Hydro con Tartaglia satura el aura e impide el control elemental Anemo por Torbellino (-600 pts)");
+  }
+
+  // Incompatibilidad mecánica dura Raiden + Beidou (Musou Isshin es daño de Definitiva y NO activa las descargas de Beidou)
+  const hasBeidou = companions.some((c) => c.character.name === "Beidou");
+  if (targetCarry.name === "Shogun Raiden" && hasBeidou) {
+    pPenalties += 1000;
+    explanations.push("Penalización crítica: Ruptura mecánica (los ataques en Definitiva de Raiden no pueden activar las descargas de Beidou) (-1000 pts)");
+  }
+
+  // Electro rompe el congelamiento en composiciones Permafrost
+  if (
+    targetCarry.element === "Cryo" &&
+    (allActiveTags.has("need_freeze") || targetCarry.name === "Kamisato Ayaka") &&
+    hasElectro
+  ) {
+    pPenalties += 800;
+    explanations.push("Penalización táctica: Electro en equipo Permafrost consume auras y desestabiliza la congelación (-800 pts)");
+  }
+
+  // Yoimiya sin escudo (interrupciones constantes reinician el combo N5)
+  if (targetCarry.name === "Yoimiya" && !hasShield) {
+    pPenalties += 400;
+    explanations.push("Penalización táctica: Yoimiya sin escudo sufre interrupciones críticas que reinician su combo N5 (-400 pts)");
+  }
+
+  // Kokomi con buffs de Prob. Crítico (anulados por su pasiva -100% CRIT)
+  if (targetCarry.name === "Sangonomiya Kokomi" && allActiveTags.has("buff_crit_rate")) {
+    pPenalties += 250;
+    explanations.push("Penalización mecánica: Buff de Probabilidad de Crítico anulado por pasiva (-100% CRIT) (-250 pts)");
   }
 
   const totalScore =

@@ -16,11 +16,16 @@ const testCarries = [
   { id: 15, name: "Noelle", constellation: 6 },
   { id: 17, name: "Razor", constellation: 4 },
   { id: 23, name: "Tartaglia", constellation: 0 },
+  { id: 24, name: "Xinyan", constellation: 0 },
   { id: 27, name: "Ganyu", constellation: 0 },
   { id: 28, name: "Xiao", constellation: 0 },
   { id: 29, name: "Hu Tao", constellation: 0 },
   { id: 31, name: "Yanfei", constellation: 0 },
   { id: 32, name: "Eula", constellation: 0 },
+  { id: 34, name: "Kamisato Ayaka", constellation: 0 },
+  { id: 36, name: "Yoimiya", constellation: 0 },
+  { id: 39, name: "Shogun Raiden", constellation: 0 },
+  { id: 40, name: "Sangonomiya Kokomi", constellation: 0 },
 ];
 
 // Inventario con los 32 personajes desbloqueados a constelaciones estándar

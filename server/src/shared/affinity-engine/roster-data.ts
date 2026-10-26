@@ -401,6 +401,7 @@ export const DEFAULT_CHARACTERS: CharacterData[] = [
     weaponType: "Bow",
     rarity: 4,
     region: "Mondstadt",
+    alignmentClass: "Witch",
     roles: ["Support", "Healer"],
     damageProfile: "Cryo Utility",
     mechanics: [
@@ -413,6 +414,8 @@ export const DEFAULT_CHARACTERS: CharacterData[] = [
       { category: "mecanica", value: "debuff_attack" },
       { category: "mecanica", value: "buff_shield_strength", minConstellation: 2 },
       { category: "mecanica", value: "buff_elemental_mastery", minConstellation: 6 },
+      { category: "mecanica", value: "buff_superconduct_dmg", minAlignmentCount: 2 },
+      { category: "mecanica", value: "buff_swirl_dmg", minAlignmentCount: 2 },
     ],
   },
   {
@@ -491,6 +494,7 @@ export const DEFAULT_CHARACTERS: CharacterData[] = [
     weaponType: "Sword",
     rarity: 5,
     region: "Mondstadt",
+    alignmentClass: "Hexerei",
     roles: ["Sub-DPS", "Support"],
     damageProfile: "Geo Off-Field AoE",
     mechanics: [
@@ -501,6 +505,7 @@ export const DEFAULT_CHARACTERS: CharacterData[] = [
       { category: "mecanica", value: "buff_elemental_mastery" },
       { category: "mecanica", value: "buff_plunge_dmg", minConstellation: 4 },
       { category: "mecanica", value: "buff_all_dmg", minConstellation: 6 },
+      { category: "mecanica", value: "buff_all_dmg", minAlignmentCount: 2 },
     ],
   },
   {
@@ -639,6 +644,208 @@ export const DEFAULT_CHARACTERS: CharacterData[] = [
       { value: "cryo_infusion", reason: "Sobrescribe golpes normales a Cryo, destruyendo sus bonos de daño físico (si actúa como Carry)" },
     ],
   },
+  {
+    id: 33,
+    name: "Kaedehara Kazuha",
+    element: "Anemo",
+    weaponType: "Sword",
+    rarity: 5,
+    region: "Inazuma",
+    roles: ["Support", "Sub-DPS"],
+    damageProfile: "Anemo AoE / Swirl Buffer",
+    mechanics: [
+      { category: "mecanica", value: "anemo_application" },
+      { category: "mecanica", value: "crowd_control" },
+      { category: "mecanica", value: "buff_elemental_dmg" },
+      { category: "mecanica", value: "absorption_elemental" },
+      { category: "mecanica", value: "interruption_power" },
+      { category: "mecanica", value: "buff_elemental_mastery", minConstellation: 2 },
+    ],
+  },
+  {
+    id: 34,
+    name: "Kamisato Ayaka",
+    element: "Cryo",
+    weaponType: "Sword",
+    rarity: 5,
+    region: "Inazuma",
+    roles: ["Main DPS"],
+    damageProfile: "Cryo Burst Melee",
+    mechanics: [
+      { category: "mecanica", value: "cryo_application" },
+      { category: "mecanica", value: "debuff_defense", minConstellation: 4 },
+    ],
+    needs: [
+      { value: "need_freeze", priority: 10 },
+      { value: "need_offfield_hydro_dmg", priority: 10 },
+      { value: "need_battery_cryo", priority: 10 },
+      { value: "need_resistance_shred", priority: 9 },
+      { value: "need_crowd_control", priority: 9 },
+      { value: "need_attack_buff", priority: 8 },
+    ],
+    antiTags: [
+      { value: "pyro_infusion", reason: "Rompe el estado de congelación y desestabiliza Nómada del Invierno" },
+    ],
+  },
+  {
+    id: 35,
+    name: "Sayu",
+    element: "Anemo",
+    weaponType: "Claymore",
+    rarity: 4,
+    region: "Inazuma",
+    roles: ["Support", "Healer"],
+    damageProfile: "Anemo Utility",
+    mechanics: [
+      { category: "mecanica", value: "healer" },
+      { category: "mecanica", value: "continuous_healing" },
+      { category: "mecanica", value: "anemo_application" },
+      { category: "mecanica", value: "absorption_elemental" },
+      { category: "mecanica", value: "cleanse" },
+      { category: "mecanica", value: "battery" },
+    ],
+  },
+  {
+    id: 36,
+    name: "Yoimiya",
+    element: "Pyro",
+    weaponType: "Bow",
+    rarity: 5,
+    region: "Inazuma",
+    roles: ["Main DPS"],
+    damageProfile: "Pyro Ranged Fast",
+    mechanics: [
+      { category: "mecanica", value: "pyro_application" },
+      { category: "mecanica", value: "buff_attack" },
+      { category: "mecanica", value: "off_field_pyro_dmg" },
+    ],
+    needs: [
+      { value: "need_shield", priority: 10 },
+      { value: "need_interruption_resistance", priority: 10 },
+      { value: "need_offfield_hydro_dmg", priority: 10 },
+      { value: "need_reaction_enabler", priority: 10 },
+      { value: "need_attack_buff", priority: 9 },
+      { value: "need_resistance_shred", priority: 9 },
+    ],
+  },
+  {
+    id: 37,
+    name: "Aloy",
+    element: "Cryo",
+    weaponType: "Bow",
+    rarity: 5,
+    region: "Mondstadt",
+    roles: ["Sub-DPS", "Support"],
+    damageProfile: "Cryo Burst Ranged",
+    mechanics: [
+      { category: "mecanica", value: "cryo_application" },
+      { category: "mecanica", value: "battery" },
+      { category: "mecanica", value: "debuff_attack" },
+      { category: "mecanica", value: "buff_attack" },
+    ],
+  },
+  {
+    id: 38,
+    name: "Kujou Sara",
+    element: "Electro",
+    weaponType: "Bow",
+    rarity: 4,
+    region: "Inazuma",
+    roles: ["Support", "Sub-DPS"],
+    damageProfile: "Electro Burst",
+    mechanics: [
+      { category: "mecanica", value: "buff_attack" },
+      { category: "mecanica", value: "battery" },
+      { category: "mecanica", value: "electro_application" },
+      { category: "mecanica", value: "buff_electro_crit_dmg", minConstellation: 6 },
+    ],
+  },
+  {
+    id: 39,
+    name: "Shogun Raiden",
+    element: "Electro",
+    weaponType: "Polearm",
+    rarity: 5,
+    region: "Inazuma",
+    roles: ["Main DPS", "Sub-DPS", "Support"],
+    damageProfile: "Electro Burst Melee",
+    mechanics: [
+      { category: "mecanica", value: "coordinated_attacks" },
+      { category: "mecanica", value: "electro_application" },
+      { category: "mecanica", value: "universal_battery" },
+      { category: "mecanica", value: "battery" },
+      { category: "mecanica", value: "buff_burst_dmg" },
+      { category: "mecanica", value: "interruption_resistance" },
+      { category: "mecanica", value: "debuff_defense", minConstellation: 2 },
+    ],
+    needs: [
+      { value: "need_attack_buff", priority: 10 },
+      { value: "need_resistance_shred", priority: 9 },
+      { value: "need_offfield_dps", priority: 9 },
+      { value: "need_sustain", priority: 8 },
+    ],
+  },
+  {
+    id: 40,
+    name: "Sangonomiya Kokomi",
+    element: "Hydro",
+    weaponType: "Catalyst",
+    rarity: 5,
+    region: "Inazuma",
+    roles: ["Support", "Healer", "Main DPS"],
+    damageProfile: "Hydro Sustained Catalyst",
+    mechanics: [
+      { category: "mecanica", value: "healer" },
+      { category: "mecanica", value: "continuous_healing" },
+      { category: "mecanica", value: "hydro_application" },
+      { category: "mecanica", value: "catalyst_buffer" },
+      { category: "mecanica", value: "interruption_resistance" },
+    ],
+    needs: [
+      { value: "need_offfield_electro_dmg", priority: 10 },
+      { value: "need_battery_electro", priority: 10 },
+      { value: "need_resistance_shred", priority: 9 },
+      { value: "need_interruption_resistance", priority: 7 },
+    ],
+    antiTags: [
+      { value: "buff_crit_rate", reason: "Pasiva reduce su Prob. Crítico en -100%, volviendo inútiles los buffs de crítico" },
+    ],
+  },
+  {
+    id: 41,
+    name: "Thoma",
+    element: "Pyro",
+    weaponType: "Polearm",
+    rarity: 4,
+    region: "Inazuma",
+    roles: ["Support", "Sub-DPS"],
+    damageProfile: "Pyro Shield Utility",
+    mechanics: [
+      { category: "mecanica", value: "shield" },
+      { category: "mecanica", value: "coordinated_attacks" },
+      { category: "mecanica", value: "pyro_application" },
+      { category: "mecanica", value: "buff_normal_attack_dmg", minConstellation: 6 },
+    ],
+  },
+  {
+    id: 42,
+    name: "Gorou",
+    element: "Geo",
+    weaponType: "Bow",
+    rarity: 4,
+    region: "Inazuma",
+    roles: ["Support"],
+    damageProfile: "Geo Utility",
+    mechanics: [
+      { category: "mecanica", value: "buff_defense" },
+      { category: "mecanica", value: "buff_geo_dmg" },
+      { category: "mecanica", value: "interruption_resistance" },
+      { category: "mecanica", value: "geo_application" },
+      { category: "mecanica", value: "magnetize_crystallize" },
+      { category: "mecanica", value: "buff_geo_crit_dmg", minConstellation: 6 },
+      { category: "mecanica", value: "healer", minConstellation: 4 },
+    ],
+  },
 ];
 
 export const DEFAULT_SUPPORT_ARTIFACT_SETS: SupportArtifactSet[] = [
@@ -723,9 +930,11 @@ export const DEFAULT_SUPPORT_ARTIFACT_SETS: SupportArtifactSet[] = [
 
 export const DEFAULT_ARTIFACT_BINDS: CharacterArtifactBind[] = [
   // Sombra Verde Esmeralda (Anemo exclusive)
+  { characterName: "Kaedehara Kazuha", artifactName: "Sombra Verde Esmeralda", priority: 10 },
   { characterName: "Sucrose", artifactName: "Sombra Verde Esmeralda", priority: 10 },
   { characterName: "Jean", artifactName: "Sombra Verde Esmeralda", priority: 10 },
   { characterName: "Venti", artifactName: "Sombra Verde Esmeralda", priority: 10 },
+  { characterName: "Sayu", artifactName: "Sombra Verde Esmeralda", priority: 10 },
 
   // Ritual Antiguo de la Nobleza
   { characterName: "Bennett", artifactName: "Ritual Antiguo de la Nobleza", priority: 10 },
@@ -736,6 +945,9 @@ export const DEFAULT_ARTIFACT_BINDS: CharacterArtifactBind[] = [
   { characterName: "Diona", artifactName: "Ritual Antiguo de la Nobleza", priority: 9 },
   { characterName: "Ganyu", artifactName: "Ritual Antiguo de la Nobleza", priority: 9 },
   { characterName: "Yanfei", artifactName: "Ritual Antiguo de la Nobleza", priority: 9 },
+  { characterName: "Kujou Sara", artifactName: "Ritual Antiguo de la Nobleza", priority: 9 },
+  { characterName: "Thoma", artifactName: "Ritual Antiguo de la Nobleza", priority: 9 },
+  { characterName: "Aloy", artifactName: "Ritual Antiguo de la Nobleza", priority: 9 },
   { characterName: "Chongyun", artifactName: "Ritual Antiguo de la Nobleza", priority: 8 },
   { characterName: "Lisa", artifactName: "Ritual Antiguo de la Nobleza", priority: 8 },
   { characterName: "Xingqiu", artifactName: "Ritual Antiguo de la Nobleza", priority: 8 },
@@ -743,24 +955,31 @@ export const DEFAULT_ARTIFACT_BINDS: CharacterArtifactBind[] = [
   { characterName: "Zhongli", artifactName: "Ritual Antiguo de la Nobleza", priority: 8 },
   { characterName: "Xinyan", artifactName: "Ritual Antiguo de la Nobleza", priority: 8 },
   { characterName: "Eula", artifactName: "Ritual Antiguo de la Nobleza", priority: 8 },
+  { characterName: "Gorou", artifactName: "Ritual Antiguo de la Nobleza", priority: 8 },
+  { characterName: "Sayu", artifactName: "Ritual Antiguo de la Nobleza", priority: 8 },
   { characterName: "Albedo", artifactName: "Ritual Antiguo de la Nobleza", priority: 7 },
   { characterName: "Razor", artifactName: "Ritual Antiguo de la Nobleza", priority: 7 },
+  { characterName: "Shogun Raiden", artifactName: "Ritual Antiguo de la Nobleza", priority: 7 },
 
   // Petra Arcaica (Zhongli 10 > Tenacidad 9)
   { characterName: "Zhongli", artifactName: "Petra Arcaica", priority: 10 },
+  { characterName: "Gorou", artifactName: "Petra Arcaica", priority: 10 },
   { characterName: "Albedo", artifactName: "Petra Arcaica", priority: 9 },
   { characterName: "Noelle", artifactName: "Petra Arcaica", priority: 8 },
   { characterName: "Ningguang", artifactName: "Petra Arcaica", priority: 8 },
 
   // Tenacidad de la Geoarmada
   { characterName: "Fischl", artifactName: "Tenacidad de la Geoarmada", priority: 10 },
+  { characterName: "Sangonomiya Kokomi", artifactName: "Tenacidad de la Geoarmada", priority: 10 },
   { characterName: "Zhongli", artifactName: "Tenacidad de la Geoarmada", priority: 9 },
   { characterName: "Albedo", artifactName: "Tenacidad de la Geoarmada", priority: 9 },
   { characterName: "Xinyan", artifactName: "Tenacidad de la Geoarmada", priority: 8 },
+  { characterName: "Shogun Raiden", artifactName: "Tenacidad de la Geoarmada", priority: 8 },
   { characterName: "Mona", artifactName: "Tenacidad de la Geoarmada", priority: 7 },
   { characterName: "Qiqi", artifactName: "Tenacidad de la Geoarmada", priority: 7 },
   { characterName: "Yanfei", artifactName: "Tenacidad de la Geoarmada", priority: 6 },
   { characterName: "Diona", artifactName: "Tenacidad de la Geoarmada", priority: 5 },
+  { characterName: "Thoma", artifactName: "Tenacidad de la Geoarmada", priority: 5 },
 
   // Instructor
   { characterName: "Mona", artifactName: "Instructor", priority: 9 },
@@ -774,21 +993,31 @@ export const DEFAULT_ARTIFACT_BINDS: CharacterArtifactBind[] = [
   { characterName: "Diona", artifactName: "Instructor", priority: 8 },
   { characterName: "Zhongli", artifactName: "Instructor", priority: 8 },
   { characterName: "Rosaria", artifactName: "Instructor", priority: 8 },
+  { characterName: "Aloy", artifactName: "Instructor", priority: 8 },
+  { characterName: "Thoma", artifactName: "Instructor", priority: 8 },
   { characterName: "Xiangling", artifactName: "Instructor", priority: 7 },
   { characterName: "Razor", artifactName: "Instructor", priority: 7 },
   { characterName: "Xinyan", artifactName: "Instructor", priority: 7 },
   { characterName: "Ganyu", artifactName: "Instructor", priority: 7 },
   { characterName: "Eula", artifactName: "Instructor", priority: 7 },
+  { characterName: "Kaedehara Kazuha", artifactName: "Instructor", priority: 7 },
+  { characterName: "Sangonomiya Kokomi", artifactName: "Instructor", priority: 7 },
+  { characterName: "Kujou Sara", artifactName: "Instructor", priority: 7 },
+  { characterName: "Sayu", artifactName: "Instructor", priority: 7 },
+  { characterName: "Gorou", artifactName: "Instructor", priority: 7 },
   { characterName: "Barbara", artifactName: "Instructor", priority: 6 },
 
   // Son de Antaño
   { characterName: "Qiqi", artifactName: "Son de Antaño", priority: 10 },
   { characterName: "Barbara", artifactName: "Son de Antaño", priority: 10 },
+  { characterName: "Sangonomiya Kokomi", artifactName: "Son de Antaño", priority: 10 },
   { characterName: "Jean", artifactName: "Son de Antaño", priority: 8 },
   { characterName: "Diona", artifactName: "Son de Antaño", priority: 8 },
+  { characterName: "Sayu", artifactName: "Son de Antaño", priority: 8 },
 
   // Pergamino del Héroe
   { characterName: "Albedo", artifactName: "Pergamino del Héroe", priority: 8 },
+  { characterName: "Gorou", artifactName: "Pergamino del Héroe", priority: 8 },
   { characterName: "Bennett", artifactName: "Pergamino del Héroe", priority: 7 },
   { characterName: "Mona", artifactName: "Pergamino del Héroe", priority: 7 },
   { characterName: "Fischl", artifactName: "Pergamino del Héroe", priority: 7 },
@@ -801,7 +1030,13 @@ export const DEFAULT_ARTIFACT_BINDS: CharacterArtifactBind[] = [
   { characterName: "Zhongli", artifactName: "Pergamino del Héroe", priority: 7 },
   { characterName: "Ganyu", artifactName: "Pergamino del Héroe", priority: 7 },
   { characterName: "Rosaria", artifactName: "Pergamino del Héroe", priority: 7 },
+  { characterName: "Kujou Sara", artifactName: "Pergamino del Héroe", priority: 7 },
+  { characterName: "Shogun Raiden", artifactName: "Pergamino del Héroe", priority: 7 },
+  { characterName: "Aloy", artifactName: "Pergamino del Héroe", priority: 7 },
+  { characterName: "Thoma", artifactName: "Pergamino del Héroe", priority: 7 },
+  { characterName: "Sangonomiya Kokomi", artifactName: "Pergamino del Héroe", priority: 7 },
   { characterName: "Barbara", artifactName: "Pergamino del Héroe", priority: 6 },
+  { characterName: "Kaedehara Kazuha", artifactName: "Pergamino del Héroe", priority: 6 },
 
   // Recuerdos del Bosque
   { characterName: "Lisa", artifactName: "Recuerdos del Bosque", priority: 6 },
@@ -918,7 +1153,7 @@ export const DEFAULT_TEAM_PRESETS: TeamPreset[] = [
       archetype: "Hu Tao Doble Geo",
       roles: ["Main DPS", "Sub-DPS", "Support", "Sub-DPS"],
       elements: ["Pyro", "Hydro", "Geo", "Geo"],
-      requiredTags: ["hydro_application", "shield", "need_resistance_shred"],
+      requiredTags: ["hydro_application", "shield", "need_resistance_shred", "coordinated_attacks"],
     },
   },
   {
@@ -973,6 +1208,83 @@ export const DEFAULT_TEAM_PRESETS: TeamPreset[] = [
       requiredTags: ["cryo_application", "pyro_application", "shield", "buff_attack"],
     },
   },
+  {
+    id: 13,
+    name: "Raiden National",
+    description: "Raiden Shogun Batería/Nuke + Pyronado Xiangling + Xingqiu Hydro + Bennett ATK",
+    composition: {
+      targetCarryName: "Shogun Raiden",
+      carryElement: "Electro",
+      archetype: "Raiden National",
+      roles: ["Main DPS", "Sub-DPS", "Sub-DPS", "Support"],
+      elements: ["Electro", "Pyro", "Hydro", "Pyro"],
+      requiredTags: ["universal_battery", "off_field_pyro_dmg", "hydro_application", "buff_attack", "coordinated_attacks"],
+    },
+  },
+  {
+    id: 14,
+    name: "Ayaka Permafrost",
+    description: "Ayaka Soumetsu Nuke + Kokomi Hydro AoE/Heal + Kazuha VV/CC + Rosaria Batería Cryo",
+    composition: {
+      targetCarryName: "Kamisato Ayaka",
+      carryElement: "Cryo",
+      archetype: "Ayaka Permafrost",
+      roles: ["Main DPS", "Support", "Support", "Support"],
+      elements: ["Cryo", "Hydro", "Anemo", "Cryo"],
+      requiredTags: ["cryo_application", "hydro_application", "crowd_control", "battery"],
+    },
+  },
+  {
+    id: 15,
+    name: "Yoimiya Vaporizado",
+    description: "Yoimiya Ataque Normal N5 + Xingqiu Coordinado + Zhongli Escudo Anti-Interrupción + Bennett ATK",
+    composition: {
+      targetCarryName: "Yoimiya",
+      carryElement: "Pyro",
+      archetype: "Yoimiya Vaporizado",
+      roles: ["Main DPS", "Sub-DPS", "Support", "Support"],
+      elements: ["Pyro", "Hydro", "Geo", "Pyro"],
+      requiredTags: ["hydro_application", "coordinated_attacks", "shield", "buff_attack"],
+    },
+  },
+  {
+    id: 16,
+    name: "Kokomi Taser",
+    description: "Kokomi Driver On-field + Beidou Rayos Cadena + Fischl Batería + Kazuha VV",
+    composition: {
+      targetCarryName: "Sangonomiya Kokomi",
+      carryElement: "Hydro",
+      archetype: "Kokomi Taser",
+      roles: ["Main DPS", "Sub-DPS", "Sub-DPS", "Support"],
+      elements: ["Hydro", "Electro", "Electro", "Anemo"],
+      requiredTags: ["hydro_application", "off_field_electro_dmg", "electro_application", "need_resistance_shred"],
+    },
+  },
+  {
+    id: 17,
+    name: "Raiden Hypercarry",
+    description: "Raiden Nuke C2 + Sara C6 Electro CRIT + Kazuha VV/DMG + Bennett ATK",
+    composition: {
+      targetCarryName: "Shogun Raiden",
+      carryElement: "Electro",
+      archetype: "Raiden Hypercarry",
+      roles: ["Main DPS", "Support", "Support", "Support"],
+      elements: ["Electro", "Electro", "Anemo", "Pyro"],
+      requiredTags: ["buff_attack", "buff_electro_crit_dmg", "need_resistance_shred", "universal_battery"],
+    },
+  },
+  {
+    id: 18,
+    name: "Triple Geo Hiperdefensa",
+    description: "Noelle DEF Carry + Gorou DEF/Geo CRIT Buffer + Albedo Daño Geo + Flex",
+    composition: {
+      carryElement: "Geo",
+      archetype: "Triple Geo",
+      roles: ["Main DPS", "Support", "Sub-DPS", "Support"],
+      elements: ["Geo", "Geo", "Geo"],
+      requiredTags: ["buff_defense", "buff_geo_dmg", "off_field_geo_dmg"],
+    },
+  },
 ];
 
 export const DEFAULT_TAG_AFFINITIES: TagAffinity[] = [
@@ -988,6 +1300,12 @@ export const DEFAULT_TAG_AFFINITIES: TagAffinity[] = [
   { tagA: "debuff_all_res", tagB: "shield", weight: 500 }, // Zhongli Escudo de Jade universal
   { tagA: "buff_crit_rate", tagB: "need_physical_shred", weight: 300 }, // Rosaria + Físico
   { tagA: "buff_normal_attack_level", tagB: "hydro_application", weight: 300 }, // Tartaglia pasiva
+  { tagA: "universal_battery", tagB: "off_field_pyro_dmg", weight: 500 }, // Raiden + Xiangling
+  { tagA: "buff_burst_dmg", tagB: "snapshot", weight: 300 }, // Raiden E + Pyronado/Raincutter
+  { tagA: "buff_electro_crit_dmg", tagB: "electro_application", weight: 500 }, // Sara C6 + Raiden/Keqing
+  { tagA: "buff_geo_crit_dmg", tagB: "buff_defense", weight: 500 }, // Gorou C6 + Noelle/Albedo
+  { tagA: "need_shield", tagB: "shield", weight: 400 }, // Yoimiya + Zhongli/Thoma
+  { tagA: "need_freeze", tagB: "hydro_application", weight: 500 }, // Ayaka + Kokomi/Mona
 ];
 
 export const DEFAULT_CATALOG: CatalogData = {
