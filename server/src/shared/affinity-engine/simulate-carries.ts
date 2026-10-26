@@ -26,9 +26,13 @@ const testCarries = [
   { id: 36, name: "Yoimiya", constellation: 0 },
   { id: 39, name: "Shogun Raiden", constellation: 0 },
   { id: 40, name: "Sangonomiya Kokomi", constellation: 0 },
+  { id: 43, name: "Arataki Itto", constellation: 0 },
+  { id: 47, name: "Kamisato Ayato", constellation: 0 },
+  { id: 50, name: "Shikanoin Heizou", constellation: 0 },
+  { id: 51, name: "Tighnari", constellation: 0 },
 ];
 
-// Inventario con los 32 personajes desbloqueados a constelaciones estándar
+// Inventario con los 52 personajes desbloqueados a constelaciones estándar
 const baseInventory = DEFAULT_CHARACTERS.map((c) => ({
   characterId: c.id,
   constellation:
@@ -36,7 +40,10 @@ const baseInventory = DEFAULT_CHARACTERS.map((c) => ({
     c.name === "Xingqiu" ? 2 :
     c.name === "Ningguang" ? 2 :
     c.name === "Noelle" ? 6 :
-    c.name === "Razor" ? 4 : 0,
+    c.name === "Razor" ? 4 :
+    c.name === "Gorou" ? 6 :
+    c.name === "Kujou Sara" ? 6 :
+    c.name === "Yun Jin" ? 6 : 0,
 }));
 
 console.log("================================================================================");

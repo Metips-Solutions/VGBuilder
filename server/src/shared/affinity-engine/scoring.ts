@@ -39,6 +39,7 @@ export function calculateTeamScore(
   const hasElectro = allActiveTags.has("electro_application");
   const hasAnemo = allActiveTags.has("anemo_application");
   const hasGeo = allActiveTags.has("geo_application");
+  const hasDendro = allActiveTags.has("dendro_application");
   const hasVV = allActiveTags.has("need_resistance_shred") || allActiveTags.has("debuff_elemental_res");
 
   // Ataques coordinados aportados por un Acompañante fuera de campo
@@ -123,13 +124,37 @@ export function calculateTeamScore(
         if (allActiveTags.has("hydro_application")) matchSources++;
         if (allActiveTags.has("cryo_application")) matchSources++;
         if (allActiveTags.has("pyro_application")) matchSources++;
+        if (allActiveTags.has("dendro_application")) matchSources += 2; // Aceleración (Quicken)
+      } else if (targetCarry.element === "Dendro") {
+        const electroSources = companions.filter((c) =>
+          c.character.mechanics.some(
+            (m) =>
+              (m.value === "electro_application" || m.value === "off_field_electro_dmg") &&
+              (!m.minConstellation || c.constellation >= m.minConstellation)
+          )
+        ).length;
+        if (electroSources > 0) matchSources += electroSources * 2; // Propagación (Spread)
       } else {
         if (allActiveTags.has("hydro_application")) matchSources++;
         if (allActiveTags.has("cryo_application")) matchSources++;
       }
+    } else if (need.value === "need_dendro_shred") {
+      if (allActiveTags.has("debuff_dendro_res")) matchSources += 2;
+    } else if (need.value === "need_anemo_shred") {
+      if (allActiveTags.has("debuff_anemo_res")) matchSources += 2; // Jean C4, Venti C2/C6, Faruzan
+      if (allActiveTags.has("debuff_all_res")) matchSources += 1;   // Zhongli
+      if (allActiveTags.has("debuff_defense")) matchSources += 1;   // Klee C2, Lisa, Razor C4
+    } else if (need.value === "need_normal_attack_buff") {
+      if (allActiveTags.has("buff_normal_attack_dmg")) matchSources += 2;
+      if (allActiveTags.has("buff_attack_speed")) matchSources += 1;
+    } else if (need.value === "need_coordinated_attacks") {
+      if (allActiveTags.has("coordinated_attacks")) matchSources += 2;
     } else if (need.value === "need_resistance_shred") {
-      if (allActiveTags.has("need_resistance_shred")) matchSources++;
-      if (allActiveTags.has("debuff_elemental_res")) matchSources++;
+      const isSwirlable = ["Pyro", "Hydro", "Electro", "Cryo"].includes(targetCarry.element);
+      if (isSwirlable) {
+        if (allActiveTags.has("need_resistance_shred")) matchSources++;
+        if (allActiveTags.has("debuff_elemental_res")) matchSources++;
+      }
       if (allActiveTags.has("debuff_all_res")) matchSources++;
       if (allActiveTags.has(`debuff_${targetCarry.element.toLowerCase()}_res`)) matchSources++;
       if (allActiveTags.has("debuff_defense")) matchSources++;
@@ -161,6 +186,7 @@ export function calculateTeamScore(
             (c.character.name === "Ningguang" && c.constellation >= 2) ||
             c.character.name === "Diona" ||
             c.character.name === "Rosaria" ||
+            c.character.name === "Shenhe" ||
             c.character.name === "Kaeya" ||
             c.character.name === "Aloy" ||
             c.character.name === "Sucrose" ||
@@ -282,15 +308,30 @@ export function calculateTeamScore(
       explanations.push(`Multiplicador ofensivo: Mono Pyro concentrado (+${monoPyroScore} pts)`);
     }
   } else if (targetCarry.element === "Hydro") {
-    // Tartaglia (Childe) / Kokomi
+    // Tartaglia (Childe) / Kokomi / Kamisato Ayato
     if (hasPyro || allActiveTags.has("off_field_pyro_dmg")) {
       sAmplification = 1000;
-      detectedArchetype = "Vaporizados (Internacional)";
-      explanations.push(`Multiplicador ofensivo: Vaporizado inverso continuo con Pyro (+1000 pts)`);
+      detectedArchetype = targetCarry.name === "Kamisato Ayato" ? "Ayato Vaporizado" : "Vaporizados (Internacional)";
+      explanations.push(`Multiplicador ofensivo: Vaporizado continuo con acompañante Pyro (+1000 pts)`);
+    } else if (hasElectro && hasDendro) {
+      sAmplification = 950;
+      detectedArchetype = "Hiperflorecimiento";
+      explanations.push(`Multiplicador elemental: Hiperflorecimiento (Dendro + Hydro + Electro) (+950 pts)`);
     } else if (hasElectro) {
       sAmplification = 850;
-      detectedArchetype = targetCarry.name === "Sangonomiya Kokomi" ? "Kokomi Taser" : "Electro-Charged / Taser";
+      detectedArchetype = targetCarry.name === "Sangonomiya Kokomi" ? "Kokomi Taser" : (targetCarry.name === "Kamisato Ayato" ? "Ayato Taser" : "Electro-Charged / Taser");
       explanations.push(`Multiplicador elemental: Electrocargado continuo (+850 pts)`);
+    }
+  } else if (targetCarry.element === "Dendro") {
+    // Tighnari
+    if (hasElectro) {
+      sAmplification = 1100;
+      detectedArchetype = "Tighnari Spread";
+      explanations.push("Multiplicador elemental: Aceleración y Propagación (Spread) continua (+1100 pts)");
+    } else if (hasHydro) {
+      sAmplification = 600;
+      detectedArchetype = "Florecimiento (Bloom)";
+      explanations.push("Multiplicador elemental: Florecimiento (+600 pts)");
     }
   } else if (targetCarry.element === "Cryo") {
     // Ganyu / Ayaka
@@ -317,18 +358,41 @@ export function calculateTeamScore(
       explanations.push(`Multiplicador ofensivo: Congelamiento permanente con CC (+${freezeScore} pts)`);
     }
   } else if (targetCarry.element === "Anemo") {
-    // Xiao
-    if (allActiveTags.has("battery")) {
+    if (targetCarry.name === "Shikanoin Heizou") {
+      if (hasPyro && hasHydro) {
+        sAmplification = 1400;
+        detectedArchetype = "Heizou Nacional";
+        explanations.push("Multiplicador elemental: Vaporizado conducido con Torbellinos en área (Heizou Nacional) (+1400 pts)");
+      } else if (hasHydro && hasElectro) {
+        sAmplification = 1200;
+        detectedArchetype = "Heizou Taser";
+        explanations.push("Multiplicador elemental: Doble Torbellino Electrocargado continuo (Heizou Taser) (+1200 pts)");
+      } else {
+        sAmplification = 800;
+        detectedArchetype = "Heizou Driver";
+        explanations.push("Multiplicador Anemo: Driver cuerpo a cuerpo con Torbellinos continuos (+800 pts)");
+      }
+    } else if (targetCarry.name === "Xiao") {
+      if (allActiveTags.has("battery")) {
+        sAmplification = 1000;
+        detectedArchetype = "Xiao Hypercarry";
+        explanations.push("Multiplicador Anemo: Rotación fluida de Ataques Descendentes (+1000 pts)");
+      }
+    } else if (allActiveTags.has("battery")) {
       sAmplification = 1000;
-      detectedArchetype = "Xiao Hypercarry";
-      explanations.push(`Multiplicador Anemo: Rotación fluida de Ataques Descendentes (+1000 pts)`);
+      detectedArchetype = "Anemo Swirl/Burst";
+      explanations.push("Multiplicador Anemo: Rotación fluida con batería elemental (+1000 pts)");
     }
   } else if (targetCarry.element === "Geo") {
     const geoCount = fullTeam.filter((c) => c.element === "Geo").length;
     if (geoCount >= 3 && allActiveTags.has("buff_defense")) {
       sAmplification = 1100;
-      detectedArchetype = "Triple Geo";
-      explanations.push("Multiplicador Geo: Triple Geo con Gorou + Hiperdefensa escalada (+1100 pts)");
+      if (geoCount >= 4 || targetCarry.name === "Arataki Itto") {
+        detectedArchetype = "Mono Geo Hiperdefensa";
+      } else {
+        detectedArchetype = "Triple Geo";
+      }
+      explanations.push("Multiplicador Geo: Hiperdefensa escalada con Gorou (+1100 pts)");
     } else if (geoCount >= 2) {
       sAmplification = 900;
       if (allActiveTags.has("shield")) sAmplification += 100;
@@ -356,6 +420,10 @@ export function calculateTeamScore(
         sAmplification = 1000;
         detectedArchetype = "Raiden Hypercarry";
         explanations.push("Multiplicador elemental: Electro Hipercarry concentrado (+1000 pts)");
+      } else if (hasDendro) {
+        sAmplification = 1000;
+        detectedArchetype = "Aceleración / Aggravate";
+        explanations.push("Multiplicador elemental: Aceleración e Intensificación (Aggravate) (+1000 pts)");
       } else if (hasHydro) {
         sAmplification = 850;
         detectedArchetype = "Electro-Charged / Taser";
@@ -426,7 +494,14 @@ export function calculateTeamScore(
 
     if (reqTags.length > 0 && matches === reqTags.length) {
       if (elemsMatch) {
-        const bonus = 1500;
+        let bonus = preset.composition.targetCarryName ? 1600 : 1500;
+        // Blueprints ultra-especializados con buffers dedicados (ej. Shenhe flat DMG o Sara C6 crit DMG)
+        if (
+          preset.composition.targetCarryName &&
+          preset.composition.requiredTags?.some((t) => t.includes("flat_dmg") || t.includes("crit_dmg"))
+        ) {
+          bonus = 1650;
+        }
         if (bonus > sBlueprint) {
           sBlueprint = bonus;
           if (preset.composition.archetype) {
@@ -484,8 +559,10 @@ export function calculateTeamScore(
   }
 
   if ((elementCounts.get("Hydro") ?? 0) >= 2) {
-    sResonance += 350;
-    explanations.push(`Resonancia Hydro (+25% Vida Máxima -> +350 pts)`);
+    const hpBeneficiary = targetCarry.name === "Hu Tao" || fullTeam.some((c) => c.name === "Yelan");
+    const val = hpBeneficiary ? 500 : 350;
+    sResonance += val;
+    explanations.push(`Resonancia Hydro (+25% Vida Máxima -> +${val} pts)`);
   }
 
   if ((elementCounts.get("Electro") ?? 0) >= 2) {
@@ -613,19 +690,32 @@ export function calculateTeamScore(
   }
 
   // Daño Crítico Geo (Gorou C6)
-  if (allActiveTags.has("buff_geo_crit_dmg") && (targetCarry.element === "Geo" || fullTeam.filter((c) => c.element === "Geo").length >= 2)) {
+  if (
+    allActiveTags.has("buff_geo_crit_dmg") &&
+    targetCarry.element === "Geo" &&
+    targetCarry.name !== "Sangonomiya Kokomi"
+  ) {
     sMicroAffinities += 400;
     explanations.push("Micro-afinidad: Colmillo del General C6 otorga hasta +40% Daño Crítico Geo (+400 pts)");
   }
 
   // Bono Plano de Defensa (Estandarte de Gorou)
-  if (allActiveTags.has("buff_defense") && (targetCarry.name === "Noelle" || targetCarry.element === "Geo")) {
+  if (
+    allActiveTags.has("buff_defense") &&
+    (targetCarry.name === "Noelle" ||
+      targetCarry.name === "Arataki Itto" ||
+      targetCarry.damageProfile?.includes("DEF Scaling"))
+  ) {
     sMicroAffinities += 300;
     explanations.push("Micro-afinidad: Estandarte de Gorou otorga Bono de Defensa y Resistencia a Interrupción (+300 pts)");
   }
 
   // Succión magnética de fragmentos de Cristalización (Gorou Q)
-  if (allActiveTags.has("magnetize_crystallize")) {
+  if (
+    allActiveTags.has("magnetize_crystallize") &&
+    (targetCarry.element === "Geo" ||
+      targetCarry.damageProfile?.includes("DEF Scaling"))
+  ) {
     sMicroAffinities += 200;
     explanations.push("Micro-afinidad: Succión magnética de fragmentos de Cristalización garantizando uptime de escudos (+200 pts)");
   }
@@ -670,10 +760,16 @@ export function calculateTeamScore(
     explanations.push(`Micro-afinidad: Rito Hexerei activo (${hexereiCount} brujas en equipo -> +300 pts)`);
   }
 
-  // Bono de Daño Elemental / Universal (Pergamino del Héroe, Petra Arcaica)
+  // Bono de Daño Elemental / Universal (Pergamino del Héroe, Petra Arcaica, Kazuha A4, Sucrose C6)
+  // Nota: buff_elemental_dmg solo beneficia al Carry si este es de elemento PHEC (Pyro, Hydro, Electro, Cryo)
+  // y no es un carry de daño puramente físico. Elementos Dendro, Anemo, Geo y Físico son inertes para Petra/Swirl.
+  const isPHECCarry = ["Pyro", "Hydro", "Electro", "Cryo"].includes(targetCarry.element);
+  const isPhysicalCarry = targetCarry.damageProfile?.toLowerCase().includes("physical");
+  const hasElementalDmgBonus = isPHECCarry && !isPhysicalCarry && allActiveTags.has("buff_elemental_dmg");
+
   const hasDmgBonus =
     allActiveTags.has("buff_all_dmg") ||
-    allActiveTags.has("buff_elemental_dmg") ||
+    hasElementalDmgBonus ||
     allActiveTags.has(`buff_${targetCarry.element.toLowerCase()}_dmg`);
   if (hasDmgBonus) {
     sMicroAffinities += 400;
@@ -690,6 +786,96 @@ export function calculateTeamScore(
   if (allActiveTags.has("buff_swirl_dmg") && fullTeam.some((c) => c.element === "Anemo")) {
     sMicroAffinities += 200;
     explanations.push("Micro-afinidad: Torbellino Estelar amplificado (Witch Revelation + Dispersión Cryo/Anemo) (+200 pts)");
+  }
+
+  // Aceleración / Propagación (Spread) directa para Tighnari con Electro
+  if (targetCarry.name === "Tighnari" && hasElectro) {
+    sMicroAffinities += 600;
+    explanations.push("Micro-afinidad: Aceleración / Propagación (Spread) alimentada por Electro off-field (+600 pts)");
+    if (hasFischl || fullTeam.some((c) => c.name === "Yae Miko")) {
+      sMicroAffinities += 450;
+      explanations.push("Micro-afinidad: Sinergia Electro de alta cadencia para Aceleración (Oz / Cerezos Kitsune) (+450 pts)");
+    }
+  }
+
+  // Plumas Glaciares de Shenhe (Icy Quills)
+  if (allActiveTags.has("buff_cryo_flat_dmg") && (targetCarry.element === "Cryo" || hasCryo)) {
+    sMicroAffinities += 500;
+    explanations.push("Micro-afinidad: Plumas Glaciares de Shenhe (Icy Quills) inyectan daño plano masivo a golpes Cryo (+500 pts)");
+    if (targetCarry.name === "Kamisato Ayaka") {
+      sMicroAffinities += 500;
+      explanations.push("Micro-afinidad: Núcleo Cryo Supremo (Ayaka Soumetsu + Shenhe Plumas Glaciares) (+500 pts)");
+      if (fullTeam.some((c) => c.name === "Kaedehara Kazuha")) {
+        sMicroAffinities += 350;
+        explanations.push("Micro-afinidad: Agrupación y Bono Cryo masivo de Kazuha para la tormenta de Soumetsu (+350 pts)");
+      }
+    }
+  }
+
+  // Formación de las Nubes de Yun Jin para Carries de Ataque Normal
+  const hasNormalAttackFocus =
+    targetCarry.name === "Yoimiya" ||
+    targetCarry.name === "Kamisato Ayato" ||
+    targetCarry.name === "Noelle" ||
+    targetCarry.damageProfile?.includes("Normal") ||
+    targetCarry.damageProfile?.includes("Fast");
+  const hasYunJin = fullTeam.some((c) => c.name === "Yun Jin");
+  if (hasYunJin && hasNormalAttackFocus) {
+    sMicroAffinities += 400;
+    explanations.push(`Micro-afinidad: Formación de las Nubes de Yun Jin bufa los Ataques Normales de ${targetCarry.name} (+400 pts)`);
+  }
+
+  // Doble Hydro insustituible (Xingqiu + Yelan) para Hu Tao y Yoimiya
+  const hasXingqiu = fullTeam.some((c) => c.name === "Xingqiu");
+  const hasYelan = fullTeam.some((c) => c.name === "Yelan");
+  if ((targetCarry.name === "Hu Tao" || targetCarry.name === "Yoimiya") && hasXingqiu && hasYelan) {
+    sMicroAffinities += 500;
+    explanations.push(`Micro-afinidad: Doble Hydro insustituible (Xingqiu + Yelan) garantizando vaporización perfecta y +25% Vida (+500 pts)`);
+  }
+
+  // Núcleo Hu Tao Doble Geo Clásico (Zhongli + Albedo)
+  if (targetCarry.name === "Hu Tao") {
+    const hasZhongli = fullTeam.some((c) => c.name === "Zhongli");
+    const hasAlbedo = fullTeam.some((c) => c.name === "Albedo");
+    if (hasZhongli && hasAlbedo) {
+      sMicroAffinities += 300;
+      explanations.push("Micro-afinidad: Núcleo Doble Geo clásico (Zhongli Escudo + Albedo Daño Off-field y Maestría Elemental) (+300 pts)");
+    }
+  }
+
+  // Núcleo Geo de Hiperdefensa (Gorou + Albedo alimentando a Itto)
+  if (targetCarry.name === "Arataki Itto") {
+    const hasGorou = fullTeam.some((c) => c.name === "Gorou");
+    const hasAlbedo = fullTeam.some((c) => c.name === "Albedo");
+    if (hasGorou && hasAlbedo) {
+      sMicroAffinities += 400;
+      explanations.push("Micro-afinidad: Núcleo Geo de Hiperdefensa (Gorou + Albedo alimentando a Itto) (+400 pts)");
+    }
+  }
+
+  // Trituración de Resistencia Anemo genuina (Zhongli, Jean C4, Venti C2/C6, Faruzan)
+  if (targetCarry.element === "Anemo" && (allActiveTags.has("debuff_anemo_res") || allActiveTags.has("debuff_all_res"))) {
+    sMicroAffinities += 500;
+    explanations.push("Micro-afinidad: Trituración de Resistencia Anemo genuina activa (Zhongli / Jean C4 / Faruzan) (+500 pts)");
+  }
+
+  // Sinergias de Heizou Driver (Nacional y Taser)
+  if (targetCarry.name === "Shikanoin Heizou") {
+    // 1. Driver activando ataques coordinados a gran cadencia
+    if (hasCompanionCoordinated) {
+      sMicroAffinities += 400;
+      explanations.push("Micro-afinidad: Heizou Driver en campo activa ataques coordinados a máxima cadencia (+400 pts)");
+    }
+    // 2. Pasiva A4 (+80 ME al causar Torbellino)
+    if (hasPyro || hasHydro || hasElectro) {
+      sMicroAffinities += 300;
+      explanations.push("Micro-afinidad: Pasiva A4 (Razonamiento penetrante) comparte +80 ME tras Torbellino (+300 pts)");
+    }
+    // 3. Cargas de Declinación rápidas para Puñetazo Fudou
+    if (hasCompanionCoordinated && (hasPyro || hasElectro || hasHydro)) {
+      sMicroAffinities += 300;
+      explanations.push("Micro-afinidad: Torbellinos continuos alimentan 4 cargas de Declinación para Puñetazo Fudou de Convicción (+300 pts)");
+    }
   }
 
   // 6. P_penalties (Penalizaciones por Fallas Estructurales)
@@ -782,6 +968,52 @@ export function calculateTeamScore(
   if (targetCarry.name === "Sangonomiya Kokomi" && allActiveTags.has("buff_crit_rate")) {
     pPenalties += 250;
     explanations.push("Penalización mecánica: Buff de Probabilidad de Crítico anulado por pasiva (-100% CRIT) (-250 pts)");
+  }
+
+  // Interferencia de Hydro en Tighnari (Florecimiento consume aura Dendro y arruina Propagación)
+  if (targetCarry.name === "Tighnari" && hasHydro) {
+    pPenalties += 400;
+    explanations.push("Penalización táctica: Hidro genera Florecimiento descontrolado, consumiendo el aura Dendro y privando a Tighnari de Propagación (-400 pts)");
+  }
+
+  // Itto Main DPS sin batería Geo
+  if (targetCarry.name === "Arataki Itto") {
+    const hasGeoBattery =
+      companions.some(
+        (c) =>
+          c.character.name === "Gorou" ||
+          c.character.name === "Albedo" ||
+          c.character.name === "Zhongli" ||
+          (c.character.name === "Ningguang" && c.constellation >= 2)
+      ) || allActiveTags.has("universal_battery");
+    if (!hasGeoBattery) {
+      pPenalties += 600;
+      explanations.push("Penalización de rotación: Arataki Itto sin batería Geo para sostener su Definitiva de 70 de coste (-600 pts)");
+    }
+  }
+
+  // Sombra Verde Esmeralda (VV) inútil en Anemo Hypercarry sin daño PHEC que swirlear
+  const hasPHECOffField =
+    allActiveTags.has("off_field_pyro_dmg") ||
+    allActiveTags.has("off_field_hydro_dmg") ||
+    allActiveTags.has("off_field_electro_dmg") ||
+    allActiveTags.has("off_field_cryo_dmg");
+  const hasVVAssigned = injectedArtifactTags.includes("need_resistance_shred");
+  if (targetCarry.element === "Anemo" && hasVVAssigned && !hasPHECOffField) {
+    pPenalties += 400;
+    explanations.push("Penalización táctica: Sombra Verde Esmeralda (VV) no reduce Resistencia Anemo ni potencia ataques Anemo (-400 pts)");
+  }
+
+  // Gorou en equipo sin Carry Geo ni escalado de Defensa (soporte hiperespecializado desperdiciado)
+  const hasGorou = companions.some((c) => c.character.name === "Gorou");
+  const isDefOrGeoCarry =
+    targetCarry.element === "Geo" ||
+    targetCarry.damageProfile?.includes("DEF Scaling") ||
+    targetCarry.name === "Noelle" ||
+    targetCarry.name === "Arataki Itto";
+  if (hasGorou && !isDefOrGeoCarry) {
+    pPenalties += 800;
+    explanations.push("Penalización táctica: Gorou es un buffer hiperespecializado en DEF/Geo; en este equipo sus aumentos de Defensa y Daño Crítico Geo son completamente desperdiciados (-800 pts)");
   }
 
   const totalScore =

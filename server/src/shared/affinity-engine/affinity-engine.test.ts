@@ -7,6 +7,7 @@ import {
   DEFAULT_CHARACTERS,
   DEFAULT_CATALOG,
   bindSupportArtifacts,
+  isSupportSetViableForTeam,
 } from "./affinity-engine";
 
 describe("calcularSinergiaEquipo (Legacy)", () => {
@@ -410,7 +411,7 @@ describe("Motor de Matching v2.0 (Epic 3)", () => {
 
 
 describe("Ronda 2 — Expansión de Roster (11 nuevos personajes)", () => {
-  const fullInventory32 = DEFAULT_CHARACTERS.map((c) => ({
+  const fullInventory32 = DEFAULT_CHARACTERS.filter((c) => c.id <= 32).map((c) => ({
     characterId: c.id,
     constellation: c.name === "Bennett" ? 1 : c.name === "Xingqiu" ? 2 : 0,
   }));
@@ -597,7 +598,7 @@ describe("Ronda 2 — Expansión de Roster (11 nuevos personajes)", () => {
 });
 
 describe("Ronda 3 — Expansión de Roster (10 personajes de Inazuma & Colaboración)", () => {
-  const fullInventory42 = DEFAULT_CHARACTERS.map((c) => ({
+  const fullInventory42 = DEFAULT_CHARACTERS.filter((c) => c.id <= 42).map((c) => ({
     characterId: c.id,
     constellation: c.name === "Bennett" ? 1 : c.name === "Xingqiu" ? 2 : 0,
   }));
@@ -725,7 +726,7 @@ describe("Ronda 3 — Expansión de Roster (10 personajes de Inazuma & Colaborac
     expect(hasSaraCritBonus).toBe(true);
   });
 
-  test("Noelle C6 con Gorou C6: Recomienda Triple Geo Hiperdefensa con asignación de Petra Arcaica a Gorou", () => {
+  test("Noelle C6 con Gorou C6: Recomienda Triple Geo Hiperdefensa con asignación de Nobleza a Gorou (descalificando Petra Arcaica)", () => {
     const noelleId = 15;
     const invWithGorou = DEFAULT_CHARACTERS.map((c) => ({
       characterId: c.id,
@@ -744,9 +745,9 @@ describe("Ronda 3 — Expansión de Roster (10 personajes de Inazuma & Colaborac
     expect(memberNames).toContain("Albedo");
     expect(topTeam.archetype).toBe("Triple Geo");
 
-    // Validar asignación de Petra Arcaica a Gorou
+    // Validar asignación de Ritual Antiguo de la Nobleza a Gorou (Petra Arcaica descalificada en carry Geo)
     const gorouArt = topTeam.artifactAssignments.find((a) => a.characterName === "Gorou");
-    expect(gorouArt?.artifactSetName).toBe("Petra Arcaica");
+    expect(gorouArt?.artifactSetName).toBe("Ritual Antiguo de la Nobleza");
   });
 
   test("Kaedehara Kazuha: Asigna Sombra Verde Esmeralda con prioridad máxima y bufa daño elemental", () => {
@@ -760,5 +761,344 @@ describe("Ronda 3 — Expansión de Roster (10 personajes de Inazuma & Colaborac
       (b) => b.artifactName === "Sombra Verde Esmeralda" && b.characterName === "Kaedehara Kazuha"
     );
     expect(topVV?.priority).toBe(10);
+  });
+});
+
+describe("Ronda 4 — Expansión de Roster (10 personajes de Inazuma & Sumeru)", () => {
+  const fullInventory52 = DEFAULT_CHARACTERS.map((c) => ({
+    characterId: c.id,
+    constellation:
+      c.name === "Bennett" ? 1 :
+      c.name === "Xingqiu" ? 2 :
+      c.name === "Xiangling" ? 4 :
+      c.name === "Gorou" ? 6 :
+      c.name === "Fischl" ? 6 :
+      c.name === "Kujou Sara" ? 6 :
+      c.name === "Noelle" ? 6 : 0,
+  }));
+
+  test("Arataki Itto: Recomienda Mono Geo Hiperdefensa con Gorou C6, Albedo y Zhongli como Top 1 absoluto", () => {
+    const ittoId = 43;
+    const results = findOptimalTeams({
+      targetCharacterId: ittoId,
+      inventory: fullInventory52,
+    });
+
+    expect(results.length).toBeGreaterThanOrEqual(1);
+    const topTeam = results[0];
+    expect(topTeam.team[0].name).toBe("Arataki Itto");
+
+    const memberNames = topTeam.team.map((m) => m.name);
+    expect(memberNames).toContain("Gorou");
+    expect(memberNames).toContain("Albedo");
+    expect(memberNames).toContain("Zhongli");
+    expect(topTeam.archetype).toBe("Mono Geo Hiperdefensa");
+  });
+
+  test("Tighnari: Recomienda Tighnari Spread con acompañante Electro y Collei Recuerdos del Bosque", () => {
+    const tighnariId = 51;
+    const results = findOptimalTeams({
+      targetCharacterId: tighnariId,
+      inventory: fullInventory52,
+    });
+
+    expect(results.length).toBeGreaterThanOrEqual(1);
+    const topTeam = results[0];
+    expect(topTeam.team[0].name).toBe("Tighnari");
+
+    const memberNames = topTeam.team.map((m) => m.name);
+    // Debe tener a Collei con Recuerdos del Bosque
+    expect(memberNames).toContain("Collei");
+    // Debe tener acompañante Electro para activar Aceleración/Propagación
+    const hasElectroPartner = memberNames.some((n) => n === "Fischl" || n === "Yae Miko" || n === "Kuki Shinobu");
+    expect(hasElectroPartner).toBe(true);
+
+    expect(topTeam.archetype).toBe("Tighnari Spread");
+
+    const hasSpreadBonus = topTeam.explanations.some((e) =>
+      e.includes("Aceleración / Propagación (Spread)")
+    );
+    expect(hasSpreadBonus).toBe(true);
+  });
+
+  test("Tighnari: Aplica penalización táctica si se fuerza Hydro/Bloom sin suficiente presencia Electro", () => {
+    const tighnariId = 51;
+    const invHydroTighnari = [
+      { characterId: 51, constellation: 0 }, // Tighnari
+      { characterId: 2, constellation: 0 },  // Barbara
+      { characterId: 13, constellation: 0 }, // Mona
+      { characterId: 25, constellation: 0 }, // Zhongli
+    ];
+
+    const results = findOptimalTeams({
+      targetCharacterId: tighnariId,
+      inventory: invHydroTighnari,
+    });
+
+    expect(results.length).toBeGreaterThanOrEqual(1);
+    const team = results[0];
+    const hasBloomPenalty = team.explanations.some((e) =>
+      e.includes("Hidro genera Florecimiento descontrolado")
+    );
+    expect(hasBloomPenalty).toBe(true);
+  });
+
+  test("Hu Tao: Con Yelan en inventario, recomienda Hu Tao Doble Hydro (Xingqiu, Yelan, Zhongli) como Top 1 absoluto", () => {
+    const huTaoId = 29;
+    const results = findOptimalTeams({
+      targetCharacterId: huTaoId,
+      inventory: fullInventory52,
+    });
+
+    expect(results.length).toBeGreaterThanOrEqual(1);
+    const topTeam = results[0];
+    expect(topTeam.team[0].name).toBe("Hu Tao");
+
+    const memberNames = topTeam.team.map((m) => m.name);
+    expect(memberNames).toContain("Xingqiu");
+    expect(memberNames).toContain("Yelan");
+    expect(memberNames).toContain("Zhongli");
+    expect(topTeam.archetype).toBe("Hu Tao Doble Hydro");
+  });
+
+  test("Kamisato Ayaka: Con Shenhe en inventario, incorpora sus Plumas Glaciares y supera variantes previas", () => {
+    const ayakaId = 34;
+    const results = findOptimalTeams({
+      targetCharacterId: ayakaId,
+      inventory: fullInventory52,
+    });
+
+    expect(results.length).toBeGreaterThanOrEqual(1);
+    const topTeam = results[0];
+    expect(topTeam.team[0].name).toBe("Kamisato Ayaka");
+
+    const memberNames = topTeam.team.map((m) => m.name);
+    expect(memberNames).toContain("Shenhe");
+    expect(memberNames).toContain("Sangonomiya Kokomi");
+    expect(memberNames).toContain("Kaedehara Kazuha");
+    expect(topTeam.archetype).toBe("Ayaka Freeze Shenhe");
+
+    const hasIcyQuills = topTeam.explanations.some((e) =>
+      e.includes("Plumas Glaciares de Shenhe (Icy Quills)")
+    );
+    expect(hasIcyQuills).toBe(true);
+  });
+
+  test("Kamisato Ayato: Recomienda Ayato Vaporizado con Xiangling, Bennett y acompañante Hydro/Anemo", () => {
+    const ayatoId = 47;
+    const results = findOptimalTeams({
+      targetCharacterId: ayatoId,
+      inventory: fullInventory52,
+    });
+
+    expect(results.length).toBeGreaterThanOrEqual(1);
+    const topTeam = results[0];
+    expect(topTeam.team[0].name).toBe("Kamisato Ayato");
+
+    const memberNames = topTeam.team.map((m) => m.name);
+    expect(memberNames).toContain("Xiangling");
+    expect(memberNames).toContain("Bennett");
+    expect(topTeam.archetype).toBe("Ayato Vaporizado");
+  });
+
+  test("Xiao: need_anemo_shred es satisfecho por Zhongli y Jean C4 pero NO por Sacarosa/Kazuha con VV", () => {
+    const xiaoId = 28;
+
+    // Equipo A: Xiao + Zhongli + Bennett + Jean C4 (Trituración real de Anemo)
+    const invA = [
+      { characterId: 28, constellation: 0 }, // Xiao
+      { characterId: 25, constellation: 0 }, // Zhongli (debuff_all_res)
+      { characterId: 4, constellation: 1 },  // Bennett
+      { characterId: 8, constellation: 4 },  // Jean C4 (debuff_anemo_res -40%)
+    ];
+    const resultsA = findOptimalTeams({
+      targetCharacterId: xiaoId,
+      inventory: invA,
+    });
+    expect(resultsA.length).toBeGreaterThanOrEqual(1);
+    const teamA = resultsA[0];
+    const hasAnemoShred = teamA.explanations.some((e) =>
+      e.includes("need_anemo_shred")
+    );
+    expect(hasAnemoShred).toBe(true);
+    const hasAnemoMicro = teamA.explanations.some((e) =>
+      e.includes("Trituración de Resistencia Anemo genuina activa")
+    );
+    expect(hasAnemoMicro).toBe(true);
+
+    // Equipo B: Xiao + Sucrose C0 (VV) + Bennett + Diona (Sin Zhongli ni Jean C4)
+    const invB = [
+      { characterId: 28, constellation: 0 }, // Xiao
+      { characterId: 18, constellation: 0 }, // Sucrose
+      { characterId: 4, constellation: 1 },  // Bennett
+      { characterId: 22, constellation: 0 }, // Diona
+    ];
+    const resultsB = findOptimalTeams({
+      targetCharacterId: xiaoId,
+      inventory: invB,
+    });
+    expect(resultsB.length).toBeGreaterThanOrEqual(1);
+    const teamB = resultsB[0];
+    const hasFalseAnemoShred = teamB.explanations.some((e) =>
+      e.includes("need_anemo_shred")
+    );
+    // VV NO debe satisfacer need_anemo_shred
+    expect(hasFalseAnemoShred).toBe(false);
+  });
+
+  test("Artifact Binder: Descalifica Sombra Verde Esmeralda en Xiao Hypercarry puro sin Sub-DPS PHEC", () => {
+    const xiaoId = 28;
+    const invXiaoPureHyper = [
+      { characterId: 28, constellation: 0 }, // Xiao (Anemo Carry)
+      { characterId: 8, constellation: 0 },  // Jean C0 (Anemo Healer/Battery)
+      { characterId: 25, constellation: 0 }, // Zhongli (Geo Support)
+      { characterId: 4, constellation: 1 },  // Bennett (Pyro Support/Buffer, no Sub-DPS)
+    ];
+
+    const results = findOptimalTeams({
+      targetCharacterId: xiaoId,
+      inventory: invXiaoPureHyper,
+    });
+
+    expect(results.length).toBeGreaterThanOrEqual(1);
+    const topTeam = results[0];
+    // Ningún acompañante debe tener asignado Sombra Verde Esmeralda porque no hay daño PHEC que swirlear
+    const assignedSets = topTeam.artifactAssignments.map((a) => a.artifactSetName);
+    expect(assignedSets).not.toContain("Sombra Verde Esmeralda");
+  });
+
+  test("Gorou: Penalizado y excluido del Top 5 de Carries no-Geo / no-DEF (Hu Tao y Kokomi)", () => {
+    // 1. Hu Tao: Gorou no debe aparecer en su Top 5 frente a Albedo / Yelan
+    const huTaoResults = findOptimalTeams({
+      targetCharacterId: 29,
+      inventory: fullInventory52,
+    });
+    const huTaoTop5 = huTaoResults.slice(0, 5);
+    for (const r of huTaoTop5) {
+      const names = r.team.map((m) => m.name);
+      expect(names).not.toContain("Gorou");
+    }
+
+    // 2. Kokomi: Gorou no debe aparecer en su Top 5
+    const kokomiResults = findOptimalTeams({
+      targetCharacterId: 40,
+      inventory: fullInventory52,
+    });
+    const kokomiTop5 = kokomiResults.slice(0, 5);
+    for (const r of kokomiTop5) {
+      const names = r.team.map((m) => m.name);
+      expect(names).not.toContain("Gorou");
+    }
+  });
+
+  test("Heizou: Recomienda Heizou Nacional como Top 1 absoluto con Xiangling, Bennett y Xingqiu/Yelan", () => {
+    const heizouId = 50;
+    const results = findOptimalTeams({
+      targetCharacterId: heizouId,
+      inventory: fullInventory52,
+    });
+
+    expect(results.length).toBeGreaterThanOrEqual(1);
+    const topTeam = results[0];
+    expect(topTeam.team[0].name).toBe("Shikanoin Heizou");
+
+    const memberNames = topTeam.team.map((m) => m.name);
+    expect(memberNames).toContain("Xiangling");
+    expect(memberNames).toContain("Bennett");
+    const hasHydroEnabler = memberNames.includes("Xingqiu") || memberNames.includes("Yelan");
+    expect(hasHydroEnabler).toBe(true);
+    expect(topTeam.archetype).toBe("Heizou Nacional");
+  });
+
+  test("Heizou: Recomienda Heizou Taser en inventario Electro/Hydro con Xingqiu, Fischl y Beidou/Kuki", () => {
+    const heizouId = 50;
+    const invTaser = [
+      { characterId: 50, constellation: 0 }, // Heizou
+      { characterId: 21, constellation: 2 }, // Xingqiu
+      { characterId: 7, constellation: 6 },  // Fischl
+      { characterId: 3, constellation: 2 },  // Beidou
+      { characterId: 49, constellation: 0 }, // Kuki
+      { characterId: 25, constellation: 0 }, // Zhongli
+    ];
+
+    const results = findOptimalTeams({
+      targetCharacterId: heizouId,
+      inventory: invTaser,
+    });
+
+    expect(results.length).toBeGreaterThanOrEqual(1);
+    const topTeam = results[0];
+    expect(topTeam.team[0].name).toBe("Shikanoin Heizou");
+
+    const memberNames = topTeam.team.map((m) => m.name);
+    expect(memberNames).toContain("Xingqiu");
+    expect(topTeam.archetype).toBe("Heizou Taser");
+  });
+
+  test("Artifact Binder: Descalifica Petra Arcaica para Carries Dendro (Tighnari), Anemo (Xiao) y Geo (Itto, Noelle)", () => {
+    const tighnari = DEFAULT_CHARACTERS.find((c) => c.name === "Tighnari")!;
+    const xiao = DEFAULT_CHARACTERS.find((c) => c.name === "Xiao")!;
+    const itto = DEFAULT_CHARACTERS.find((c) => c.name === "Arataki Itto")!;
+    const huTao = DEFAULT_CHARACTERS.find((c) => c.name === "Hu Tao")!;
+    const zhongli = DEFAULT_CHARACTERS.find((c) => c.name === "Zhongli")!;
+    const yelan = DEFAULT_CHARACTERS.find((c) => c.name === "Yelan")!;
+    const yae = DEFAULT_CHARACTERS.find((c) => c.name === "Yae Miko")!;
+
+    // Carry Dendro con soporte Geo: Inviable
+    const tighnariCompanions = [
+      { character: zhongli, constellation: 0 },
+      { character: yae, constellation: 0 },
+    ];
+    expect(isSupportSetViableForTeam("Petra Arcaica", tighnari, tighnariCompanions)).toBe(false);
+
+    // Carry Anemo con soporte Geo: Inviable
+    const xiaoCompanions = [
+      { character: zhongli, constellation: 0 },
+      { character: yelan, constellation: 0 },
+    ];
+    expect(isSupportSetViableForTeam("Petra Arcaica", xiao, xiaoCompanions)).toBe(false);
+
+    // Carry Geo en Mono Geo (sin elementos PHEC): Inviable
+    const ittoCompanions = [
+      { character: zhongli, constellation: 0 },
+    ];
+    expect(isSupportSetViableForTeam("Petra Arcaica", itto, ittoCompanions)).toBe(false);
+
+    // Carry Pyro (PHEC) con soporte Geo cristalizando: Viable
+    const huTaoCompanions = [
+      { character: zhongli, constellation: 0 },
+      { character: yelan, constellation: 0 },
+    ];
+    expect(isSupportSetViableForTeam("Petra Arcaica", huTao, huTaoCompanions)).toBe(true);
+  });
+
+  test("Tighnari: Zhongli equipa Tenacidad de la Geoarmada en lugar de Petra Arcaica y no recibe bono de daño elemental indebido", () => {
+    const tighnariId = 51;
+    const invTighnari = [
+      { characterId: 51, constellation: 0 }, // Tighnari
+      { characterId: 25, constellation: 0 }, // Zhongli
+      { characterId: 46, constellation: 0 }, // Yae Miko
+      { characterId: 52, constellation: 0 }, // Collei
+    ];
+
+    const results = findOptimalTeams({
+      targetCharacterId: tighnariId,
+      inventory: invTighnari,
+    });
+
+    expect(results.length).toBeGreaterThanOrEqual(1);
+    const topTeam = results[0];
+    expect(topTeam.archetype).toBe("Tighnari Spread");
+
+    // Zhongli no debe llevar Petra Arcaica
+    const zhongliArt = topTeam.artifactAssignments.find((a) => a.characterName === "Zhongli");
+    expect(zhongliArt?.artifactSetName).not.toBe("Petra Arcaica");
+    expect(zhongliArt?.artifactSetName).toBe("Tenacidad de la Geoarmada");
+
+    // No debe recibir bono de daño elemental indebido de buff_elemental_dmg
+    const hasInvalidElementalBuff = topTeam.explanations.some((e) =>
+      e.includes("Multiplicador de Daño: Bono de Daño Elemental / Universal al equipo")
+    );
+    expect(hasInvalidElementalBuff).toBe(false);
   });
 });

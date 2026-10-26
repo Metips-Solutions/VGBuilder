@@ -61,6 +61,43 @@ export function isSupportSetViableForTeam(
     }
   }
 
+  if (setName === "Sombra Verde Esmeralda") {
+    // Sombra Verde Esmeralda solo reduce resistencias PHEC (Pyro, Hydro, Electro, Cryo).
+    // Si el Carry es Anemo o Geo, VV solo es viable si existe al menos un Sub-DPS PHEC que aproveche la bajada elemental.
+    if (targetCarry.element === "Anemo" || targetCarry.element === "Geo") {
+      const fullTeam = [targetCarry, ...companions.map((c) => c.character)];
+      const hasPHECSubDps = fullTeam.some(
+        (c) =>
+          ["Pyro", "Hydro", "Electro", "Cryo"].includes(c.element) &&
+          c.roles.includes("Sub-DPS")
+      );
+      if (!hasPHECSubDps) {
+        return false;
+      }
+    }
+  }
+
+  if (setName === "Petra Arcaica") {
+    // Petra Arcaica otorga +35% de Bono de Daño Elemental al recoger un cristal de Cristalización.
+    // 1. Debe existir al menos un elemento reactivo PHEC (Pyro, Hydro, Electro, Cryo) en el equipo.
+    const fullTeam = [targetCarry, ...companions.map((c) => c.character)];
+    const hasPHEC = fullTeam.some((c) =>
+      ["Pyro", "Hydro", "Electro", "Cryo"].includes(c.element)
+    );
+    if (!hasPHEC) {
+      return false;
+    }
+
+    // 2. Cristalización es inerte con Dendro, Anemo, Geo y Físico (no existen cristales de estos tipos).
+    // Si el Carry no es PHEC o su daño es puramente físico, Petra Arcaica queda descalificado
+    // para que la cascada asigne sets legítimos (Tenacidad, Nobleza, Recuerdos).
+    const isPHECCarry = ["Pyro", "Hydro", "Electro", "Cryo"].includes(targetCarry.element);
+    const isPhysicalCarry = targetCarry.damageProfile?.toLowerCase().includes("physical");
+    if (!isPHECCarry || isPhysicalCarry) {
+      return false;
+    }
+  }
+
   return true;
 }
 
@@ -165,18 +202,25 @@ export function bindSupportArtifacts(
         injectedTags.push(assigned.setObj.providedTag);
       }
     } else {
-      // Conflicto de set: el personaje no pudo obtener un set único
+      // No se pudo asignar set único o no es viable en esta composición
       const compBinds = artifactBinds.filter(
         (b) => b.characterName.toLowerCase() === comp.character.name.toLowerCase()
       );
-      const topSet = compBinds.length > 0 ? compBinds[0].artifactName : "Set de Soporte";
+      const topSet = compBinds.length > 0 ? compBinds[0].artifactName : null;
+
+      let alertMsg: string;
+      if (topSet && usedSets.has(topSet)) {
+        alertMsg = `Conflicto de set: ${comp.character.name} compite por ${topSet}, pero ya está asignado. Equípale con artefactos de daño personal/substats ofensivos.`;
+      } else {
+        alertMsg = `Sin set de soporte aplicable para esta composición: Equípale con artefactos de daño personal/estadísticas ofensivas acordes a su rol.`;
+      }
 
       assignments.push({
         characterId: charId,
         characterName: comp.character.name,
         artifactSetName: "Set de Daño Personal (ej. Emblema)",
         providedTag: null,
-        alert: `Conflicto de set: ${comp.character.name} compite por ${topSet}, pero ya está asignado. Equípale con artefactos de daño personal/substats ofensivos.`,
+        alert: alertMsg,
       });
     }
   }

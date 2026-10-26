@@ -561,12 +561,12 @@
   <header>
     <div class="header-title">
       <h1>VGBuilder — Probador de Endpoint POST /affinity/match</h1>
-      <p>Simulador KQM v2.0 • 42 Personajes (Rondas 1-3 Inazuma) • 18 Presets Meta • 11 Sets de Soporte</p>
+      <p>Simulador KQM v2.0 • 52 Personajes (Rondas 1-4 Inazuma & Sumeru) • 24 Presets Meta • 11 Sets de Soporte</p>
     </div>
     <div class="config-bar">
       <label for="endpointUrl" style="font-size:12px; color:var(--text-muted);">Endpoint:</label>
       <input type="text" id="endpointUrl" value="http://localhost:3000/affinity/match" style="width: 280px;">
-      <button id="btnReloadCatalog" title="Cargar personajes desde /catalog/characters">🔄 Cargar API (42)</button>
+      <button id="btnReloadCatalog" title="Cargar personajes desde /catalog/characters">🔄 Cargar API (52)</button>
     </div>
   </header>
 
@@ -581,12 +581,22 @@
       <!-- SELECTOR DESPLEGABLE DE PRESETS META -->
       <div class="preset-selector-bar">
         <div class="title">
-          <span>⚡ Presets Meta KQM (Rondas 1, 2 y 3 — Inazuma)</span>
+          <span>⚡ Presets Meta KQM (Rondas 1-4 — Inazuma & Sumeru)</span>
           <span style="font-size:10px; color:var(--text-muted);">Carga equipo, constelaciones y calcula al instante</span>
         </div>
         <div class="controls">
           <select id="presetDropdown" style="flex: 1;">
             <option value="">-- Elige un Preset Meta para probar --</option>
+            <optgroup label="🌿 Ronda 4 — Inazuma & Sumeru Meta">
+              <option value="itto-mono-geo">🪨 Itto Mono Geo Hiperdefensa (Itto C0, Gorou C6, Albedo C0, Zhongli C0)</option>
+              <option value="tighnari-spread">🌿 Tighnari Spread Quickswap (Tighnari C0, Yae Miko C0, Collei C0, Zhongli C0)</option>
+              <option value="hu-tao-double-hydro">🔥 Hu Tao Doble Hydro (Hu Tao C0, Xingqiu C2, Yelan C0, Zhongli C0)</option>
+              <option value="ayato-vape">🌊 Ayato Vaporizado (Ayato C0, Xiangling C4, Bennett C1, Yelan C0)</option>
+              <option value="ayaka-shenhe">❄️ Ayaka Freeze Shenhe Core (Ayaka C0, Shenhe C0, Kokomi C0, Kazuha C0)</option>
+              <option value="heizou-national">👊 Heizou Nacional (Heizou C0, Xiangling C4, Xingqiu C2, Bennett C1)</option>
+              <option value="heizou-taser">⚡ Heizou Taser (Heizou C0, Xingqiu C2, Fischl C6, Beidou C2)</option>
+              <option value="hyperbloom-core">🌱 Motor de Hiperflorecimiento (Ayato C0, Kuki C0, Collei C0, Xingqiu C2)</option>
+            </optgroup>
             <optgroup label="⚡ Ronda 3 — Inazuma Meta">
               <option value="raiden-national">⚡ Raiden National (Raiden C0, Xiangling C4, Xingqiu C2, Bennett C1)</option>
               <option value="ayaka-freeze">❄️ Ayaka Permafrost (Ayaka C0, Kokomi C0, Kazuha C0, Rosaria C2)</option>
@@ -610,9 +620,16 @@
 
       <!-- BOTONES DE ACCIÓN RÁPIDA -->
       <div class="quick-toolbar">
-        <button id="btnSelectAll">Seleccionar Todos (42)</button>
+        <button id="btnSelectAll">Seleccionar Todos (52)</button>
         <button id="btnDeselectAll">Deseleccionar Todos</button>
         <button id="btnPresetAllC0">Todos a C0</button>
+        <button id="btnQuickItto" title="Mono Geo Hiperdefensa">🪨 Itto Mono Geo</button>
+        <button id="btnQuickTighnari" title="Tighnari Spread">🌿 Tighnari Spread</button>
+        <button id="btnQuickHuTaoHydro" title="Hu Tao Doble Hydro">💧 Hu Tao 2x Hydro</button>
+        <button id="btnQuickAyato" title="Ayato Vaporizado">🌊 Ayato Vape</button>
+        <button id="btnQuickAyakaShenhe" title="Ayaka Freeze Shenhe">❄️ Ayaka Shenhe</button>
+        <button id="btnQuickHeizouNat" title="Heizou Nacional">👊 Heizou Nat</button>
+        <button id="btnQuickHeizouTaser" title="Heizou Taser">⚡ Heizou Taser</button>
         <button id="btnQuickRaidenNat" title="Raiden National">⚡ Raiden Nat</button>
         <button id="btnQuickAyaka" title="Ayaka Permafrost">❄️ Ayaka Freeze</button>
         <button id="btnQuickYoimiya" title="Yoimiya Vape">🔥 Yoimiya Vape</button>
@@ -750,11 +767,113 @@
       { id: 39, name: "Shogun Raiden", element: "Electro", roles: ["Main DPS", "Sub-DPS", "Support"] },
       { id: 40, name: "Sangonomiya Kokomi", element: "Hydro", roles: ["Main DPS", "Support", "Healer"] },
       { id: 41, name: "Thoma", element: "Pyro", roles: ["Support", "Sub-DPS"] },
-      { id: 42, name: "Gorou", element: "Geo", roles: ["Support"] }
+      { id: 42, name: "Gorou", element: "Geo", roles: ["Support"] },
+      { id: 43, name: "Arataki Itto", element: "Geo", roles: ["Main DPS"] },
+      { id: 44, name: "Yun Jin", element: "Geo", roles: ["Support"] },
+      { id: 45, name: "Shenhe", element: "Cryo", roles: ["Support", "Sub-DPS"] },
+      { id: 46, name: "Yae Miko", element: "Electro", roles: ["Sub-DPS", "Main DPS"] },
+      { id: 47, name: "Kamisato Ayato", element: "Hydro", roles: ["Main DPS", "Sub-DPS"] },
+      { id: 48, name: "Yelan", element: "Hydro", roles: ["Sub-DPS", "Support"] },
+      { id: 49, name: "Kuki Shinobu", element: "Electro", roles: ["Support", "Healer"] },
+      { id: 50, name: "Shikanoin Heizou", element: "Anemo", roles: ["Main DPS", "Sub-DPS"] },
+      { id: 51, name: "Tighnari", element: "Dendro", roles: ["Main DPS"] },
+      { id: 52, name: "Collei", element: "Dendro", roles: ["Sub-DPS", "Support"] }
     ];
 
     // Presets Meta KQM con constelaciones e inventario calibrado
     const PRESETS = {
+      "itto-mono-geo": {
+        name: "Mono Geo Hiperdefensa",
+        carryId: 43,
+        inventory: [
+          { id: 43, c: 0 }, // Itto C0
+          { id: 42, c: 6 }, // Gorou C6
+          { id: 26, c: 0 }, // Albedo C0
+          { id: 25, c: 0 }, // Zhongli C0
+          { id: 44, c: 6 }  // Yun Jin C6
+        ]
+      },
+      "tighnari-spread": {
+        name: "Tighnari Spread Quickswap",
+        carryId: 51,
+        inventory: [
+          { id: 51, c: 0 }, // Tighnari C0
+          { id: 46, c: 0 }, // Yae Miko C0
+          { id: 7, c: 6 },  // Fischl C6
+          { id: 52, c: 0 }, // Collei C0
+          { id: 25, c: 0 }, // Zhongli C0
+          { id: 49, c: 0 }  // Kuki Shinobu C0
+        ]
+      },
+      "hu-tao-double-hydro": {
+        name: "Hu Tao Doble Hydro",
+        carryId: 29,
+        inventory: [
+          { id: 29, c: 0 }, // Hu Tao C0
+          { id: 21, c: 2 }, // Xingqiu C2
+          { id: 48, c: 0 }, // Yelan C0
+          { id: 25, c: 0 }, // Zhongli C0
+          { id: 13, c: 0 }  // Mona C0
+        ]
+      },
+      "ayato-vape": {
+        name: "Ayato Vaporizado",
+        carryId: 47,
+        inventory: [
+          { id: 47, c: 0 }, // Ayato C0
+          { id: 20, c: 4 }, // Xiangling C4
+          { id: 4, c: 1 },  // Bennett C1
+          { id: 48, c: 0 }, // Yelan C0
+          { id: 33, c: 0 }, // Kazuha C0
+          { id: 21, c: 2 }  // Xingqiu C2
+        ]
+      },
+      "ayaka-shenhe": {
+        name: "Ayaka Freeze Shenhe Core",
+        carryId: 34,
+        inventory: [
+          { id: 34, c: 0 }, // Ayaka C0
+          { id: 45, c: 0 }, // Shenhe C0
+          { id: 40, c: 0 }, // Kokomi C0
+          { id: 33, c: 0 }, // Kazuha C0
+          { id: 13, c: 0 }, // Mona C0
+          { id: 30, c: 2 }  // Rosaria C2
+        ]
+      },
+      "hyperbloom-core": {
+        name: "Motor de Hiperflorecimiento",
+        carryId: 47,
+        inventory: [
+          { id: 47, c: 0 }, // Ayato C0 (Driver)
+          { id: 49, c: 0 }, // Kuki Shinobu C0
+          { id: 52, c: 0 }, // Collei C0
+          { id: 21, c: 2 }, // Xingqiu C2
+          { id: 33, c: 0 }  // Kazuha C0
+        ]
+      },
+      "heizou-national": {
+        name: "Heizou Nacional",
+        carryId: 50,
+        inventory: [
+          { id: 50, c: 0 }, // Heizou C0
+          { id: 20, c: 4 }, // Xiangling C4
+          { id: 21, c: 2 }, // Xingqiu C2
+          { id: 4, c: 1 },  // Bennett C1
+          { id: 48, c: 0 }, // Yelan C0
+        ]
+      },
+      "heizou-taser": {
+        name: "Heizou Taser",
+        carryId: 50,
+        inventory: [
+          { id: 50, c: 0 }, // Heizou C0
+          { id: 21, c: 2 }, // Xingqiu C2
+          { id: 7, c: 6 },  // Fischl C6
+          { id: 3, c: 2 },  // Beidou C2
+          { id: 49, c: 0 }, // Kuki C0
+          { id: 48, c: 0 }, // Yelan C0
+        ]
+      },
       "raiden-national": {
         name: "Raiden National",
         carryId: 39,
@@ -1330,6 +1449,13 @@
       document.querySelectorAll(".char-constellation").forEach(sel => sel.value = "0");
     });
 
+    document.getElementById("btnQuickItto")?.addEventListener("click", () => applyPreset("itto-mono-geo"));
+    document.getElementById("btnQuickTighnari")?.addEventListener("click", () => applyPreset("tighnari-spread"));
+    document.getElementById("btnQuickHuTaoHydro")?.addEventListener("click", () => applyPreset("hu-tao-double-hydro"));
+    document.getElementById("btnQuickAyato")?.addEventListener("click", () => applyPreset("ayato-vape"));
+    document.getElementById("btnQuickAyakaShenhe")?.addEventListener("click", () => applyPreset("ayaka-shenhe"));
+    document.getElementById("btnQuickHeizouNat")?.addEventListener("click", () => applyPreset("heizou-national"));
+    document.getElementById("btnQuickHeizouTaser")?.addEventListener("click", () => applyPreset("heizou-taser"));
     document.getElementById("btnQuickRaidenNat")?.addEventListener("click", () => applyPreset("raiden-national"));
     document.getElementById("btnQuickAyaka")?.addEventListener("click", () => applyPreset("ayaka-freeze"));
     document.getElementById("btnQuickYoimiya")?.addEventListener("click", () => applyPreset("yoimiya-vape"));
