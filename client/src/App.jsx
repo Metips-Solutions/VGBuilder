@@ -46,7 +46,7 @@ export function App() {
         <div className="brand-wrapper">
           <div className="brand-logo">✦</div>
           <div className="brand-title">
-            ASTRA
+            VGBuilder
             <span className="brand-subtitle">Genshin Impact · Inventario</span>
           </div>
         </div>
