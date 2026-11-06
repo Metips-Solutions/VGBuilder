@@ -571,8 +571,8 @@ export const CHARACTERS = [
   {
     id: "shikanoin heizou",
     name: "Shikanoin Heizou",
-    element: "geo",
-    role: "Main-DPS · Aplicador Geo",
+    element: "Anemo",
+    role: "Main-DPS · ",
     region: "Snezhnaya",
     stars: 5,
     image: encodeURI("/Images/Genshin Impact/Splash Art/heizou_genshin_impact_full_body_render_by_deg5270_dfbjq9z-fullview.png"),
