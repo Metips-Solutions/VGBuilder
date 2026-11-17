@@ -77,13 +77,14 @@ cd server
 bun test
 ```
 
-## Frontend (Epic 4, todavía no arrancado)
+## Cómo arrancar el frontend
 
-Cuando lleguen a esa fase, generar el proyecto con:
+El cliente web vive en `client/` (React + Vite + Bun) y está organizado por módulos de dominio.
 
 ```bash
-bun create vite@latest client -- --template react-ts
+cd client
+bun install
+bun run dev
 ```
 
-y seguir la convención de módulos por Epic también ahí (una carpeta por
-feature, no por tipo de archivo).
+El cliente levantará en `http://localhost:5173`. Para más detalles sobre la arquitectura interna del cliente, consultar [`client/README.md`](client/README.md).
