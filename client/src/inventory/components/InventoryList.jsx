@@ -1,22 +1,41 @@
 import React from 'react';
 import { ELEMENTS } from '../data/characters';
 
-export function InventoryList({ inventory, onRemoveItem, onOpenModal }) {
+export function InventoryList({
+  inventory,
+  onRemoveItem,
+  onOpenModal,
+  onOpenEnkaModal
+}) {
   if (inventory.length === 0) {
     return (
       <div className="hero-empty">
         <div className="hero-icon">+</div>
         <h2 className="hero-title">Tu inventario de equipo está vacío</h2>
         <p className="hero-desc">
-          Comienza seleccionando personajes de Teyvat para agregarlos a tu escuadra con su respectivo nivel de constelación.
+          Comienza seleccionando personajes de Teyvat para agregarlos a tu escuadra o sincroniza tu cuenta con Enka.Network.
         </p>
-        <button
-          type="button"
-          className="btn-pill btn-pill-primary"
-          onClick={onOpenModal}
-        >
-          + Agregar Primer Personaje
-        </button>
+        <div className="hero-empty-actions">
+          {onOpenEnkaModal && (
+            <button
+              type="button"
+              className="btn-pill btn-pill-secondary btn-sync-enka"
+              onClick={onOpenEnkaModal}
+              title="Sincronizar inventario desde perfil de Enka.Network"
+            >
+              <span className="sync-icon-symbol">⚡</span>
+              <span>Sincronizar Enka</span>
+            </button>
+          )}
+
+          <button
+            type="button"
+            className="btn-pill btn-pill-primary"
+            onClick={onOpenModal}
+          >
+            + Agregar Personaje
+          </button>
+        </div>
       </div>
     );
   }
@@ -29,13 +48,27 @@ export function InventoryList({ inventory, onRemoveItem, onOpenModal }) {
           <span className="badge-counter">{inventory.length}</span>
         </h2>
 
-        <button
-          type="button"
-          className="btn-pill btn-pill-primary"
-          onClick={onOpenModal}
-        >
-          + Agregar Personaje
-        </button>
+        <div className="inventory-header-actions">
+          {onOpenEnkaModal && (
+            <button
+              type="button"
+              className="btn-pill btn-pill-secondary btn-sync-enka"
+              onClick={onOpenEnkaModal}
+              title="Sincronizar inventario desde perfil de Enka.Network"
+            >
+              <span className="sync-icon-symbol">⚡</span>
+              <span>Sincronizar Enka</span>
+            </button>
+          )}
+
+          <button
+            type="button"
+            className="btn-pill btn-pill-primary"
+            onClick={onOpenModal}
+          >
+            + Agregar Personaje
+          </button>
+        </div>
       </div>
 
       <div className="inventory-grid">
@@ -91,6 +124,7 @@ export function InventoryList({ inventory, onRemoveItem, onOpenModal }) {
                 </span>
               </div>
 
+              {/* Botón único de acción en Inventario: Eliminar */}
               <button
                 type="button"
                 className="inventory-delete-btn"
@@ -107,3 +141,5 @@ export function InventoryList({ inventory, onRemoveItem, onOpenModal }) {
     </div>
   );
 }
+
+export default InventoryList;

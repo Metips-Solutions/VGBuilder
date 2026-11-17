@@ -94,7 +94,6 @@ export function HomePage() {
 
         <h1 className="home-hero-title">
           VGBuilder
-          <span className="home-hero-accent"> · Astra Platform</span>
         </h1>
 
         <p className="home-hero-summary">
