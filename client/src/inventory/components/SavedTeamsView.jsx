@@ -10,7 +10,27 @@ export function SavedTeamsView({ onGoToOptimizer }) {
   const [savedTeams, setSavedTeams] = useState(() => {
     try {
       const data = localStorage.getItem('genshin_saved_teams');
-      return data ? JSON.parse(data) : [];
+      if (!data) return [];
+      const list = JSON.parse(data);
+      // Auto-migración a .webp para avatares y stickers guardados
+      const migrated = list.map((t) => ({
+        ...t,
+        team: (t.team || []).map((m) => {
+          let avatar = m.avatar;
+          if (avatar && typeof avatar === 'string') {
+            avatar = avatar.replace(/\.(png|jpe?g)$/i, '.webp');
+          }
+          if (!avatar) {
+            avatar = getTeamMemberAvatar(m.name);
+          }
+          return {
+            ...m,
+            avatar
+          };
+        })
+      }));
+      localStorage.setItem('genshin_saved_teams', JSON.stringify(migrated));
+      return migrated;
     } catch {
       return [];
     }
@@ -131,7 +151,10 @@ export function SavedTeamsView({ onGoToOptimizer }) {
               {/* Fila de Personajes con imágenes más grandes, sin bordes ni fondo */}
               <div className="team-members-grid">
                 {(t.team || []).map((m, mIdx) => {
-                  const charImg = m.avatar || getTeamMemberAvatar(m.name);
+                  const rawAvatar = m.avatar && typeof m.avatar === 'string'
+                    ? m.avatar.replace(/\.(png|jpe?g)$/i, '.webp')
+                    : null;
+                  const charImg = rawAvatar || getTeamMemberAvatar(m.name);
                   const shortName = getShortCharacterName(m.name);
                   const elemMeta = ELEMENTS[m.element?.toLowerCase()] || {};
                   const elemIcon = elemMeta.icon;

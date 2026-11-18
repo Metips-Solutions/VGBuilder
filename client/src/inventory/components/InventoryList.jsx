@@ -131,6 +131,9 @@ export function InventoryList({
             name: character.element,
             color: '#38bdf8'
           };
+          const sanitizeWebp = (url) => (typeof url === 'string' ? url.replace(/\.(png|jpe?g)$/i, '.webp') : url);
+          const namecardUrl = sanitizeWebp(character.namecard);
+          const thumbUrl = sanitizeWebp(character.icon || character.image);
 
           return (
             <div
@@ -138,7 +141,7 @@ export function InventoryList({
               className={`inventory-card ${pressingIndex === index ? 'is-pressing' : ''}`}
               style={{
                 '--card-elem-color': elemMeta.color,
-                backgroundImage: character.namecard ? `url("${character.namecard}")` : undefined
+                backgroundImage: namecardUrl ? `url("${namecardUrl}")` : undefined
               }}
               onPointerDown={(e) => handlePointerDown(e, index)}
               onPointerMove={handlePointerMove}
@@ -154,11 +157,17 @@ export function InventoryList({
                 style={{ borderColor: elemMeta.color }}
               >
                 <img
-                  src={character.icon || character.image}
+                  src={thumbUrl}
                   alt={`Retrato de ${character.name}`}
                   className="inventory-card-thumb"
                   loading="lazy"
                   decoding="async"
+                  onError={(e) => {
+                    const fallback = `/Images/Genshin Impact/Character Icons/${character.name} · Icon · Genshin Impact.webp`;
+                    if (e.target.src !== fallback) {
+                      e.target.src = fallback;
+                    }
+                  }}
                 />
               </div>
 

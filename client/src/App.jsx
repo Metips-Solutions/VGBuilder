@@ -1,7 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { CharacterModal, EnkaSyncModal, GenshinEngine } from './inventory';
+import { CHARACTERS } from './inventory/data/characters';
 import { HomePage, NotFoundPage } from './dashboard';
 import { RouterProvider, useRouter } from './shared/router';
+
+export function sanitizeToWebp(url) {
+  if (!url || typeof url !== 'string') return url;
+  return url.replace(/\.(png|jpe?g)$/i, '.webp');
+}
 
 function AppContent() {
   const { path, navigate } = useRouter();
@@ -21,11 +27,64 @@ function AppContent() {
   const [inventory, setInventory] = useState(() => {
     try {
       const saved = localStorage.getItem('genshin_inventory_team');
-      return saved ? JSON.parse(saved) : [];
+      if (!saved) return [];
+      const parsed = JSON.parse(saved);
+      // Auto-migración inmediata a .webp y sincronización con el catálogo canónico CHARACTERS
+      const migrated = parsed.map((item) => {
+        const canonical = CHARACTERS.find(
+          (c) => c.id === item.character?.id || c.name.toLowerCase() === item.character?.name?.toLowerCase()
+        );
+        if (canonical) {
+          return {
+            ...item,
+            character: { ...canonical }
+          };
+        }
+        return {
+          ...item,
+          character: {
+            ...item.character,
+            icon: sanitizeToWebp(item.character?.icon),
+            image: sanitizeToWebp(item.character?.image),
+            namecard: sanitizeToWebp(item.character?.namecard)
+          }
+        };
+      });
+      localStorage.setItem('genshin_inventory_team', JSON.stringify(migrated));
+      return migrated;
     } catch {
       return [];
     }
   });
+
+  // Migración global preventiva de equipos guardados en localStorage para garantizar stickers en .webp
+  useEffect(() => {
+    try {
+      const savedTeamsData = localStorage.getItem('genshin_saved_teams');
+      if (savedTeamsData) {
+        const list = JSON.parse(savedTeamsData);
+        let hasChanged = false;
+        const migratedList = list.map((t) => ({
+          ...t,
+          team: (t.team || []).map((m) => {
+            if (m.avatar && typeof m.avatar === 'string' && /\.(png|jpe?g)$/i.test(m.avatar)) {
+              hasChanged = true;
+              return {
+                ...m,
+                avatar: m.avatar.replace(/\.(png|jpe?g)$/i, '.webp')
+              };
+            }
+            return m;
+          })
+        }));
+        if (hasChanged) {
+          localStorage.setItem('genshin_saved_teams', JSON.stringify(migratedList));
+        }
+      }
+    } catch (e) {
+      console.warn('Error en migración de genshin_saved_teams:', e);
+    }
+  }, []);
 
   useEffect(() => {
     try {

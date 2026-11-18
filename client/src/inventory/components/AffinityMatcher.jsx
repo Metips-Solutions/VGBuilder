@@ -185,14 +185,26 @@ export function AffinityMatcher({
         return;
       }
 
-      // Guardar información limpia
+      // Guardar información limpia con avatares normalizados a .webp
       const teamToSave = {
         id: uniqueId,
         rank: teamObj.rank || index + 1,
         archetype: teamObj.archetype,
         totalScore: teamObj.totalScore,
         targetCharacterId: selectedCarryId,
-        team: teamObj.team,
+        team: (teamObj.team || []).map((m) => {
+          let avatar = m.avatar;
+          if (avatar && typeof avatar === 'string') {
+            avatar = avatar.replace(/\.(png|jpe?g)$/i, '.webp');
+          }
+          if (!avatar) {
+            avatar = getTeamMemberAvatar(m.name);
+          }
+          return {
+            ...m,
+            avatar
+          };
+        }),
         artifactAssignments: teamObj.artifactAssignments || []
       };
 
@@ -466,7 +478,7 @@ export function AffinityMatcher({
                         }
                       >
                         <img
-                          src={char.icon || char.image || getDefaultCharacterIcon(char.name)}
+                          src={(char.icon || char.image || getDefaultCharacterIcon(char.name)).replace(/\.(png|jpe?g)$/i, '.webp')}
                           alt={`Avatar de ${char.name}`}
                           className="char-avatar-img"
                           loading="lazy"
@@ -542,7 +554,7 @@ export function AffinityMatcher({
                         }
                       >
                         <img
-                          src={char.icon || char.image || getDefaultCharacterIcon(char.name)}
+                          src={(char.icon || char.image || getDefaultCharacterIcon(char.name)).replace(/\.(png|jpe?g)$/i, '.webp')}
                           alt={`Avatar de ${char.name}`}
                           className="char-avatar-img"
                           loading="lazy"
@@ -649,7 +661,10 @@ export function AffinityMatcher({
                     {/* Fila/Cuadrícula de Personajes */}
                     <div className="team-members-grid">
                       {(t.team || []).map((m, mIdx) => {
-                        const charImg = m.avatar || getTeamMemberAvatar(m.name);
+                        const rawAvatar = m.avatar && typeof m.avatar === 'string'
+                          ? m.avatar.replace(/\.(png|jpe?g)$/i, '.webp')
+                          : null;
+                        const charImg = rawAvatar || getTeamMemberAvatar(m.name);
                         const shortName = getShortCharacterName(m.name);
                         const elemMeta = ELEMENTS[m.element?.toLowerCase()] || {};
                         const elemIcon = elemMeta.icon;
