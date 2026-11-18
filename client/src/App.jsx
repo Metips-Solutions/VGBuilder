@@ -88,20 +88,11 @@ function AppContent() {
     <div className="app-container">
       {/* Barra de cabecera con navegación y acciones */}
       <header className="app-header">
-        <div className="header-left">
-          {/* Logo y Nombre del Proyecto clickeable para ir a la raíz */}
-          <div
-            className="brand-wrapper"
-            onClick={() => navigate('/')}
-            role="button"
-            tabIndex={0}
-            title="Ir a la pantalla principal de VGBuilder"
-          >
-            <div className="brand-logo">✦</div>
-            <div className="brand-title">
-              VGBuilder
-              <span className="brand-subtitle">{subtitleText}</span>
-            </div>
+        <div className="brand-wrapper">
+          <div className="brand-logo">✦</div>
+          <div className="brand-title">
+            VGBuilder
+            <span className="brand-subtitle">Genshin Impact · Inventario</span>
           </div>
 
           {/* Navegación de Motores: Botón Genshin Impact y Botón "Más" (no-op) */}
