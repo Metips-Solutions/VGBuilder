@@ -67,20 +67,25 @@ Se eliminó el banner superior estático redundante para maximizar el espacio ve
 
 ### 2.3. Pestaña "Optimizador de Afinidad" (`AffinityMatcher.jsx`)
 
-#### A. Drawer Lateral Deslizante para Roster y Filtros
-- Se transformó la columna lateral fija en un **Menú Lateral Desplegable (Slide-over Drawer)** accesible mediante un botón superior visible (`.btn-drawer-trigger`):
-  `[ 👥 Seleccionar Carry & Personajes (Filtros) ▾ ]`.
-- **Eliminación del Scroll Excesivo**: El área de equipos sugeridos ahora ocupa el ancho completo de la vista sin verse empujada o alargada por una columna lateral kilométrica.
-- **Scroll Interno Aislado**: El interior del Drawer cuenta con su propio scroll independiente (`overflow-y: auto; max-height: calc(100vh - 80px)`), permitiendo navegar por decenas de personajes sin alterar la posición del resto de la página.
-- **Cierre Suave Automático**: Al hacer clic en cualquier Main DPS para seleccionarlo como Carry, el Drawer se cierra suavemente para revelar de inmediato las composiciones calculadas.
+#### A. Arquitectura Híbrida: Columna Lateral en PC y Drawer Deslizante Exclusivo en Móvil
+- **En PC / Escritorio (Pantallas > 820px)**:
+  - Se mantiene la **columna lateral estática izquierda** (`.affinity-panel-inventory` de ~300px) integrada en una cuadrícula CSS (`grid-template-columns: 300px 1fr`).
+  - No se utiliza menú desplegable en PC: todos los personajes del inventario están permanentemente visibles y accesibles para agilizar la selección directa del Carry.
+  - La barra superior de filtros por elemento (`.affinity-filter-bar`) se ubica arriba de ambos paneles, mostrando los filtros y la etiqueta informativa del Carry activo.
+  - El botón de apertura del drawer (`.affinity-mobile-control-bar`) permanece estrictamente oculto (`display: none`).
+- **En Móvil / Teléfonos (Pantallas ≤ 820px)**:
+  - El panel de inventario se transforma en un **Menú Desplegable Lateral (Slide-over Drawer)** accesible mediante un botón superior visible (`.btn-drawer-trigger`): `[ 👥 Seleccionar Carry & Personajes (Filtros) ▾ ]`.
+  - **Eliminación del Scroll Excesivo en Móvil**: Al estar en un drawer deslizante, el usuario en teléfono no tiene que hacer scroll infinito pasando más de 20 personajes para ver los resultados de los equipos; estos ocupan inmediatamente la pantalla completa.
+  - **Scroll Interno Aislado**: El interior del Drawer cuenta con su propio scroll independiente (`overflow-y: auto`), permitiendo navegar por decenas de personajes sin alterar la posición del resto de la página.
+  - **Cierre Suave Automático**: Al hacer clic en cualquier Main DPS para seleccionarlo como Carry, el Drawer se cierra suavemente para revelar de inmediato las composiciones calculadas.
 
-#### B. Filtro Compacto por Elemento dentro del Drawer
-- Barra superior de botones reducida en tamaño (altura 26px, iconos de 14px, tipografía 0.72rem), con badges de color elemental para Todos, Pyro, Hydro, Anemo, Electro, Dendro, Cryo y Geo.
+#### B. Filtro Compacto por Elemento
+- Barra superior de botones reducida en tamaño (altura 26px, iconos de 14px, tipografía 0.72rem), con badges de color elemental para Todos, Pyro, Hydro, Anemo, Electro, Dendro, Cryo y Geo (renderizada arriba en PC, y dentro del drawer en móvil).
 
 #### C. Selección de Carry Integrada en la Tarjeta (Sin Botones Saturados)
 - Se **eliminó el botón explícito "Seleccionar Carry"** y se removió la etiqueta redundante `🎯 CARRY ACTIVO`.
 - **Interacción Fluida**:
-  - Al hacer **clic en cualquier parte de la tarjeta del Main DPS** (fuera del icono de avatar), se ejecuta automáticamente la selección del Carry, se cierra el Drawer y se dispara la búsqueda de equipos por afinidad (`POST /affinity/match`).
+  - Al hacer **clic en cualquier parte de la tarjeta del Main DPS** (fuera del icono de avatar), se ejecuta automáticamente la selección del Carry, se cierra el Drawer (en móvil) y se dispara la búsqueda de equipos por afinidad (`POST /affinity/match`).
   - La tarjeta activa se resalta con un borde rojizo iluminado distintivo (`row-selected-carry`).
   - **Función Desactivada en Soportes**: En las tarjetas de Sub-DPS, Soportes y Curadores esta función de clic está estrictamente desactivada para preservar su rol táctico de acompañamiento.
 
