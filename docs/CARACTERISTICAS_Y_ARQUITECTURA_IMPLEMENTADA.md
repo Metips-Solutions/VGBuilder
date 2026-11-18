@@ -12,7 +12,8 @@ La interfaz está construida con un sistema de diseño modular en React y CSS mo
 El layout principal se compone de:
 - **Cabecera Global Compacta (`.app-header`)**:
   - **Identidad de Marca Oficial**: Se sustituyó el isotipo genérico anterior por el nuevo logotipo oficial de la plataforma (`/LogoVGBuilder.png`), eliminando toda referencia previa a "Astra" para consolidar la marca exclusivamente como **VGBuilder**.
-  - **Header Minimalista y Reducido**: Se removieron los botones de agregar personajes y sincronización de Enka de la cabecera, reduciendo el relleno vertical (`padding: 12px 28px`) para aprovechar al máximo el espacio útil de la pantalla.
+  - **Header Minimalista y Reducido**: Se removieron los botones de agregar personajes y sincronización de Enka de la cabecera, reduciendo el relleno vertical (`padding: 10px 16px`) para aprovechar al máximo el espacio útil de la pantalla.
+  - **Responsividad Móvil Fija en 1 Fila**: Se corrigieron las reglas de breakpoint móvil para garantizar que el logotipo a la izquierda y el botón de tema a la derecha permanezcan en una sola fila compacta (`min-height: 50px`), evitando el apilamiento vertical en 2 filas y la sensación de solapamiento.
   - **Botón de Modo Oscuro / Claro**: En lugar de un control deslizante (switch track), se implementó un **botón simple y circular (`.theme-simple-btn`)** que alterna reactivamente su emoji según el tema activo:
     - Modo Oscuro activo: `🌙`
     - Modo Claro activo: `☀️`
@@ -66,17 +67,20 @@ Se eliminó el banner superior estático redundante para maximizar el espacio ve
 
 ### 2.3. Pestaña "Optimizador de Afinidad" (`AffinityMatcher.jsx`)
 
-#### A. Disposición en 2 Columnas Asimétricas
-- **Columna Izquierda Angosta (300px, ~60% del ancho original)**: Dedicada a la selección del Carry y exploración rápida de acompañantes.
-- **Columna Derecha Amplia (~75% del espacio en pantalla)**: Brinda el espacio necesario para que las tarjetas de los equipos sugeridos sean grandes, espaciosas y con un impacto visual premium.
+#### A. Drawer Lateral Deslizante para Roster y Filtros
+- Se transformó la columna lateral fija en un **Menú Lateral Desplegable (Slide-over Drawer)** accesible mediante un botón superior visible (`.btn-drawer-trigger`):
+  `[ 👥 Seleccionar Carry & Personajes (Filtros) ▾ ]`.
+- **Eliminación del Scroll Excesivo**: El área de equipos sugeridos ahora ocupa el ancho completo de la vista sin verse empujada o alargada por una columna lateral kilométrica.
+- **Scroll Interno Aislado**: El interior del Drawer cuenta con su propio scroll independiente (`overflow-y: auto; max-height: calc(100vh - 80px)`), permitiendo navegar por decenas de personajes sin alterar la posición del resto de la página.
+- **Cierre Suave Automático**: Al hacer clic en cualquier Main DPS para seleccionarlo como Carry, el Drawer se cierra suavemente para revelar de inmediato las composiciones calculadas.
 
-#### B. Filtro Compacto por Elemento
+#### B. Filtro Compacto por Elemento dentro del Drawer
 - Barra superior de botones reducida en tamaño (altura 26px, iconos de 14px, tipografía 0.72rem), con badges de color elemental para Todos, Pyro, Hydro, Anemo, Electro, Dendro, Cryo y Geo.
 
 #### C. Selección de Carry Integrada en la Tarjeta (Sin Botones Saturados)
 - Se **eliminó el botón explícito "Seleccionar Carry"** y se removió la etiqueta redundante `🎯 CARRY ACTIVO`.
 - **Interacción Fluida**:
-  - Al hacer **clic en cualquier parte de la tarjeta del Main DPS** (fuera del icono de avatar), se ejecuta automáticamente la selección del Carry y la búsqueda de equipos por afinidad (`POST /affinity/match`).
+  - Al hacer **clic en cualquier parte de la tarjeta del Main DPS** (fuera del icono de avatar), se ejecuta automáticamente la selección del Carry, se cierra el Drawer y se dispara la búsqueda de equipos por afinidad (`POST /affinity/match`).
   - La tarjeta activa se resalta con un borde rojizo iluminado distintivo (`row-selected-carry`).
   - **Función Desactivada en Soportes**: En las tarjetas de Sub-DPS, Soportes y Curadores esta función de clic está estrictamente desactivada para preservar su rol táctico de acompañamiento.
 
@@ -89,25 +93,21 @@ Se eliminó el banner superior estático redundante para maximizar el espacio ve
 - Inmediatamente arriba de la lista de Sub-DPS, Soportes y Curadores, se ubica la leyenda informativa:
   > *⚙️ Trabajando en poder usar personajes que no sean Main Dps*
 
-### 2.4. Tarjetas de Equipos Sugeridos y Guardados: Diseño sin Saturación y Stickers Amigables
-Tanto en la lista de resultados del Optimizador como en la vista de Equipos Guardados ([SavedTeamsView.jsx](file:///home/tyreans/metips/vgbuilder/client/src/inventory/components/SavedTeamsView.jsx)), las tarjetas muestran **únicamente lo esencial**:
+### 2.4. Tarjetas de Equipos: Cuadrícula en Escritorio y Vista Vertical GameWith en Móvil
+Tanto en la lista de resultados del Optimizador como en la vista de Equipos Guardados ([SavedTeamsView.jsx](file:///home/tyreans/metips/vgbuilder/client/src/inventory/components/SavedTeamsView.jsx)), las tarjetas presentan un comportamiento adaptativo según el dispositivo:
 
-1. **Nombre del Arquetipo / Equipo**: Título tipográfico limpio y destacado (ej. *Vaporizados Clásico*, *Mono Geo Hiperdefensa*, *Tighnari Spread*).
-2. **Botón de Guardado / Eliminación**: Botón `💾 Guardar Equipo` (con cambio a `✓ Guardado` tras pulsar) o botón `🗑️ Eliminar` en la vista de guardados.
-3. **Cuadrícula de los 4 Personajes (`team-members-grid`) con Stickers Dinámicos**:
-   - **Retratos de Stickers Amigables (`client/public/Images/stckersGI/`)**:
-     - 50 personajes poseen **2 stickers amigables** que se renderizan de forma **aleatoria (50% / 50%)**.
-     - Noelle cuenta con 1 sticker amigable (`noelle_shy.png`).
-     - Aloy (quien no posee stickers en la carpeta) utiliza el icono oficial actual como fallback.
-     - Ajuste `object-fit: contain` con padding suave y zoom en hover (`scale(1.08)`).
-   - **Nombre**: En tipografía negrita destacada.
-   - **Rol Táctico**: Main DPS, Sub-DPS, Support o Healer.
-   - **Tag de Elemento**: Badge distintivo coloreado según el elemento Genshin.
-   - **Sin Constelación**: Se omitieron las etiquetas `C0`, `C1` para un diseño limpio enfocado en la alineación del equipo.
-4. **Set de Artefactos Sugerido**:
-   - Al pie de cada integrante se muestra una píldora con el nombre del set de soporte óptimo asignado por el motor (ej. *Ritual Antiguo de la Nobleza*, *Sombra Verde Esmeralda*, *Set de Daño Personal*).
-   - Si el personaje no requiere un set de soporte específico (como los Carries puros), se despliega con elegancia la leyenda:
-     > `"Sin set sugerido"`
+1. **En Pantallas de Escritorio (Desktop)**:
+   - Se mantiene la cuadrícula horizontal amplia de 4 columnas (`grid-template-columns: repeat(4, 1fr)`).
+   - Stickers transparentes de gran tamaño (**104px × 104px**) flotantes sin cajas ni bordes, con sombra sutil (`drop-shadow`) y zoom al pasar el cursor.
+   - Debajo de la imagen: Línea única unificada `[Icono del elemento] • [Nombre corto] • [Rol]` y píldora de set de artefactos.
+2. **En Pantallas Móviles / Responsivas (Estilo GameWith — `gamewith.net`)**:
+   - Los 4 integrantes se generan en **filas verticales apiladas de arriba hacia abajo**, eliminando por completo la compresión horizontal en teléfonos.
+   - **Icono compacto a la izquierda**: Avatares de **56px × 56px**, nítidos y proporcionados.
+   - **Datos a la derecha**:
+     - Fila superior: `[Icono Elemento TCG] • [Nombre corto] • [Rol Táctico]`.
+     - Fila inferior: Píldora de set de artefactos sugerido (`✦ Ritual Antiguo de la Nobleza` o `"Sin set sugerido"`).
+3. **Nombre del Arquetipo / Equipo**: Título tipográfico limpio y destacado (ej. *Vaporizados Clásico*, *Mono Geo Hiperdefensa*, *Tighnari Spread*).
+4. **Botón de Guardado / Eliminación**: Botón `💾 Guardar Equipo` (con cambio a `✓ Guardado` tras pulsar) o botón `🗑️ Eliminar` en la vista de guardados.
 
 ---
 

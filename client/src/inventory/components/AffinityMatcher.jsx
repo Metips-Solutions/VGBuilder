@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { ELEMENTS, CHARACTERS } from '../data/characters';
 import { findAffinityCharacter, isMainDps } from '../data/affinityCharacters';
 import {
@@ -18,6 +18,20 @@ export function AffinityMatcher({
 
   // Personaje principal (Carry) seleccionado — Ninguno seleccionado por defecto
   const [selectedCarryId, setSelectedCarryId] = useState(null);
+
+  // Estado del menú desplegable lateral (Drawer)
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
+  // Manejo de la tecla Escape para cerrar el drawer
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && isDrawerOpen) {
+        setIsDrawerOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isDrawerOpen]);
 
   // Estado de la llamada HTTP
   const [isLoading, setIsLoading] = useState(false);
@@ -143,13 +157,14 @@ export function AffinityMatcher({
     }
   };
 
-  // Al presionar "Seleccionar Carry": asigna y automáticamente ejecuta la búsqueda (más fluido)
+  // Al presionar "Seleccionar Carry": asigna, cierra el drawer y automáticamente ejecuta la búsqueda (más fluido)
   const handleSelectCarry = (charId) => {
     if (deactivatedIds.has(charId) && onToggleDeactivate) {
       onToggleDeactivate(charId);
     }
     setSelectedCarryId(charId);
     setErrorMsg(null);
+    setIsDrawerOpen(false); // Cierre suave del drawer para ver resultados de inmediato
     // Búsqueda inmediata fluida
     handleCalculateTeams(charId);
   };
@@ -251,52 +266,101 @@ export function AffinityMatcher({
       {/* Toast flotante de confirmación de guardado */}
       {saveToast && <div className="affinity-toast-notification">{saveToast}</div>}
 
-      {/* BARRA SUPERIOR: Filtro compacto por Elementos */}
-      <div className="affinity-filter-bar">
-        <div className="affinity-filter-left">
-          <span className="affinity-filter-label">Elemento:</span>
-          <div className="element-filter-pills-compact">
-            {elementKeys.map((key) => {
-              const isAll = key === 'ALL';
-              const meta = !isAll ? ELEMENTS[key] : null;
-              const label = isAll ? 'Todos' : meta?.name || key;
-              const isActive = selectedElement.toLowerCase() === key.toLowerCase();
-
-              return (
-                <button
-                  key={key}
-                  type="button"
-                  className={`filter-pill-compact ${isActive ? 'active' : ''}`}
-                  style={{
-                    '--elem-color': meta?.color || '#38bdf8'
-                  }}
-                  onClick={() => setSelectedElement(key)}
-                  title={`Filtrar por ${label}`}
-                >
-                  {!isAll && meta?.icon && (
-                    <img src={meta.icon} alt="" className="filter-pill-icon-compact" />
-                  )}
-                  <span>{label}</span>
-                </button>
-              );
-            })}
+      {/* BARRA SUPERIOR CON BOTÓN DESPLEGABLE DE PERSONAJES / CARRY */}
+      <div className="affinity-top-control-bar">
+        <button
+          type="button"
+          className="btn-drawer-trigger"
+          onClick={() => setIsDrawerOpen(true)}
+          title="Abrir catálogo de personajes para selección de Carry y filtros"
+          aria-expanded={isDrawerOpen}
+        >
+          <div className="drawer-trigger-left">
+            <span className="drawer-trigger-icon">👥</span>
+            <span className="drawer-trigger-title">
+              {selectedCarryItem ? (
+                <>
+                  Carry Activo: <strong>{selectedCarryItem.character.name}</strong> · Cambiar personaje
+                </>
+              ) : (
+                <>Seleccionar Carry & Personajes (Filtros)</>
+              )}
+            </span>
           </div>
-        </div>
-
-        {selectedCarryItem && (
-          <div className="affinity-current-carry-tag">
-            Carry: <strong>{selectedCarryItem.character.name}</strong>
+          <div className="drawer-trigger-right">
+            <span className="drawer-trigger-pill">
+              {mainDpsCharacters.length} Carries · {supportCharacters.length} Soportes
+            </span>
+            <span className="drawer-trigger-arrow">▾</span>
           </div>
-        )}
+        </button>
       </div>
 
-      {/* DISPOSICIÓN PRINCIPAL EN 2 PANELES: Columna izquierda angosta (~300px) y equipos amplios */}
-      <div className="affinity-layout">
-        {/* PANEL IZQUIERDO: Columna de personajes (Angosta) */}
-        <div className="affinity-panel affinity-panel-inventory">
+      {/* DRAWER LATERAL DESLIZANTE PARA ROSTER / SELECCIÓN DE CARRY */}
+      <div
+        className={`affinity-drawer-overlay ${isDrawerOpen ? 'open' : ''}`}
+        onClick={() => setIsDrawerOpen(false)}
+        aria-hidden={!isDrawerOpen}
+      />
+
+      <aside
+        className={`affinity-drawer ${isDrawerOpen ? 'open' : ''}`}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Catálogo de personajes y filtros"
+      >
+        <div className="affinity-drawer-header">
+          <div className="affinity-drawer-title-group">
+            <h3 className="affinity-drawer-title">Catálogo de Personajes</h3>
+            <span className="affinity-drawer-subtitle">
+              Elige tu Carry y gestiona exclusiones (clic en icono)
+            </span>
+          </div>
+          <button
+            type="button"
+            className="affinity-drawer-close-btn"
+            onClick={() => setIsDrawerOpen(false)}
+            aria-label="Cerrar catálogo"
+          >
+            ✕
+          </button>
+        </div>
+
+        <div className="affinity-drawer-body">
+          {/* Filtro compacto por Elementos dentro del drawer */}
+          <div className="drawer-filter-group">
+            <span className="affinity-filter-label">Filtrar por elemento:</span>
+            <div className="element-filter-pills-compact">
+              {elementKeys.map((key) => {
+                const isAll = key === 'ALL';
+                const meta = !isAll ? ELEMENTS[key] : null;
+                const label = isAll ? 'Todos' : meta?.name || key;
+                const isActive = selectedElement.toLowerCase() === key.toLowerCase();
+
+                return (
+                  <button
+                    key={key}
+                    type="button"
+                    className={`filter-pill-compact ${isActive ? 'active' : ''}`}
+                    style={{
+                      '--elem-color': meta?.color || '#38bdf8'
+                    }}
+                    onClick={() => setSelectedElement(key)}
+                    title={`Filtrar por ${label}`}
+                  >
+                    {!isAll && meta?.icon && (
+                      <img src={meta.icon} alt="" className="filter-pill-icon-compact" />
+                    )}
+                    <span>{label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
           {/* SECCIÓN 1: Main DPS */}
           <div className="section-label section-main-dps">
-            <span>⚔️ MAIN DPS</span>
+            <span>⚔️ MAIN DPS (SELECCIÓN DE CARRY)</span>
             <span className="section-hint">Click para calcular</span>
           </div>
 
@@ -326,7 +390,7 @@ export function AffinityMatcher({
                     title="Haz clic para seleccionar como Carry y calcular composiciones"
                   >
                     <div className="char-info-col">
-                      {/* Clic en icono: monocromático y desactivado (con stopPropagation para no seleccionar carry) */}
+                      {/* Clic en icono: monocromático y desactivado */}
                       <div
                         className={`char-avatar-box ${isDeactivated ? 'is-monochrome' : ''}`}
                         style={{ borderColor: isDeactivated ? '#4b5563' : elemMeta.color }}
@@ -343,7 +407,7 @@ export function AffinityMatcher({
                         }
                       >
                         <img
-                          src={char.icon || char.image || getMemberImage(char.name)}
+                          src={char.icon || char.image || getDefaultCharacterIcon(char.name)}
                           alt={char.name}
                           className="char-avatar-img"
                         />
@@ -417,7 +481,7 @@ export function AffinityMatcher({
                         }
                       >
                         <img
-                          src={char.icon || char.image || getMemberImage(char.name)}
+                          src={char.icon || char.image || getDefaultCharacterIcon(char.name)}
                           alt={char.name}
                           className="char-avatar-img"
                         />
@@ -450,106 +514,116 @@ export function AffinityMatcher({
             </div>
           )}
         </div>
+      </aside>
 
-        {/* PANEL DERECHO: Resultados de Equipos (Más Grandes y Vistosos, Sin Saturación) */}
-        <div className="affinity-panel affinity-panel-results">
-          {/* Estado de carga */}
-          {isLoading && (
-            <div className="affinity-loading-box">
-              <div className="loading-spinner" />
-              <p>Calculando composiciones óptimas de afinidad...</p>
+      {/* ÁREA DE RESULTADOS: Ancho completo sin scroll innecesario */}
+      <div className="affinity-panel affinity-panel-results">
+        {/* Estado de carga */}
+        {isLoading && (
+          <div className="affinity-loading-box">
+            <div className="loading-spinner" />
+            <p>Calculando composiciones óptimas de afinidad...</p>
+          </div>
+        )}
+
+        {/* Mensaje de aviso/error */}
+        {errorMsg && !isLoading && (
+          <div className="affinity-error-box">
+            <span className="error-icon">⚠️</span>
+            <div>
+              <strong>Aviso:</strong> {errorMsg}
             </div>
-          )}
+          </div>
+        )}
 
-          {/* Mensaje de aviso/error */}
-          {errorMsg && !isLoading && (
-            <div className="affinity-error-box">
-              <span className="error-icon">⚠️</span>
-              <div>
-                <strong>Aviso:</strong> {errorMsg}
-              </div>
-            </div>
-          )}
+        {/* Si aún no se selecciona ningún Carry */}
+        {!teams && !isLoading && !errorMsg && (
+          <div className="affinity-placeholder-box">
+            <div className="placeholder-icon">🎯</div>
+            <h3 className="placeholder-title">
+              {selectedCarryItem
+                ? `Carry: ${selectedCarryItem.character.name}`
+                : 'Selecciona un Personaje Principal'}
+            </h3>
+            <p className="placeholder-desc">
+              Haz clic en el botón superior para desplegar el catálogo de personajes a la izquierda, elegir a tu Carry y generar automáticamente los mejores equipos.
+            </p>
+            <button
+              type="button"
+              className="btn-pill btn-pill-primary"
+              onClick={() => setIsDrawerOpen(true)}
+            >
+              👥 Abrir Catálogo & Elegir Carry
+            </button>
+          </div>
+        )}
 
-          {/* Si aún no se selecciona ningún Carry */}
-          {!teams && !isLoading && !errorMsg && (
-            <div className="affinity-placeholder-box">
-              <div className="placeholder-icon">🎯</div>
-              <h3 className="placeholder-title">
-                {selectedCarryItem
-                  ? `Carry: ${selectedCarryItem.character.name}`
-                  : 'Selecciona un Personaje Principal'}
-              </h3>
-              <p className="placeholder-desc">
-                Haz clic en cualquiera de tus personajes Main DPS a la izquierda para generar automáticamente los mejores equipos.
-              </p>
-            </div>
-          )}
+        {/* RENDERIZADO VISUAL DE LOS EQUIPOS SUGERIDOS */}
+        {teams && !isLoading && (
+          <div className="teams-container">
+            {teams.map((t, index) => {
+              const memberNames = (t.team || []).map((m) => m.name).sort().join('_');
+              const uniqueId = `team_${t.archetype || 'custom'}_${memberNames}`;
+              const isSaved = savedTeamIds.has(uniqueId);
 
-          {/* RENDERIZADO VISUAL LIMPIO DE LOS EQUIPOS SUGERIDOS */}
-          {teams && !isLoading && (
-            <div className="teams-container">
-              {teams.map((t, index) => {
-                const memberNames = (t.team || []).map((m) => m.name).sort().join('_');
-                const uniqueId = `team_${t.archetype || 'custom'}_${memberNames}`;
-                const isSaved = savedTeamIds.has(uniqueId);
+              return (
+                <div key={index} className="team-card team-card-clean">
+                  {/* Encabezado: Nombre del equipo y botón de guardado */}
+                  <div className="team-header">
+                    <span className="team-archetype-title">
+                      {t.archetype || 'Equipo Sugerido'}
+                    </span>
 
-                return (
-                  <div key={index} className="team-card team-card-clean">
-                    {/* Solo Nombre del equipo y botón de guardado */}
-                    <div className="team-header">
-                      <span className="team-archetype-title">
-                        {t.archetype || 'Equipo Sugerido'}
-                      </span>
+                    <button
+                      type="button"
+                      className={`btn-save-team ${isSaved ? 'btn-save-team-saved' : ''}`}
+                      onClick={() => handleSaveTeam(t, index)}
+                      title="Guardar este equipo en el almacenamiento local"
+                    >
+                      {isSaved ? '✓ Guardado' : '💾 Guardar Equipo'}
+                    </button>
+                  </div>
 
-                      <button
-                        type="button"
-                        className={`btn-save-team ${isSaved ? 'btn-save-team-saved' : ''}`}
-                        onClick={() => handleSaveTeam(t, index)}
-                        title="Guardar este equipo en el almacenamiento local"
-                      >
-                        {isSaved ? '✓ Guardado' : '💾 Guardar Equipo'}
-                      </button>
-                    </div>
+                  {/* Fila/Cuadrícula de Personajes */}
+                  <div className="team-members-grid">
+                    {(t.team || []).map((m, mIdx) => {
+                      const charImg = m.avatar || getTeamMemberAvatar(m.name);
+                      const shortName = getShortCharacterName(m.name);
+                      const elemMeta = ELEMENTS[m.element?.toLowerCase()] || {};
+                      const elemIcon = elemMeta.icon;
 
-                    {/* Fila de Personajes con imágenes más grandes, sin bordes ni fondo */}
-                    <div className="team-members-grid">
-                      {(t.team || []).map((m, mIdx) => {
-                        const charImg = m.avatar || getTeamMemberAvatar(m.name);
-                        const shortName = getShortCharacterName(m.name);
-                        const elemMeta = ELEMENTS[m.element?.toLowerCase()] || {};
-                        const elemIcon = elemMeta.icon;
+                      const artifactBind = (t.artifactAssignments || []).find(
+                        (a) => a.characterName?.toLowerCase() === m.name?.toLowerCase() || a.characterId === m.id
+                      );
+                      const artifactSetName = artifactBind?.artifactSetName || 'Sin set sugerido';
+                      const isNone = !artifactBind?.artifactSetName || artifactSetName === 'Sin set sugerido';
 
-                        const artifactBind = (t.artifactAssignments || []).find(
-                          (a) => a.characterName?.toLowerCase() === m.name?.toLowerCase() || a.characterId === m.id
-                        );
-                        const artifactSetName = artifactBind?.artifactSetName || 'Sin set sugerido';
-                        const isNone = !artifactBind?.artifactSetName || artifactSetName === 'Sin set sugerido';
+                      return (
+                        <div key={`${m.name}-${mIdx}`} className="team-member-showcase">
+                          <div className="member-showcase-avatar-wrap">
+                            {charImg ? (
+                              <img
+                                src={charImg}
+                                alt={m.name}
+                                className="member-showcase-img"
+                                onError={(e) => {
+                                  const fallback = getDefaultCharacterIcon(m.name);
+                                  if (fallback && e.target.src !== fallback) {
+                                    e.target.src = fallback;
+                                  } else {
+                                    e.target.style.display = 'none';
+                                  }
+                                }}
+                              />
+                            ) : (
+                              <div className="member-showcase-placeholder">
+                                {m.name.charAt(0)}
+                              </div>
+                            )}
+                          </div>
 
-                        return (
-                          <div key={`${m.name}-${mIdx}`} className="team-member-showcase">
-                            <div className="member-showcase-avatar-wrap">
-                              {charImg ? (
-                                <img
-                                  src={charImg}
-                                  alt={m.name}
-                                  className="member-showcase-img"
-                                  onError={(e) => {
-                                    const fallback = getDefaultCharacterIcon(m.name);
-                                    if (fallback && e.target.src !== fallback) {
-                                      e.target.src = fallback;
-                                    } else {
-                                      e.target.style.display = 'none';
-                                    }
-                                  }}
-                                />
-                              ) : (
-                                <div className="member-showcase-placeholder">
-                                  {m.name.charAt(0)}
-                                </div>
-                              )}
-                            </div>
-
+                          {/* Contenedor de datos a la derecha en móvil / centrado en escritorio */}
+                          <div className="member-showcase-details-col">
                             {/* [Icono del elemento] • [Nombre corto del personaje] • [Rol] */}
                             <div className="member-showcase-meta-line">
                               {elemIcon && (
@@ -575,15 +649,15 @@ export function AffinityMatcher({
                               <span className="artifact-name-text">{artifactSetName}</span>
                             </div>
                           </div>
-                        );
-                      })}
-                    </div>
+                        </div>
+                      );
+                    })}
                   </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
     </div>
   );

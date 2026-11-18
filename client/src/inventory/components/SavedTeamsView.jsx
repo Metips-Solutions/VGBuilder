@@ -166,29 +166,32 @@ export function SavedTeamsView({ onGoToOptimizer }) {
                         )}
                       </div>
 
-                      {/* [Icono del elemento] • [Nombre corto del personaje] • [Rol] */}
-                      <div className="member-showcase-meta-line">
-                        {elemIcon && (
-                          <img
-                            src={elemIcon}
-                            alt={m.element}
-                            className="member-elem-icon-small"
-                            title={`Elemento: ${m.element}`}
-                          />
-                        )}
-                        <span className="member-meta-separator">•</span>
-                        <span className="member-short-name">{shortName}</span>
-                        <span className="member-meta-separator">•</span>
-                        <span className="member-short-role">{m.role || 'Miembro'}</span>
-                      </div>
+                      {/* Contenedor de datos a la derecha en móvil / centrado en escritorio */}
+                      <div className="member-showcase-details-col">
+                        {/* [Icono del elemento] • [Nombre corto del personaje] • [Rol] */}
+                        <div className="member-showcase-meta-line">
+                          {elemIcon && (
+                            <img
+                              src={elemIcon}
+                              alt={m.element}
+                              className="member-elem-icon-small"
+                              title={`Elemento: ${m.element}`}
+                            />
+                          )}
+                          <span className="member-meta-separator">•</span>
+                          <span className="member-short-name">{shortName}</span>
+                          <span className="member-meta-separator">•</span>
+                          <span className="member-short-role">{m.role || 'Miembro'}</span>
+                        </div>
 
-                      {/* Set de artefactos sugerido */}
-                      <div
-                        className={`member-showcase-artifact ${isNone ? 'is-none' : ''}`}
-                        title={`Set sugerido: ${artifactSetName}`}
-                      >
-                        <span className="artifact-icon-sparkle">✦</span>
-                        <span className="artifact-name-text">{artifactSetName}</span>
+                        {/* Set de artefactos sugerido */}
+                        <div
+                          className={`member-showcase-artifact ${isNone ? 'is-none' : ''}`}
+                          title={`Set sugerido: ${artifactSetName}`}
+                        >
+                          <span className="artifact-icon-sparkle">✦</span>
+                          <span className="artifact-name-text">{artifactSetName}</span>
+                        </div>
                       </div>
                     </div>
                   );
