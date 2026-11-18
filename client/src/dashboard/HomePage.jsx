@@ -87,10 +87,10 @@ export function HomePage() {
     <div className="home-container">
       {/* Hero Banner Principal con nombre de proyecto, imágenes de juegos y resumen */}
       <section className="home-hero">
-        <div className="home-hero-badge">
+        {/* <div className="home-hero-badge">
           <span className="hero-badge-spark">✦</span>
           <span>Plataforma de Optimización Gacha Multi-Juego</span>
-        </div>
+        </div> */}
 
         <h1 className="home-hero-title">
           VGBuilder
@@ -133,7 +133,7 @@ export function HomePage() {
           ))}
         </div>
 
-        <div className="home-hero-actions">
+        {/* <div className="home-hero-actions">
           <button
             type="button"
             className="btn-pill btn-pill-primary home-btn-cta"
@@ -147,10 +147,10 @@ export function HomePage() {
           >
             Ver Catálogo Completo ↓
           </a>
-        </div>
+        </div> */}
 
         {/* Pilares clave del proyecto en formato chips */}
-        <div className="home-hero-chips">
+        {/* <div className="home-hero-chips">
           <div className="hero-chip">
             <span className="hero-chip-icon">🎮</span>
             <span>Arquitectura Multi-Motor</span>
@@ -167,7 +167,7 @@ export function HomePage() {
             <span className="hero-chip-icon">🚀</span>
             <span>React 19 + Bun</span>
           </div>
-        </div>
+        </div> */}
       </section>
 
       {/* Directorio de Juegos: Banners, Logos y tarjetas de motores */}

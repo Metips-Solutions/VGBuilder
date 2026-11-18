@@ -2,43 +2,13 @@ import React from 'react';
 
 export function GenshinLogo({ size = 48, className = '' }) {
   return (
-    <svg
+    <img
+      src="/Images/Genshin Impact/gi_logo.webp"
+      alt="Logo Genshin Impact"
       width={size}
       height={size}
-      viewBox="0 0 64 64"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
       className={className}
-      aria-label="Logo Genshin Impact"
-    >
-      <defs>
-        <linearGradient id="genshinGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#38bdf8" />
-          <stop offset="50%" stopColor="#818cf8" />
-          <stop offset="100%" stopColor="#fbbf24" />
-        </linearGradient>
-        <radialGradient id="genshinGlow" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#ffffff" stopOpacity="0.9" />
-          <stop offset="40%" stopColor="#38bdf8" stopOpacity="0.4" />
-          <stop offset="100%" stopColor="#38bdf8" stopOpacity="0" />
-        </radialGradient>
-      </defs>
-      <circle cx="32" cy="32" r="30" fill="url(#genshinGlow)" />
-      {/* Primogem 4-point star outer */}
-      <path
-        d="M32 4 L38 24 L58 32 L38 40 L32 60 L26 40 L6 32 L26 24 Z"
-        fill="url(#genshinGrad)"
-        stroke="#ffffff"
-        strokeWidth="1.5"
-      />
-      {/* Inner facet diamond */}
-      <path
-        d="M32 14 L36 28 L50 32 L36 36 L32 50 L28 36 L14 32 L28 28 Z"
-        fill="#ffffff"
-        fillOpacity="0.45"
-      />
-      <circle cx="32" cy="32" r="3.5" fill="#ffffff" />
-    </svg>
+    />
   );
 }
 
