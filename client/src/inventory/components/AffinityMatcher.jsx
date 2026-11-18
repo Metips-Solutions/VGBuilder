@@ -1,7 +1,11 @@
 import React, { useState, useMemo } from 'react';
 import { ELEMENTS, CHARACTERS } from '../data/characters';
 import { findAffinityCharacter, isMainDps } from '../data/affinityCharacters';
-import { getTeamMemberAvatar, getDefaultCharacterIcon } from '../data/characterStickers';
+import {
+  getTeamMemberAvatar,
+  getDefaultCharacterIcon,
+  getShortCharacterName
+} from '../data/characterStickers';
 
 export function AffinityMatcher({
   inventory = [],
@@ -508,10 +512,14 @@ export function AffinityMatcher({
                       </button>
                     </div>
 
-                    {/* Fila de Personajes con imágenes más grandes y vistosas (Sin Constelación) */}
+                    {/* Fila de Personajes con imágenes más grandes, sin bordes ni fondo */}
                     <div className="team-members-grid">
                       {(t.team || []).map((m, mIdx) => {
                         const charImg = m.avatar || getTeamMemberAvatar(m.name);
+                        const shortName = getShortCharacterName(m.name);
+                        const elemMeta = ELEMENTS[m.element?.toLowerCase()] || {};
+                        const elemIcon = elemMeta.icon;
+
                         const artifactBind = (t.artifactAssignments || []).find(
                           (a) => a.characterName?.toLowerCase() === m.name?.toLowerCase() || a.characterId === m.id
                         );
@@ -542,11 +550,21 @@ export function AffinityMatcher({
                               )}
                             </div>
 
-                            <div className="member-showcase-name">{m.name}</div>
-                            <div className="member-showcase-role">{m.role || 'Miembro'}</div>
-                            <span className={`element-tag elem-${m.element}`}>
-                              {m.element}
-                            </span>
+                            {/* [Icono del elemento] • [Nombre corto del personaje] • [Rol] */}
+                            <div className="member-showcase-meta-line">
+                              {elemIcon && (
+                                <img
+                                  src={elemIcon}
+                                  alt={m.element}
+                                  className="member-elem-icon-small"
+                                  title={`Elemento: ${m.element}`}
+                                />
+                              )}
+                              <span className="member-meta-separator">•</span>
+                              <span className="member-short-name">{shortName}</span>
+                              <span className="member-meta-separator">•</span>
+                              <span className="member-short-role">{m.role || 'Miembro'}</span>
+                            </div>
 
                             {/* Set de artefactos sugerido */}
                             <div

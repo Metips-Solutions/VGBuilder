@@ -148,3 +148,48 @@ export function getTeamMemberAvatar(charName) {
   }
   return getDefaultCharacterIcon(charName);
 }
+
+/**
+ * Retorna el nombre corto y amigable del personaje para etiquetas y casillas de equipo.
+ * Ejemplos:
+ * - "Kaedehara Kazuha" -> "Kazuha"
+ * - "Kamisato Ayaka" -> "Ayaka"
+ * - "Kamisato Ayato" -> "Ayato"
+ * - "Shogun Raiden" -> "Raiden"
+ * - "Sangonomiya Kokomi" -> "Kokomi"
+ * - "Arataki Itto" -> "Itto"
+ * - "Kujou Sara" -> "Sara"
+ * - "Shikanoin Heizou" -> "Heizou"
+ * - "Kuki Shinobu" -> "Kuki"
+ * - "Yae Miko" -> "Yae"
+ */
+export function getShortCharacterName(fullName) {
+  if (!fullName) return '';
+  const trimmed = String(fullName).trim();
+
+  const KNOWN_SHORT_NAMES = {
+    'Kaedehara Kazuha': 'Kazuha',
+    'Kamisato Ayaka': 'Ayaka',
+    'Kamisato Ayato': 'Ayato',
+    'Shogun Raiden': 'Raiden',
+    'Sangonomiya Kokomi': 'Kokomi',
+    'Arataki Itto': 'Itto',
+    'Kujou Sara': 'Sara',
+    'Shikanoin Heizou': 'Heizou',
+    'Kuki Shinobu': 'Kuki',
+    'Yae Miko': 'Yae'
+  };
+
+  if (KNOWN_SHORT_NAMES[trimmed]) {
+    return KNOWN_SHORT_NAMES[trimmed];
+  }
+
+  const lower = trimmed.toLowerCase();
+  for (const [key, short] of Object.entries(KNOWN_SHORT_NAMES)) {
+    if (key.toLowerCase() === lower) {
+      return short;
+    }
+  }
+
+  return trimmed;
+}

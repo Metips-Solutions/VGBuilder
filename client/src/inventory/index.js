@@ -14,7 +14,8 @@ export {
   getCharacterStickers,
   getRandomCharacterSticker,
   getDefaultCharacterIcon,
-  getTeamMemberAvatar
+  getTeamMemberAvatar,
+  getShortCharacterName
 } from './data/characterStickers';
 export { GenshinEngine } from './GenshinEngine';
 
