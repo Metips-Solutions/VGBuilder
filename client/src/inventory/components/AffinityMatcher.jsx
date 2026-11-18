@@ -218,7 +218,7 @@ export function AffinityMatcher({
     if (foundInProject) {
       return foundInProject.icon || foundInProject.image;
     }
-    return `/Images/Genshin Impact/Character Icons/${memberName} · Icon · Genshin Impact.png`;
+    return `/Images/Genshin Impact/Character Icons/${memberName} · Icon · Genshin Impact.webp`;
   };
 
   // Filtrado de personajes por elemento
@@ -289,7 +289,13 @@ export function AffinityMatcher({
                   title={`Filtrar por ${label}`}
                 >
                   {!isAll && meta?.icon && (
-                    <img src={meta.icon} alt="" className="filter-pill-icon-compact" />
+                    <img
+                      src={meta.icon}
+                      alt={`Elemento ${label}`}
+                      className="filter-pill-icon-compact"
+                      loading="lazy"
+                      decoding="async"
+                    />
                   )}
                   <span>{label}</span>
                 </button>
@@ -396,7 +402,13 @@ export function AffinityMatcher({
                     title={`Filtrar por ${label}`}
                   >
                     {!isAll && meta?.icon && (
-                      <img src={meta.icon} alt="" className="filter-pill-icon-compact" />
+                      <img
+                        src={meta.icon}
+                        alt={`Elemento ${label}`}
+                        className="filter-pill-icon-compact"
+                        loading="lazy"
+                        decoding="async"
+                      />
                     )}
                     <span>{label}</span>
                   </button>
@@ -455,8 +467,10 @@ export function AffinityMatcher({
                       >
                         <img
                           src={char.icon || char.image || getDefaultCharacterIcon(char.name)}
-                          alt={char.name}
+                          alt={`Avatar de ${char.name}`}
                           className="char-avatar-img"
+                          loading="lazy"
+                          decoding="async"
                         />
                       </div>
 
@@ -529,8 +543,10 @@ export function AffinityMatcher({
                       >
                         <img
                           src={char.icon || char.image || getDefaultCharacterIcon(char.name)}
-                          alt={char.name}
+                          alt={`Avatar de ${char.name}`}
                           className="char-avatar-img"
+                          loading="lazy"
+                          decoding="async"
                         />
                       </div>
 
@@ -650,8 +666,10 @@ export function AffinityMatcher({
                               {charImg ? (
                                 <img
                                   src={charImg}
-                                  alt={m.name}
+                                  alt={`Sticker o avatar de ${m.name}`}
                                   className="member-showcase-img"
+                                  loading="lazy"
+                                  decoding="async"
                                   onError={(e) => {
                                     const fallback = getDefaultCharacterIcon(m.name);
                                     if (fallback && e.target.src !== fallback) {
@@ -675,8 +693,10 @@ export function AffinityMatcher({
                                 {elemIcon && (
                                   <img
                                     src={elemIcon}
-                                    alt={m.element}
+                                    alt={`Elemento ${m.element}`}
                                     className="member-elem-icon-small"
+                                    loading="lazy"
+                                    decoding="async"
                                     title={`Elemento: ${m.element}`}
                                   />
                                 )}

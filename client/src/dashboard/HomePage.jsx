@@ -13,7 +13,7 @@ export function HomePage() {
       status: 'active',
       statusLabel: '✦ Motor Activo',
       logo: <GenshinLogo size={52} />,
-      bannerImg: '/Images/banners/genshin.jpg',
+      bannerImg: '/Images/banners/genshin.webp',
       webImg: 'https://wallpapercave.com/wp/wp7486905.jpg',
       desc: 'Gestión completa de inventario de personajes, constelaciones C0-C6, sincronización automática vía Enka.Network y optimización de afinidad elemental.',
       tags: ['Afinidad Elemental', 'Sincronización Enka', 'Constelaciones C0-C6', 'Filtrado por Elemento'],
@@ -28,7 +28,7 @@ export function HomePage() {
       status: 'upcoming',
       statusLabel: 'En Desarrollo',
       logo: <ZZZLogo size={52} />,
-      bannerImg: '/Images/banners/zzz.jpg',
+      bannerImg: '/Images/banners/zzz.webp',
       webImg: 'https://wallpapercave.com/wp/wp12340088.jpg',
       desc: 'Análisis de acumulación de anomalías de atributos (Físico, Fuego, Hielo, Eléctrico, Éter), sinergias de facciones urbanas y compatibilidad de Bangboo.',
       tags: ['Sinergias de Facción', 'Cálculo de Anomalías', 'Compatibilidad Bangboo'],
@@ -43,7 +43,7 @@ export function HomePage() {
       status: 'upcoming',
       statusLabel: 'En Desarrollo',
       logo: <HSRLogo size={52} />,
-      bannerImg: '/Images/banners/hsr.jpg',
+      bannerImg: '/Images/banners/hsr.webp',
       webImg: 'https://wallpapercave.com/wp/wp12342709.jpg',
       desc: 'Simulación de sinergias entre Vías de combate (Destrucción, Cacería, Armonía, Nihilidad), cobertura de debilidades de ruptura y optimización de Conos de Luz.',
       tags: ['Afinidad de Vías', 'Cobertura de Ruptura', 'Sinergias Conos de Luz'],
@@ -58,7 +58,7 @@ export function HomePage() {
       status: 'upcoming',
       statusLabel: 'En Desarrollo',
       logo: <UmaMusumeLogo size={52} />,
-      bannerImg: '/Images/banners/umamusume.png',
+      bannerImg: '/Images/banners/umamusume.webp',
       webImg: 'https://wallpapercave.com/wp/wp6538873.png',
       desc: 'Modelado de compatibilidad genética entre corredoras, simulación de factores de herencia (azul, rojo, blanco) y afinidad de mazos de soporte.',
       tags: ['Afinidad de Linaje', 'Factores de Herencia', 'Aptitud de Pista'],
@@ -73,7 +73,7 @@ export function HomePage() {
       status: 'planned',
       statusLabel: 'Planificado',
       logo: <WuWaLogo size={52} />,
-      bannerImg: '/Images/banners/wuwa.jpg',
+      bannerImg: '/Images/banners/wuwa.webp',
       webImg: 'https://wallpapercave.com/wp/wp12600978.jpg',
       desc: 'Optimización de conjuntos sonoros de Ecos, atributos de concierto y combinaciones de habilidades Intro/Outro entre resonadores.',
       tags: ['Conjuntos de Ecos', 'Cadenas Intro/Outro', 'Resonancia Elemental'],
@@ -115,9 +115,10 @@ export function HomePage() {
             >
               <img
                 src={g.bannerImg}
-                alt={g.name}
+                alt={`Banner ilustrativo de ${g.name}`}
                 className="reel-img"
                 loading="lazy"
+                decoding="async"
                 onError={(e) => {
                   if (e.target.src !== g.webImg) e.target.src = g.webImg;
                 }}
@@ -191,9 +192,10 @@ export function HomePage() {
               <div className="game-card-cover">
                 <img
                   src={game.bannerImg}
-                  alt={`Ilustración de ${game.name}`}
+                  alt={`Portada oficial del juego ${game.name}`}
                   className="game-cover-image"
                   loading="lazy"
+                  decoding="async"
                   onError={(e) => {
                     if (e.target.src !== game.webImg) {
                       e.target.src = game.webImg;

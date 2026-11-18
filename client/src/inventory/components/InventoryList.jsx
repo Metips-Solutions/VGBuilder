@@ -155,9 +155,10 @@ export function InventoryList({
               >
                 <img
                   src={character.icon || character.image}
-                  alt={character.name}
+                  alt={`Retrato de ${character.name}`}
                   className="inventory-card-thumb"
                   loading="lazy"
+                  decoding="async"
                 />
               </div>
 
@@ -168,8 +169,10 @@ export function InventoryList({
                     {elemMeta.icon && (
                       <img
                         src={elemMeta.icon}
-                        alt=""
+                        alt={`Elemento ${elemMeta.name}`}
                         className="inventory-card-elem-icon"
+                        loading="lazy"
+                        decoding="async"
                       />
                     )}
                     {elemMeta.name}

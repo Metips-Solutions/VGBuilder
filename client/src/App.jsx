@@ -94,9 +94,11 @@ function AppContent() {
             title="Ir a la pantalla principal de VGBuilder"
           >
             <img
-              src="/LogoVGBuilder.png"
-              alt="VGBuilder"
+              src="/LogoVGBuilder.webp"
+              alt="Logotipo oficial de VGBuilder"
               className="brand-logo-img"
+              width="36"
+              height="36"
             />
             <div className="brand-title">
               VGBuilder

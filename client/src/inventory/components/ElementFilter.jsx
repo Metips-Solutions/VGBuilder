@@ -26,9 +26,10 @@ export function ElementFilter({ activeElement, onSelectElement }) {
             >
               <img
                 src={elem.icon}
-                alt={elem.name}
+                alt={`Elemento ${elem.name}`}
                 className="element-sphere-icon"
                 loading="lazy"
+                decoding="async"
               />
             </button>
           );

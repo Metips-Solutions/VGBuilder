@@ -4,65 +4,65 @@
  *
  * Cobertura:
  * - 50 personajes con 2 variantes de stickers (selección aleatoria)
- * - Noelle con 1 variante (noelle_shy.png)
+ * - Noelle con 1 variante (noelle_shy.webp)
  * - Aloy sin variante en carpeta (fallback al icono oficial actual)
  */
 
 import { CHARACTERS } from './characters';
 
 export const CHARACTER_STICKERS = {
-  Amber: ['amber_grabbed.png', 'baronbunny_mad.png'],
-  Barbara: ['barbara_panic.png', 'barbara_shh.png'],
-  Beidou: ['beidou_embarrassed.png', 'beidou_laugh.png'],
-  Bennett: ['bennet_thumbsup.png', 'bennett_excited.png'],
-  Chongyun: ['chongyun_card.png', 'chongyun_drunk.png'],
-  Diluc: ['diluc_explain.png', 'diluc_refuse.png'],
-  Fischl: ['fischl_beach.png', 'fischl_laugh.png'],
-  Jean: ['jean_embarrassed.png', 'jean_skinthumbsup.png'],
-  Kaeya: ['kaeya_laugh.png', 'kaeya_shrug.png'],
-  Keqing: ['keqing_sleep.png', 'keqing_thumbsup.png'],
-  Klee: ['klee_excited.png', 'klee_point.png'],
-  Lisa: ['lisa_smug.png', 'lisa_wink.png'],
-  Mona: ['mona_heart.png', 'mona_proud.png'],
-  Ningguang: ['ningguang_rich.png', 'ningguang_toast.png'],
-  Noelle: ['noelle_shy.png'],
-  Qiqi: ['qiqi_down.png', 'qiqi_sideeye.png'],
-  Razor: ['razor_happy.png', 'razor_moon.png'],
-  Sucrose: ['sucrose_OK.png', 'sucrose_shrug.png'],
-  Venti: ['venti_basket.png', 'venti_shock.png'],
-  Xiangling: ['xiangling_blush.png', 'xiangling_orange.png'],
-  Xingqiu: ['xingqiu_command.png', 'xingqiu_heavy.png'],
-  Diona: ['diona_proud.png', 'diona_rawr.png'],
-  Tartaglia: ['Tartaglia_1.png', 'tartagliaBringItOn.png'],
-  Xinyan: ['xinyan_charge.png', 'xinyan_wave.png'],
-  Zhongli: ['zhongli_box.png', 'zhongli_shrug.png'],
-  Albedo: ['albedo_question.png', 'albedo_smirk.png'],
-  Ganyu: ['ganyu_pray.png', 'ganyu_shock.png'],
-  Xiao: ['xiao_hmph.png', 'xiao_upset.png'],
-  'Hu Tao': ['hutao_mischievous.png', 'hutao_point.png'],
-  Rosaria: ['rosaria_cat.png', 'rosaria_run.png'],
-  Yanfei: ['yanfei_command.png', 'yanfei_smug.png'],
-  Eula: ['eula_look.png', 'eula_thumbsup.png'],
-  'Kaedehara Kazuha': ['kazuha_crystalfly.png', 'kazuha_hi.png'],
-  'Kamisato Ayaka': ['ayaka_dazed.png', 'ayaka_shy.png'],
-  Sayu: ['sayu_hmph.png', 'sayu_pose.png'],
-  Yoimiya: ['yoimiya_daydream.png', 'yoimiya_thumbsup.png'],
+  Amber: ['amber_grabbed.webp', 'baronbunny_mad.webp'],
+  Barbara: ['barbara_panic.webp', 'barbara_shh.webp'],
+  Beidou: ['beidou_embarrassed.webp', 'beidou_laugh.webp'],
+  Bennett: ['bennet_thumbsup.webp', 'bennett_excited.webp'],
+  Chongyun: ['chongyun_card.webp', 'chongyun_drunk.webp'],
+  Diluc: ['diluc_explain.webp', 'diluc_refuse.webp'],
+  Fischl: ['fischl_beach.webp', 'fischl_laugh.webp'],
+  Jean: ['jean_embarrassed.webp', 'jean_skinthumbsup.webp'],
+  Kaeya: ['kaeya_laugh.webp', 'kaeya_shrug.webp'],
+  Keqing: ['keqing_sleep.webp', 'keqing_thumbsup.webp'],
+  Klee: ['klee_excited.webp', 'klee_point.webp'],
+  Lisa: ['lisa_smug.webp', 'lisa_wink.webp'],
+  Mona: ['mona_heart.webp', 'mona_proud.webp'],
+  Ningguang: ['ningguang_rich.webp', 'ningguang_toast.webp'],
+  Noelle: ['noelle_shy.webp'],
+  Qiqi: ['qiqi_down.webp', 'qiqi_sideeye.webp'],
+  Razor: ['razor_happy.webp', 'razor_moon.webp'],
+  Sucrose: ['sucrose_OK.webp', 'sucrose_shrug.webp'],
+  Venti: ['venti_basket.webp', 'venti_shock.webp'],
+  Xiangling: ['xiangling_blush.webp', 'xiangling_orange.webp'],
+  Xingqiu: ['xingqiu_command.webp', 'xingqiu_heavy.webp'],
+  Diona: ['diona_proud.webp', 'diona_rawr.webp'],
+  Tartaglia: ['Tartaglia_1.webp', 'tartagliaBringItOn.webp'],
+  Xinyan: ['xinyan_charge.webp', 'xinyan_wave.webp'],
+  Zhongli: ['zhongli_box.webp', 'zhongli_shrug.webp'],
+  Albedo: ['albedo_question.webp', 'albedo_smirk.webp'],
+  Ganyu: ['ganyu_pray.webp', 'ganyu_shock.webp'],
+  Xiao: ['xiao_hmph.webp', 'xiao_upset.webp'],
+  'Hu Tao': ['hutao_mischievous.webp', 'hutao_point.webp'],
+  Rosaria: ['rosaria_cat.webp', 'rosaria_run.webp'],
+  Yanfei: ['yanfei_command.webp', 'yanfei_smug.webp'],
+  Eula: ['eula_look.webp', 'eula_thumbsup.webp'],
+  'Kaedehara Kazuha': ['kazuha_crystalfly.webp', 'kazuha_hi.webp'],
+  'Kamisato Ayaka': ['ayaka_dazed.webp', 'ayaka_shy.webp'],
+  Sayu: ['sayu_hmph.webp', 'sayu_pose.webp'],
+  Yoimiya: ['yoimiya_daydream.webp', 'yoimiya_thumbsup.webp'],
   Aloy: [],
-  'Kujou Sara': ['sara_archery.png', 'sara_lead.png'],
-  'Shogun Raiden': ['raiden_angry.png', 'raiden_shock.png'],
-  'Sangonomiya Kokomi': ['kokomi_pray.png', 'kokomi_read.png'],
-  Thoma: ['thoma_happy.png', 'thoma_thumbsup.png'],
-  Gorou: ['gorou_excited.png', 'gorou_question.png'],
-  'Arataki Itto': ['itto_happy.png', 'itto_wave.png'],
-  'Yun Jin': ['yunjin_listen.png', 'yunjin_shock.png'],
-  Shenhe: ['shenhe_confused.png', 'shenhe_disappointed.png'],
-  'Yae Miko': ['yaemiko_whisper.png', 'yaemiko_write.png'],
-  'Kamisato Ayato': ['ayato_confused.png', 'ayato_smug.png'],
-  Yelan: ['yelan_suitcase.png', 'yelan_yawn.png'],
-  'Kuki Shinobu': ['kuki_shock.png', 'kuki_surprised.png'],
-  'Shikanoin Heizou': ['heizou_fist.png', 'heizou_sparkle.png'],
-  Tighnari: ['tighnari_saveseat.png', 'tighnari_upset.png'],
-  Collei: ['collei_shock.png', 'collei_speech.png']
+  'Kujou Sara': ['sara_archery.webp', 'sara_lead.webp'],
+  'Shogun Raiden': ['raiden_angry.webp', 'raiden_shock.webp'],
+  'Sangonomiya Kokomi': ['kokomi_pray.webp', 'kokomi_read.webp'],
+  Thoma: ['thoma_happy.webp', 'thoma_thumbsup.webp'],
+  Gorou: ['gorou_excited.webp', 'gorou_question.webp'],
+  'Arataki Itto': ['itto_happy.webp', 'itto_wave.webp'],
+  'Yun Jin': ['yunjin_listen.webp', 'yunjin_shock.webp'],
+  Shenhe: ['shenhe_confused.webp', 'shenhe_disappointed.webp'],
+  'Yae Miko': ['yaemiko_whisper.webp', 'yaemiko_write.webp'],
+  'Kamisato Ayato': ['ayato_confused.webp', 'ayato_smug.webp'],
+  Yelan: ['yelan_suitcase.webp', 'yelan_yawn.webp'],
+  'Kuki Shinobu': ['kuki_shock.webp', 'kuki_surprised.webp'],
+  'Shikanoin Heizou': ['heizou_fist.webp', 'heizou_sparkle.webp'],
+  Tighnari: ['tighnari_saveseat.webp', 'tighnari_upset.webp'],
+  Collei: ['collei_shock.webp', 'collei_speech.webp']
 };
 
 /**
@@ -133,7 +133,7 @@ export function getDefaultCharacterIcon(charName) {
     return found.icon || found.image;
   }
 
-  return `/Images/Genshin Impact/Character Icons/${charName} · Icon · Genshin Impact.png`;
+  return `/Images/Genshin Impact/Character Icons/${charName} · Icon · Genshin Impact.webp`;
 }
 
 /**

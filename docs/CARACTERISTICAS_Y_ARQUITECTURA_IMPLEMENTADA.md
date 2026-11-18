@@ -11,7 +11,7 @@ La interfaz está construida con un sistema de diseño modular en React y CSS mo
 
 El layout principal se compone de:
 - **Cabecera Global Compacta (`.app-header`)**:
-  - **Identidad de Marca Oficial**: Se sustituyó el isotipo genérico anterior por el nuevo logotipo oficial de la plataforma (`/LogoVGBuilder.png`), eliminando toda referencia previa a "Astra" para consolidar la marca exclusivamente como **VGBuilder**.
+  - **Identidad de Marca Oficial**: Se sustituyó el isotipo genérico anterior por el nuevo logotipo oficial de la plataforma (`/LogoVGBuilder.webp`), eliminando toda referencia previa a "Astra" para consolidar la marca exclusivamente como **VGBuilder**.
   - **Header Minimalista y Reducido**: Se removieron los botones de agregar personajes y sincronización de Enka de la cabecera, reduciendo el relleno vertical (`padding: 10px 16px`) para aprovechar al máximo el espacio útil de la pantalla.
   - **Responsividad Móvil Fija en 1 Fila**: Se corrigieron las reglas de breakpoint móvil para garantizar que el logotipo a la izquierda y el botón de tema a la derecha permanezcan en una sola fila compacta (`min-height: 50px`), evitando el apilamiento vertical en 2 filas y la sensación de solapamiento.
   - **Botón de Modo Oscuro / Claro**: En lugar de un control deslizante (switch track), se implementó un **botón simple y circular (`.theme-simple-btn`)** que alterna reactivamente su emoji según el tema activo:

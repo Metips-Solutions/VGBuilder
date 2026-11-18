@@ -55,7 +55,7 @@ export function SavedTeamsView({ onGoToOptimizer }) {
     const found = CHARACTERS.find(
       (c) => c.name.toLowerCase() === memberName.toLowerCase()
     );
-    return found ? (found.icon || found.image) : `/Images/Genshin Impact/Character Icons/${memberName} · Icon · Genshin Impact.png`;
+    return found ? (found.icon || found.image) : `/Images/Genshin Impact/Character Icons/${memberName} · Icon · Genshin Impact.webp`;
   };
 
   if (savedTeams.length === 0) {
@@ -148,8 +148,10 @@ export function SavedTeamsView({ onGoToOptimizer }) {
                         {charImg ? (
                           <img
                             src={charImg}
-                            alt={m.name}
+                            alt={`Sticker o avatar de ${m.name}`}
                             className="member-showcase-img"
+                            loading="lazy"
+                            decoding="async"
                             onError={(e) => {
                               const fallback = getDefaultCharacterIcon(m.name);
                               if (fallback && e.target.src !== fallback) {
@@ -173,8 +175,10 @@ export function SavedTeamsView({ onGoToOptimizer }) {
                           {elemIcon && (
                             <img
                               src={elemIcon}
-                              alt={m.element}
+                              alt={`Elemento ${m.element}`}
                               className="member-elem-icon-small"
+                              loading="lazy"
+                              decoding="async"
                               title={`Elemento: ${m.element}`}
                             />
                           )}
