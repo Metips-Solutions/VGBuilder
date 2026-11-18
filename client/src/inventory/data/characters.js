@@ -63,6 +63,17 @@ export const CHARACTERS = [
     namecard: encodeURI("/Images/Genshin Impact/Namecards/Amber · Namecard · Genshin Impact.png")
   },
   {
+    id: "barbara",
+    name: "Barbara",
+    element: "hydro",
+    role: "Apoyo · Curación",
+    region: "Mondstadt",
+    stars: 4,
+    image: encodeURI("/Images/Genshin Impact/Splash Art/barbara-nobg · Genshin Impact.png"),
+    icon: encodeURI("/Images/Genshin Impact/Character Icons/Barbara · Icon · Genshin Impact.png"),
+    namecard: encodeURI("/Images/Genshin Impact/Namecards/Barbara · Namecard · Genshin Impact.png")
+  },
+  {
     id: "beidou",
     name: "Beidou",
     element: "electro",
