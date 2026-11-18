@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { InventoryList } from './components/InventoryList';
-import { useRouter } from '../shared/router';
+import { AffinityMatcher } from './components/AffinityMatcher';
+import { SavedTeamsView } from './components/SavedTeamsView';
 
 export function GenshinEngine({
   inventory,
@@ -8,62 +9,129 @@ export function GenshinEngine({
   onOpenModal,
   onOpenEnkaModal
 }) {
-  const { navigate } = useRouter();
+  const [activeTab, setActiveTab] = useState('inventory');
+  const [savedCount, setSavedCount] = useState(0);
+
+  // Estado compartido de personajes desactivados (persiste en LocalStorage)
+  const [deactivatedIds, setDeactivatedIds] = useState(() => {
+    try {
+      const saved = localStorage.getItem('genshin_deactivated_characters');
+      return saved ? new Set(JSON.parse(saved)) : new Set();
+    } catch {
+      return new Set();
+    }
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(
+        'genshin_deactivated_characters',
+        JSON.stringify(Array.from(deactivatedIds))
+      );
+    } catch (e) {
+      console.warn('Error al guardar personajes desactivados:', e);
+    }
+  }, [deactivatedIds]);
+
+  const handleToggleDeactivate = (charId) => {
+    setDeactivatedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(charId)) {
+        next.delete(charId);
+      } else {
+        next.add(charId);
+      }
+      return next;
+    });
+  };
+
+  // Leer cantidad de equipos guardados en LocalStorage para el badge del switch
+  useEffect(() => {
+    const updateSavedCount = () => {
+      try {
+        const data = localStorage.getItem('genshin_saved_teams');
+        const list = data ? JSON.parse(data) : [];
+        setSavedCount(list.length);
+      } catch {
+        setSavedCount(0);
+      }
+    };
+
+    updateSavedCount();
+    window.addEventListener('storage', updateSavedCount);
+    return () => window.removeEventListener('storage', updateSavedCount);
+  }, [activeTab]);
 
   return (
     <div className="engine-container">
-      {/* Barra de contexto del motor de Genshin Impact */}
-      <div className="engine-banner">
-        <div className="engine-banner-info">
-          <div className="engine-breadcrumb">
-            <button
-              type="button"
-              className="breadcrumb-back-btn"
-              onClick={() => navigate('/')}
-              title="Volver a la pantalla principal"
-            >
-              ← Inicio
-            </button>
-            <span className="breadcrumb-separator">/</span>
-            <span className="breadcrumb-current">Genshin Impact</span>
-            <span className="engine-badge-active">Motor Activo</span>
-          </div>
+      {/* Switch de Vistas (Pestañas de Navegación) - Sin banner redundante */}
+      <div className="engine-tab-switch-bar" role="tablist" aria-label="Secciones del motor">
+        <button
+          type="button"
+          role="tab"
+          aria-selected={activeTab === 'inventory'}
+          className={`engine-switch-btn ${activeTab === 'inventory' ? 'active' : ''}`}
+          onClick={() => setActiveTab('inventory')}
+        >
+          <span className="switch-icon">👥</span>
+          <span className="switch-label">Mi Inventario</span>
+          <span className="switch-count-badge">{inventory.length}</span>
+        </button>
 
-          <h1 className="engine-title">
-            Motor de Optimización: Genshin Impact
-          </h1>
-          <p className="engine-desc">
-            Organiza tus personajes de Teyvat, configura sus constelaciones y calcula composiciones de afinidad óptimas.
-          </p>
-        </div>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={activeTab === 'affinity'}
+          className={`engine-switch-btn ${activeTab === 'affinity' ? 'active' : ''}`}
+          onClick={() => setActiveTab('affinity')}
+        >
+          <span className="switch-icon">⚡</span>
+          <span className="switch-label">Optimizador de Afinidad</span>
+        </button>
 
-        <div className="engine-banner-actions">
-          <button
-            type="button"
-            className="btn-pill btn-pill-secondary btn-sync-enka"
-            onClick={onOpenEnkaModal}
-            title="Sincronizar inventario desde perfil de Enka.Network"
-          >
-            <span className="sync-icon-symbol">⚡</span>
-            Sincronizar Enka
-          </button>
-
-          <button
-            type="button"
-            className="btn-pill btn-pill-primary"
-            onClick={onOpenModal}
-          >
-            + Agregar Personaje
-          </button>
-        </div>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={activeTab === 'savedTeams'}
+          className={`engine-switch-btn ${activeTab === 'savedTeams' ? 'active' : ''}`}
+          onClick={() => setActiveTab('savedTeams')}
+        >
+          <span className="switch-icon">💾</span>
+          <span className="switch-label">Equipos Guardados</span>
+          {savedCount > 0 && (
+            <span className="switch-count-badge count-saved">{savedCount}</span>
+          )}
+        </button>
       </div>
 
-      {/* Lista del inventario de personajes */}
-      <InventoryList
-        inventory={inventory}
-        onRemoveItem={onRemoveItem}
-        onOpenModal={onOpenModal}
-      />
+      {/* Renderizado condicional según la pestaña activa */}
+      <div className="engine-tab-content">
+        {activeTab === 'inventory' && (
+          <InventoryList
+            inventory={inventory}
+            onRemoveItem={onRemoveItem}
+            onOpenModal={onOpenModal}
+            onOpenEnkaModal={onOpenEnkaModal}
+            deactivatedIds={deactivatedIds}
+            onToggleDeactivate={handleToggleDeactivate}
+          />
+        )}
+
+        {activeTab === 'affinity' && (
+          <AffinityMatcher
+            inventory={inventory}
+            deactivatedIds={deactivatedIds}
+            onToggleDeactivate={handleToggleDeactivate}
+            onOpenModal={onOpenModal}
+          />
+        )}
+
+        {activeTab === 'savedTeams' && (
+          <SavedTeamsView
+            onGoToOptimizer={() => setActiveTab('affinity')}
+          />
+        )}
+      </div>
     </div>
   );
 }

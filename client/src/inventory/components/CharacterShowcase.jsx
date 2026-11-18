@@ -54,8 +54,10 @@ export function CharacterShowcase({ character }) {
         <div className="showcase-art-column">
           <img
             src={displayedChar.image}
-            alt={displayedChar.name}
+            alt={`Arte oficial de ${displayedChar.name}`}
             className="showcase-splash-art"
+            loading="lazy"
+            decoding="async"
           />
         </div>
 
@@ -77,8 +79,10 @@ export function CharacterShowcase({ character }) {
               {elemMeta.icon && (
                 <img
                   src={elemMeta.icon}
-                  alt={elemMeta.name}
+                  alt={`Elemento ${elemMeta.name}`}
                   className="showcase-elem-icon"
+                  loading="lazy"
+                  decoding="async"
                 />
               )}
               Elemento: {elemMeta.name}

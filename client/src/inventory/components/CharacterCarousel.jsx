@@ -44,9 +44,10 @@ export function CharacterCarousel({
               <div className="carousel-avatar-wrap">
                 <img
                   src={char.icon || char.image}
-                  alt={char.name}
+                  alt={`Avatar de ${char.name}`}
                   className="carousel-avatar"
                   loading="lazy"
+                  decoding="async"
                 />
               </div>
               <span className="carousel-name">{char.name}</span>
