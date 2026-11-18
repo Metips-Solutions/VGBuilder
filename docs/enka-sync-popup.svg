@@ -1,0 +1,205 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 680" width="100%" height="100%">
+  <defs>
+    <!-- Filtros de Sombra -->
+    <filter id="shadow-card" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="16" stdDeviation="20" flood-color="#000000" flood-opacity="0.65"/>
+    </filter>
+    <filter id="glow-cyan" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="0" stdDeviation="6" flood-color="#38bdf8" flood-opacity="0.45"/>
+    </filter>
+    <filter id="glow-green" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="0" stdDeviation="6" flood-color="#1ed760" flood-opacity="0.45"/>
+    </filter>
+
+    <!-- Degradados de Fondo -->
+    <linearGradient id="bg-canvas" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#121418"/>
+      <stop offset="100%" stop-color="#1a1d24"/>
+    </linearGradient>
+
+    <linearGradient id="modal-card" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#242832"/>
+      <stop offset="100%" stop-color="#1b1e26"/>
+    </linearGradient>
+
+    <linearGradient id="help-card" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1c202a"/>
+      <stop offset="100%" stop-color="#171a22"/>
+    </linearGradient>
+
+    <linearGradient id="btn-primary" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="100%" stop-color="#0284c7"/>
+    </linearGradient>
+
+    <linearGradient id="btn-green" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#1ed760"/>
+      <stop offset="100%" stop-color="#16a34a"/>
+    </linearGradient>
+  </defs>
+
+  <style>
+    .font-title { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-weight: 800; }
+    .font-semibold { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-weight: 600; }
+    .font-regular { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-weight: 400; }
+    .font-mono { font-family: 'Fira Code', 'JetBrains Mono', monospace; }
+  </style>
+
+  <!-- Lienzo general -->
+  <rect width="1000" height="680" rx="16" fill="url(#bg-canvas)" stroke="#2b303c" stroke-width="2"/>
+
+  <!-- Barra de Encabezado Superior (Contexto Aplicación) -->
+  <g id="header-context">
+    <rect x="0" y="0" width="1000" height="74" fill="#171a21" opacity="0.9" stroke="#2c313d" stroke-width="1"/>
+    
+    <!-- Logo Astra -->
+    <circle cx="50" cy="37" r="16" fill="#38bdf8" opacity="0.15"/>
+    <text x="50" y="42" fill="#38bdf8" text-anchor="middle" font-size="18" class="font-title">✦</text>
+    <text x="76" y="43" fill="#ffffff" font-size="18" class="font-title" letter-spacing="1">ASTRA <tspan fill="#828898" font-size="13" class="font-regular">· Genshin Impact</tspan></text>
+
+    <!-- Botones Header -->
+    <rect x="620" y="20" width="180" height="36" rx="18" fill="#282d38" stroke="#38bdf8" stroke-width="1.5" filter="url(#glow-cyan)"/>
+    <text x="636" y="43" fill="#38bdf8" font-size="15">⚡</text>
+    <text x="656" y="43" fill="#ffffff" font-size="12" class="font-semibold" letter-spacing="0.5">SINCRONIZAR ENKA</text>
+    
+    <rect x="815" y="20" width="145" height="36" rx="18" fill="#38bdf8"/>
+    <text x="887" y="43" fill="#0c1520" text-anchor="middle" font-size="12" class="font-title" letter-spacing="0.5">+ AGREGAR</text>
+  </g>
+
+  <!-- Capa de Fondo Atenuada (Overlay) -->
+  <rect x="0" y="74" width="1000" height="606" fill="#0b0d11" opacity="0.6"/>
+
+  <!-- ================= POPUP MODAL COMPACTO ================= -->
+  <g id="modal-popup" transform="translate(180, 105)">
+    <!-- Marco Principal del Modal -->
+    <rect width="640" height="340" rx="20" fill="url(#modal-card)" stroke="#3a4050" stroke-width="1.5" filter="url(#shadow-card)"/>
+
+    <!-- Cabecera del Modal -->
+    <g id="modal-header">
+      <circle cx="44" cy="42" r="15" fill="#38bdf8" opacity="0.15"/>
+      <text x="44" y="47" fill="#38bdf8" text-anchor="middle" font-size="15">⚡</text>
+
+      <text x="72" y="40" fill="#ffffff" font-size="17" class="font-title">Sincronizar Perfil de Enka.Network</text>
+      <text x="72" y="56" fill="#9ca3af" font-size="12" class="font-regular">Ingresa la URL de tu perfil con builds para sincronizar automáticamente tu inventario</text>
+
+      <!-- Botón Ayuda (❓) -->
+      <g id="btn-help-header" cursor="pointer">
+        <rect x="526" y="28" width="32" height="32" rx="16" fill="#2d323f" stroke="#4b5563" stroke-width="1"/>
+        <text x="542" y="49" fill="#38bdf8" text-anchor="middle" font-size="14" class="font-title">?</text>
+      </g>
+
+      <!-- Botón Cerrar (✕) -->
+      <g id="btn-close-header" cursor="pointer">
+        <rect x="568" y="28" width="32" height="32" rx="16" fill="#2d323f" stroke="#4b5563" stroke-width="1"/>
+        <text x="584" y="48" fill="#e5e7eb" text-anchor="middle" font-size="14" class="font-semibold">✕</text>
+      </g>
+
+      <line x1="28" y1="78" x2="612" y2="78" stroke="#2e3442" stroke-width="1"/>
+    </g>
+
+    <!-- Campo de Entrada (Input Textfield) -->
+    <g id="modal-input" transform="translate(32, 100)">
+      <text x="2" y="0" fill="#e2e8f0" font-size="12" class="font-semibold">URL de Perfil / Builds de Enka:</text>
+      
+      <!-- Contenedor del Input -->
+      <rect x="0" y="10" width="576" height="48" rx="10" fill="#14171d" stroke="#38bdf8" stroke-width="1.5" filter="url(#glow-cyan)"/>
+      <text x="18" y="40" fill="#f8fafc" font-size="13" class="font-mono">https://enka.network/u/ZoeTraveler/120394857/builds/</text>
+      
+      <!-- Indicador o Ícono de enlace -->
+      <circle cx="546" cy="34" r="10" fill="#1f2937"/>
+      <text x="546" y="38" fill="#38bdf8" text-anchor="middle" font-size="11">🔗</text>
+
+      <text x="2" y="74" fill="#94a3b8" font-size="11" class="font-regular">
+        ✦ Se extraerán los personajes activos y su constelación actual para guardarlos en <tspan fill="#38bdf8" class="font-mono">localStorage</tspan>.
+      </text>
+    </g>
+
+    <!-- Barra Inferior de Botones de Acción -->
+    <g id="modal-actions" transform="translate(32, 235)">
+      <line x1="-4" y1="-12" x2="580" y2="-12" stroke="#2e3442" stroke-width="1"/>
+
+      <!-- 1. Botón PEGAR (Clipboard API) -->
+      <g id="btn-pegar" cursor="pointer">
+        <rect x="0" y="10" width="128" height="42" rx="21" fill="#262b37" stroke="#3b4252" stroke-width="1.2"/>
+        <text x="26" y="36" fill="#38bdf8" font-size="14">📋</text>
+        <text x="50" y="36" fill="#ffffff" font-size="12" class="font-semibold" letter-spacing="0.5">PEGAR</text>
+      </g>
+
+      <!-- 2. Botón BORRAR (Clear input) -->
+      <g id="btn-borrar" cursor="pointer">
+        <rect x="140" y="10" width="128" height="42" rx="21" fill="#262b37" stroke="#3b4252" stroke-width="1.2"/>
+        <text x="166" y="36" fill="#f43f5e" font-size="13">🗑️</text>
+        <text x="188" y="36" fill="#ffffff" font-size="12" class="font-semibold" letter-spacing="0.5">BORRAR</text>
+      </g>
+
+      <!-- Botón Cancelar/Cerrar Secundario -->
+      <g id="btn-cancel" cursor="pointer">
+        <text x="390" y="36" fill="#94a3b8" font-size="12" class="font-semibold" letter-spacing="0.5">CANCELAR</text>
+      </g>
+
+      <!-- 3. Botón ACEPTAR (Sincronizar y Normalizar) -->
+      <g id="btn-aceptar" cursor="pointer" filter="url(#glow-green)">
+        <rect x="444" y="10" width="132" height="42" rx="21" fill="url(#btn-green)"/>
+        <text x="466" y="36" fill="#072711" font-size="15">✓</text>
+        <text x="486" y="36" fill="#072711" font-size="12" class="font-title" letter-spacing="0.8">ACEPTAR</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- ================= SUBMÓDULO DE AYUDA (DESPLEGABLE / DRAWER) ================= -->
+  <g id="help-drawer" transform="translate(180, 465)">
+    <rect width="640" height="185" rx="16" fill="url(#help-card)" stroke="#2b313f" stroke-width="1.5" filter="url(#shadow-card)"/>
+
+    <!-- Cabecera de Ayuda -->
+    <text x="24" y="28" fill="#38bdf8" font-size="14" class="font-title">❓ GUÍA RÁPIDA DE OBTENCIÓN DE PERFIL ENKA</text>
+    <rect x="520" y="14" width="96" height="20" rx="10" fill="#38bdf8" opacity="0.12"/>
+    <text x="568" y="28" fill="#38bdf8" text-anchor="middle" font-size="10" class="font-semibold">4 PASOS SIMPLES</text>
+
+    <!-- 4 Pasos Visuales -->
+    <!-- Paso 1 -->
+    <g transform="translate(24, 48)">
+      <rect width="136" height="114" rx="10" fill="#1e232d" stroke="#333a49" stroke-width="1"/>
+      <circle cx="20" cy="20" r="10" fill="#38bdf8" opacity="0.2"/>
+      <text x="20" y="24" fill="#38bdf8" text-anchor="middle" font-size="11" class="font-title">1</text>
+      <text x="36" y="23" fill="#ffffff" font-size="11" class="font-semibold">En Genshin</text>
+      <text x="12" y="48" fill="#94a3b8" font-size="10" class="font-regular">Abre Paimon Menu</text>
+      <text x="12" y="64" fill="#94a3b8" font-size="10" class="font-regular">→ Editar Perfil.</text>
+      <rect x="10" y="80" width="116" height="22" rx="4" fill="#14171e"/>
+      <text x="68" y="94" fill="#38bdf8" text-anchor="middle" font-size="9" class="font-mono">Detalles: ON</text>
+    </g>
+
+    <!-- Paso 2 -->
+    <g transform="translate(172, 48)">
+      <rect width="136" height="114" rx="10" fill="#1e232d" stroke="#333a49" stroke-width="1"/>
+      <circle cx="20" cy="20" r="10" fill="#38bdf8" opacity="0.2"/>
+      <text x="20" y="24" fill="#38bdf8" text-anchor="middle" font-size="11" class="font-title">2</text>
+      <text x="36" y="23" fill="#ffffff" font-size="11" class="font-semibold">Exhibidor</text>
+      <text x="12" y="48" fill="#94a3b8" font-size="10" class="font-regular">Equipa hasta 8</text>
+      <text x="12" y="64" fill="#94a3b8" font-size="10" class="font-regular">personajes que</text>
+      <text x="12" y="78" fill="#94a3b8" font-size="10" class="font-regular">quieras importar.</text>
+    </g>
+
+    <!-- Paso 3 -->
+    <g transform="translate(320, 48)">
+      <rect width="144" height="114" rx="10" fill="#1e232d" stroke="#333a49" stroke-width="1"/>
+      <circle cx="20" cy="20" r="10" fill="#38bdf8" opacity="0.2"/>
+      <text x="20" y="24" fill="#38bdf8" text-anchor="middle" font-size="11" class="font-title">3</text>
+      <text x="36" y="23" fill="#ffffff" font-size="11" class="font-semibold">Enka.Network</text>
+      <text x="12" y="48" fill="#94a3b8" font-size="10" class="font-regular">Ingresa a la web con</text>
+      <text x="12" y="64" fill="#94a3b8" font-size="10" class="font-regular">tu UID y copia el</text>
+      <text x="12" y="78" fill="#94a3b8" font-size="10" class="font-regular">enlace de tu perfil.</text>
+    </g>
+
+    <!-- Paso 4 -->
+    <g transform="translate(476, 48)">
+      <rect width="140" height="114" rx="10" fill="#1e232d" stroke="#1ed760" stroke-width="1.2" filter="url(#glow-green)"/>
+      <circle cx="20" cy="20" r="10" fill="#1ed760" opacity="0.2"/>
+      <text x="20" y="24" fill="#1ed760" text-anchor="middle" font-size="11" class="font-title">4</text>
+      <text x="36" y="23" fill="#ffffff" font-size="11" class="font-semibold">Pegar y Listo</text>
+      <text x="12" y="48" fill="#94a3b8" font-size="10" class="font-regular">Toca el botón</text>
+      <text x="12" y="64" fill="#1ed760" font-size="10" class="font-semibold">"PEGAR"</text>
+      <text x="60" y="64" fill="#94a3b8" font-size="10" class="font-regular">y luego</text>
+      <text x="12" y="80" fill="#38bdf8" font-size="10" class="font-semibold">"ACEPTAR".</text>
+    </g>
+  </g>
+</svg>
