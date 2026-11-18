@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { ELEMENTS } from '../data/characters';
 
 export function InventoryList({
@@ -7,6 +7,59 @@ export function InventoryList({
   onOpenModal,
   onOpenEnkaModal
 }) {
+  const [pressingIndex, setPressingIndex] = useState(null);
+  const pressTimerRef = useRef(null);
+  const pointerStartPos = useRef({ x: 0, y: 0 });
+
+  // Limpieza del temporizador si el componente se desmonta o cambia el inventario
+  useEffect(() => {
+    return () => {
+      if (pressTimerRef.current) {
+        clearTimeout(pressTimerRef.current);
+      }
+    };
+  }, [inventory]);
+
+  const handlePointerDown = (e, index) => {
+    // Si se hizo clic en el botón directo de la 'x', no iniciar long-press
+    if (e.target.closest('.inventory-delete-btn')) return;
+
+    pointerStartPos.current = { x: e.clientX, y: e.clientY };
+    setPressingIndex(index);
+
+    pressTimerRef.current = setTimeout(() => {
+      // Long-press completado (>650ms)
+      if (navigator.vibrate) {
+        navigator.vibrate(50);
+      }
+      setPressingIndex(null);
+      onRemoveItem(index);
+    }, 650);
+  };
+
+  const handlePointerMove = (e) => {
+    if (!pressTimerRef.current) return;
+    const dx = Math.abs(e.clientX - pointerStartPos.current.x);
+    const dy = Math.abs(e.clientY - pointerStartPos.current.y);
+
+    // Si el usuario se desplaza verticalmente u horizontalmente (scroll en móvil), cancelar
+    if (dx > 10 || dy > 10) {
+      if (pressTimerRef.current) {
+        clearTimeout(pressTimerRef.current);
+        pressTimerRef.current = null;
+      }
+      setPressingIndex(null);
+    }
+  };
+
+  const handlePointerCancelOrUp = () => {
+    if (pressTimerRef.current) {
+      clearTimeout(pressTimerRef.current);
+      pressTimerRef.current = null;
+    }
+    setPressingIndex(null);
+  };
+
   if (inventory.length === 0) {
     return (
       <div className="hero-empty">
@@ -82,11 +135,17 @@ export function InventoryList({
           return (
             <div
               key={`${character.id}-${index}`}
-              className="inventory-card"
+              className={`inventory-card ${pressingIndex === index ? 'is-pressing' : ''}`}
               style={{
                 '--card-elem-color': elemMeta.color,
                 backgroundImage: character.namecard ? `url("${character.namecard}")` : undefined
               }}
+              onPointerDown={(e) => handlePointerDown(e, index)}
+              onPointerMove={handlePointerMove}
+              onPointerUp={handlePointerCancelOrUp}
+              onPointerCancel={handlePointerCancelOrUp}
+              onPointerLeave={handlePointerCancelOrUp}
+              title="Mantén presionado para eliminar o usa la '✕' en la esquina"
             >
               <div className="inventory-card-backdrop" />
 
@@ -124,12 +183,15 @@ export function InventoryList({
                 </span>
               </div>
 
-              {/* Botón único de acción en Inventario: Eliminar */}
+              {/* Botón en la esquina con una X para eliminar */}
               <button
                 type="button"
                 className="inventory-delete-btn"
-                onClick={() => onRemoveItem(index)}
-                title="Eliminar del inventario"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onRemoveItem(index);
+                }}
+                title={`Eliminar ${character.name} del inventario`}
                 aria-label={`Eliminar ${character.name} del inventario`}
               >
                 ✕

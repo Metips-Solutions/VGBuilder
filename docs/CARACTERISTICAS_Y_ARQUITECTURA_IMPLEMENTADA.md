@@ -53,7 +53,15 @@ Se eliminó el banner superior estático redundante para maximizar el espacio ve
 - **Acciones Centralizadas**: Los botones para incorporar personajes se trasladaron exclusivamente a esta vista dentro de `.inventory-header-actions`:
   - `⚡ Sincronizar Enka`: Importa y actualiza personajes y constelaciones directamente desde perfiles de Enka.Network.
   - `+ Agregar Personaje`: Abre el modal interactivo con carrusel, selector de constelación (C0-C6) y showcase.
-- **Visualización de Cartas**: Muestra tarjetas individuales con el namecard de fondo del personaje, miniatura, elemento con icono TCG, región de procedencia, badge de constelación (`C0` a `C6`) y botón de eliminación `✕`.
+- **Botón de Eliminación en Esquina con "✕" (`.inventory-delete-btn`)**:
+  - Cada tarjeta de personaje cuenta con un botón circular ubicado en la esquina superior derecha (`position: absolute; top: 10px; right: 10px;`).
+  - Fondo translúcido con desenfoque de cristal y transición a rojo carmesí (`#ef4444`) con elevación al hacer hover.
+- **Evento de Mantener Presionado (Long-Press para Teléfonos)**:
+  - En dispositivos móviles táctiles, el usuario puede mantener presionada la tarjeta durante 650 ms para borrar el personaje del inventario sin requerir pulsar exactamente el botón pequeño de la esquina.
+  - **Scroll Guard**: Se detecta el movimiento del dedo; si el usuario se desplaza más de 10 píxeles (gesto de scroll en teléfono), el temporizador se cancela automáticamente evitando borrados accidentales.
+  - **Feedback Visual y Háptico**: La tarjeta se contrae levemente (`scale(0.96)`) con borde rojo iluminado (`.is-pressing`), y emite una vibración corta (`navigator.vibrate(50)`).
+- **Filtro Anti-Duplicados en "Agregar Personaje" (`CharacterModal.jsx`)**:
+  - El modal filtra los personajes disponibles contra el inventario actual (`inventory`), evitando mostrar personajes ya incorporados al equipo. Si todos los personajes (o los de un elemento) ya han sido agregados, muestra un estado vacío informativo y deshabilita el botón de incorporar.
 - **Mejora en Modo Claro (Light Mode)**: Se disminuyó la opacidad del gradiente de cobertura (`--card-backdrop` ajustado a `0.50` en bordes y `0.22` al centro) para que los artes de fondo (namecards) de cada personaje se aprecien con excelente fidelidad y contraste sin oscurecer los textos.
 
 ### 2.3. Pestaña "Optimizador de Afinidad" (`AffinityMatcher.jsx`)
@@ -66,10 +74,10 @@ Se eliminó el banner superior estático redundante para maximizar el espacio ve
 - Barra superior de botones reducida en tamaño (altura 26px, iconos de 14px, tipografía 0.72rem), con badges de color elemental para Todos, Pyro, Hydro, Anemo, Electro, Dendro, Cryo y Geo.
 
 #### C. Selección de Carry Integrada en la Tarjeta (Sin Botones Saturados)
-- Se **eliminó el botón explícito "Seleccionar Carry"** para evitar abrumar al usuario con controles redundantes.
+- Se **eliminó el botón explícito "Seleccionar Carry"** y se removió la etiqueta redundante `🎯 CARRY ACTIVO`.
 - **Interacción Fluida**:
   - Al hacer **clic en cualquier parte de la tarjeta del Main DPS** (fuera del icono de avatar), se ejecuta automáticamente la selección del Carry y la búsqueda de equipos por afinidad (`POST /affinity/match`).
-  - La tarjeta activa se resalta con un borde rojizo iluminado y la etiqueta `🎯 CARRY ACTIVO`.
+  - La tarjeta activa se resalta con un borde rojizo iluminado distintivo (`row-selected-carry`).
   - **Función Desactivada en Soportes**: En las tarjetas de Sub-DPS, Soportes y Curadores esta función de clic está estrictamente desactivada para preservar su rol táctico de acompañamiento.
 
 #### D. Interacción Monocromática para Exclusión de Personajes
@@ -81,13 +89,17 @@ Se eliminó el banner superior estático redundante para maximizar el espacio ve
 - Inmediatamente arriba de la lista de Sub-DPS, Soportes y Curadores, se ubica la leyenda informativa:
   > *⚙️ Trabajando en poder usar personajes que no sean Main Dps*
 
-### 2.4. Tarjetas de Equipos Sugeridos y Guardados: Diseño sin Saturación
+### 2.4. Tarjetas de Equipos Sugeridos y Guardados: Diseño sin Saturación y Stickers Amigables
 Tanto en la lista de resultados del Optimizador como en la vista de Equipos Guardados ([SavedTeamsView.jsx](file:///home/tyreans/metips/vgbuilder/client/src/inventory/components/SavedTeamsView.jsx)), las tarjetas muestran **únicamente lo esencial**:
 
 1. **Nombre del Arquetipo / Equipo**: Título tipográfico limpio y destacado (ej. *Vaporizados Clásico*, *Mono Geo Hiperdefensa*, *Tighnari Spread*).
 2. **Botón de Guardado / Eliminación**: Botón `💾 Guardar Equipo` (con cambio a `✓ Guardado` tras pulsar) o botón `🗑️ Eliminar` en la vista de guardados.
-3. **Cuadrícula de los 4 Personajes (`team-members-grid`)**:
-   - **Retratos Grandes y Vistosos**: Avatares de `78px × 78px` con bordes redondeados, fondo oscuro y animación suave de elevación al pasar el cursor.
+3. **Cuadrícula de los 4 Personajes (`team-members-grid`) con Stickers Dinámicos**:
+   - **Retratos de Stickers Amigables (`client/public/Images/stckersGI/`)**:
+     - 50 personajes poseen **2 stickers amigables** que se renderizan de forma **aleatoria (50% / 50%)**.
+     - Noelle cuenta con 1 sticker amigable (`noelle_shy.png`).
+     - Aloy (quien no posee stickers en la carpeta) utiliza el icono oficial actual como fallback.
+     - Ajuste `object-fit: contain` con padding suave y zoom en hover (`scale(1.08)`).
    - **Nombre**: En tipografía negrita destacada.
    - **Rol Táctico**: Main DPS, Sub-DPS, Support o Healer.
    - **Tag de Elemento**: Badge distintivo coloreado según el elemento Genshin.

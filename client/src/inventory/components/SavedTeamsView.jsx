@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { CHARACTERS } from '../data/characters';
+import { getTeamMemberAvatar, getDefaultCharacterIcon } from '../data/characterStickers';
 
 export function SavedTeamsView({ onGoToOptimizer }) {
   const [savedTeams, setSavedTeams] = useState(() => {
@@ -126,7 +127,7 @@ export function SavedTeamsView({ onGoToOptimizer }) {
               {/* Fila de Personajes con imágenes grandes, nombre, rol y elemento (Sin Constelación) */}
               <div className="team-members-grid">
                 {(t.team || []).map((m, mIdx) => {
-                  const charImg = getCharacterImage(m.name);
+                  const charImg = m.avatar || getTeamMemberAvatar(m.name);
                   const artifactBind = (t.artifactAssignments || []).find(
                     (a) => a.characterName?.toLowerCase() === m.name?.toLowerCase() || a.characterId === m.id
                   );
@@ -142,7 +143,12 @@ export function SavedTeamsView({ onGoToOptimizer }) {
                             alt={m.name}
                             className="member-showcase-img"
                             onError={(e) => {
-                              e.target.style.display = 'none';
+                              const fallback = getDefaultCharacterIcon(m.name);
+                              if (fallback && e.target.src !== fallback) {
+                                e.target.src = fallback;
+                              } else {
+                                e.target.style.display = 'none';
+                              }
                             }}
                           />
                         ) : (

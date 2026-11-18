@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { ELEMENTS, CHARACTERS } from '../data/characters';
 import { findAffinityCharacter, isMainDps } from '../data/affinityCharacters';
+import { getTeamMemberAvatar, getDefaultCharacterIcon } from '../data/characterStickers';
 
 export function AffinityMatcher({
   inventory = [],
@@ -112,8 +113,16 @@ export function AffinityMatcher({
       }
 
       if (Array.isArray(data)) {
-        setTeams(data);
-        if (data.length === 0) {
+        // Enriquecer cada miembro del equipo con sticker aleatorio (o icono oficial si no posee)
+        const enrichedTeams = data.map((teamObj) => ({
+          ...teamObj,
+          team: (teamObj.team || []).map((member) => ({
+            ...member,
+            avatar: getTeamMemberAvatar(member.name)
+          }))
+        }));
+        setTeams(enrichedTeams);
+        if (enrichedTeams.length === 0) {
           setErrorMsg('No se encontraron combinaciones viables con los acompañantes activos.');
         }
       } else {
@@ -352,12 +361,6 @@ export function AffinityMatcher({
                         </div>
                       </div>
                     </div>
-
-                    <div className="char-actions-col">
-                      {isCarrySelected && (
-                        <span className="badge-carry-active">🎯 CARRY ACTIVO</span>
-                      )}
-                    </div>
                   </div>
                 );
               })}
@@ -474,7 +477,7 @@ export function AffinityMatcher({
                   : 'Selecciona un Personaje Principal'}
               </h3>
               <p className="placeholder-desc">
-                Haz clic en el botón <strong>🎯 Seleccionar Carry</strong> en cualquiera de tus personajes Main DPS a la izquierda para generar automáticamente los mejores equipos.
+                Haz clic en cualquiera de tus personajes Main DPS a la izquierda para generar automáticamente los mejores equipos.
               </p>
             </div>
           )}
@@ -508,7 +511,7 @@ export function AffinityMatcher({
                     {/* Fila de Personajes con imágenes más grandes y vistosas (Sin Constelación) */}
                     <div className="team-members-grid">
                       {(t.team || []).map((m, mIdx) => {
-                        const charImg = getMemberImage(m.name);
+                        const charImg = m.avatar || getTeamMemberAvatar(m.name);
                         const artifactBind = (t.artifactAssignments || []).find(
                           (a) => a.characterName?.toLowerCase() === m.name?.toLowerCase() || a.characterId === m.id
                         );
@@ -524,7 +527,12 @@ export function AffinityMatcher({
                                   alt={m.name}
                                   className="member-showcase-img"
                                   onError={(e) => {
-                                    e.target.style.display = 'none';
+                                    const fallback = getDefaultCharacterIcon(m.name);
+                                    if (fallback && e.target.src !== fallback) {
+                                      e.target.src = fallback;
+                                    } else {
+                                      e.target.style.display = 'none';
+                                    }
                                   }}
                                 />
                               ) : (

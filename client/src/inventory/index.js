@@ -9,5 +9,12 @@ export { AffinityMatcher } from './components/AffinityMatcher';
 export { SavedTeamsView } from './components/SavedTeamsView';
 export { CHARACTERS, ELEMENTS } from './data/characters';
 export { AFFINITY_CHARACTERS, findAffinityCharacter, isMainDps } from './data/affinityCharacters';
+export {
+  CHARACTER_STICKERS,
+  getCharacterStickers,
+  getRandomCharacterSticker,
+  getDefaultCharacterIcon,
+  getTeamMemberAvatar
+} from './data/characterStickers';
 export { GenshinEngine } from './GenshinEngine';
 

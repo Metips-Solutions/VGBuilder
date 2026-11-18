@@ -203,11 +203,12 @@ function AppContent() {
         </div>
       </footer>
 
-      {/* Popup Modal con carrusel, filtros, showcase animado y constelaciones */}
+      {/* Popup Modal con carrusel, filtros, showcase animado y constelaciones (filtrando ya agregados) */}
       <CharacterModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onAddCharacter={handleAddCharacter}
+        inventory={inventory}
       />
 
       {/* Popup Modal compacto para sincronizar con perfil de Enka */}

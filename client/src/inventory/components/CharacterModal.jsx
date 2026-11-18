@@ -1,28 +1,50 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { CHARACTERS, ELEMENTS } from '../data/characters';
 import { ElementFilter } from './ElementFilter';
 import { CharacterCarousel } from './CharacterCarousel';
 import { CharacterShowcase } from './CharacterShowcase';
 import { ConstellationSelector } from './ConstellationSelector';
 
-export function CharacterModal({ isOpen, onClose, onAddCharacter }) {
+export function CharacterModal({ isOpen, onClose, onAddCharacter, inventory = [] }) {
   const [activeElement, setActiveElement] = useState(null);
-  const [selectedCharacter, setSelectedCharacter] = useState(CHARACTERS[0]);
+  const [selectedCharacter, setSelectedCharacter] = useState(null);
   const [constellation, setConstellation] = useState(0);
 
-  // Filtrar personajes por elemento seleccionado (o todos)
-  const filteredCharacters = activeElement
-    ? CHARACTERS.filter((c) => c.element === activeElement)
-    : CHARACTERS;
+  // Set de personajes ya existentes en el inventario (por id y por name normalizados)
+  const existingSet = useMemo(() => {
+    const set = new Set();
+    inventory.forEach((item) => {
+      if (item.character?.id) set.add(item.character.id.toLowerCase());
+      if (item.character?.name) set.add(item.character.name.toLowerCase());
+    });
+    return set;
+  }, [inventory]);
 
-  // Si el filtro excluye al seleccionado, cambiar al primer disponible del filtro
+  // Excluir los personajes que ya están en el inventario
+  const availableCharacters = useMemo(() => {
+    return CHARACTERS.filter(
+      (c) => !existingSet.has(c.id.toLowerCase()) && !existingSet.has(c.name.toLowerCase())
+    );
+  }, [existingSet]);
+
+  // Filtrar personajes disponibles por elemento seleccionado (o todos)
+  const filteredCharacters = useMemo(() => {
+    return activeElement
+      ? availableCharacters.filter((c) => c.element === activeElement)
+      : availableCharacters;
+  }, [activeElement, availableCharacters]);
+
+  // Mantener seleccionado un personaje válido de los disponibles
   useEffect(() => {
-    if (activeElement && selectedCharacter.element !== activeElement) {
-      if (filteredCharacters.length > 0) {
+    if (!isOpen) return;
+    if (filteredCharacters.length > 0) {
+      if (!selectedCharacter || !filteredCharacters.some((c) => c.id === selectedCharacter.id)) {
         setSelectedCharacter(filteredCharacters[0]);
       }
+    } else {
+      setSelectedCharacter(null);
     }
-  }, [activeElement]);
+  }, [isOpen, activeElement, filteredCharacters]);
 
   // Manejo de la tecla Escape para cerrar
   useEffect(() => {
@@ -82,23 +104,41 @@ export function CharacterModal({ isOpen, onClose, onAddCharacter }) {
             onSelectElement={setActiveElement}
           />
 
-          {/* 2. Carrusel horizontal de personajes */}
-          <CharacterCarousel
-            characters={filteredCharacters}
-            selectedCharacter={selectedCharacter}
-            onSelectCharacter={setSelectedCharacter}
-          />
+          {filteredCharacters.length === 0 ? (
+            <div className="modal-empty-state">
+              <div className="modal-empty-icon">✓</div>
+              <h4 className="modal-empty-title">
+                {activeElement
+                  ? `Todos los personajes ${ELEMENTS[activeElement]?.name || ''} ya están en tu inventario`
+                  : '¡Todos los personajes disponibles ya están en tu inventario!'}
+              </h4>
+              <p className="modal-empty-desc">
+                {activeElement
+                  ? 'Prueba seleccionando otro elemento o elimina alguno si deseas reconfigurarlo.'
+                  : 'Has incorporado a todos los personajes disponibles al catálogo de tu equipo.'}
+              </p>
+            </div>
+          ) : (
+            <>
+              {/* 2. Carrusel horizontal de personajes disponibles */}
+              <CharacterCarousel
+                characters={filteredCharacters}
+                selectedCharacter={selectedCharacter}
+                onSelectCharacter={setSelectedCharacter}
+              />
 
-          {/* 3. Showcase del personaje + Selector dual de constelación */}
-          <div className="showcase-grid">
-            <CharacterShowcase character={selectedCharacter} />
+              {/* 3. Showcase del personaje + Selector dual de constelación */}
+              <div className="showcase-grid">
+                <CharacterShowcase character={selectedCharacter} />
 
-            <ConstellationSelector
-              constellation={constellation}
-              onChangeConstellation={setConstellation}
-              activeColor={elemMeta.color}
-            />
-          </div>
+                <ConstellationSelector
+                  constellation={constellation}
+                  onChangeConstellation={setConstellation}
+                  activeColor={elemMeta.color}
+                />
+              </div>
+            </>
+          )}
         </div>
 
         {/* Pie del modal */}
@@ -115,8 +155,10 @@ export function CharacterModal({ isOpen, onClose, onAddCharacter }) {
             type="button"
             className="btn-pill btn-pill-primary"
             onClick={handleAdd}
+            disabled={!selectedCharacter}
+            title={!selectedCharacter ? 'No hay personajes disponibles para agregar' : undefined}
           >
-            + Incorporar al equipo · C{constellation}
+            + Incorporar al equipo {selectedCharacter ? `· C${constellation}` : ''}
           </button>
         </div>
       </div>
