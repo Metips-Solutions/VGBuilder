@@ -64,44 +64,60 @@ export function GenshinEngine({
 
   return (
     <div className="engine-container">
-      {/* Switch de Vistas (Pestañas de Navegación) - Sin banner redundante */}
-      <div className="engine-tab-switch-bar" role="tablist" aria-label="Secciones del motor">
-        <button
-          type="button"
-          role="tab"
-          aria-selected={activeTab === 'inventory'}
-          className={`engine-switch-btn ${activeTab === 'inventory' ? 'active' : ''}`}
-          onClick={() => setActiveTab('inventory')}
-        >
-          <span className="switch-icon">👥</span>
-          <span className="switch-label">Mi Inventario</span>
-          <span className="switch-count-badge">{inventory.length}</span>
-        </button>
+      {/* Barra de Navegación Segmented Control + Toggle de Acento */}
+      <div className="engine-nav-header">
+        <div className="engine-tab-switch-bar" role="tablist" aria-label="Secciones del motor">
+          <button
+            type="button"
+            role="tab"
+            aria-selected={activeTab === 'inventory'}
+            className={`engine-switch-btn ${activeTab === 'inventory' ? 'active' : ''}`}
+            onClick={() => setActiveTab('inventory')}
+          >
+            <img
+              src="/Images/Genshin Impact/UI_Icons/Icon_Character_Archive.webp"
+              alt=""
+              className="switch-icon-img"
+              width="20"
+              height="20"
+            />
+            <span className="switch-label">Personajes</span>
+          </button>
 
-        <button
-          type="button"
-          role="tab"
-          aria-selected={activeTab === 'affinity'}
-          className={`engine-switch-btn ${activeTab === 'affinity' ? 'active' : ''}`}
-          onClick={() => setActiveTab('affinity')}
-        >
-          <span className="switch-icon">⚡</span>
-          <span className="switch-label">Optimizador de Afinidad</span>
-        </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={activeTab === 'affinity'}
+            className={`engine-switch-btn ${activeTab === 'affinity' ? 'active' : ''}`}
+            onClick={() => setActiveTab('affinity')}
+          >
+            <img
+              src="/Images/Genshin Impact/UI_Icons/Icon_Party_Setup.webp"
+              alt=""
+              className="switch-icon-img"
+              width="20"
+              height="20"
+            />
+            <span className="switch-label">Creación Equipos</span>
+          </button>
 
-        <button
-          type="button"
-          role="tab"
-          aria-selected={activeTab === 'savedTeams'}
-          className={`engine-switch-btn ${activeTab === 'savedTeams' ? 'active' : ''}`}
-          onClick={() => setActiveTab('savedTeams')}
-        >
-          <span className="switch-icon">💾</span>
-          <span className="switch-label">Equipos Guardados</span>
-          {savedCount > 0 && (
-            <span className="switch-count-badge count-saved">{savedCount}</span>
-          )}
-        </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={activeTab === 'savedTeams'}
+            className={`engine-switch-btn ${activeTab === 'savedTeams' ? 'active' : ''}`}
+            onClick={() => setActiveTab('savedTeams')}
+          >
+            <img
+              src="/Images/Genshin Impact/UI_Icons/Icon_Archive.webp"
+              alt=""
+              className="switch-icon-img"
+              width="20"
+              height="20"
+            />
+            <span className="switch-label">Guardados</span>
+          </button>
+        </div>
       </div>
 
       {/* Renderizado condicional según la pestaña activa */}

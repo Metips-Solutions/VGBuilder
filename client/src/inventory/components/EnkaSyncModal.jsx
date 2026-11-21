@@ -30,27 +30,31 @@ export function EnkaSyncModal({ isOpen, onClose, onSyncSuccess }) {
 
   if (!isOpen) return null;
 
-  // Botón 1: Pegar desde el portapapeles
+  // Pegar desde el portapapeles
   const handlePaste = async () => {
     try {
-      const textFromClipboard = await navigator.clipboard.readText();
-      if (textFromClipboard) {
-        setUrl(textFromClipboard.trim());
-        setError(null);
+      if (navigator?.clipboard?.readText) {
+        const textFromClipboard = await navigator.clipboard.readText();
+        if (textFromClipboard) {
+          setUrl(textFromClipboard.trim());
+          setError(null);
+          return;
+        }
       }
-    } catch (err) {
-      setError('No se pudo acceder al portapapeles automáticamente. Pega el enlace manualmente con Ctrl+V.');
+      throw new Error('Clipboard empty or unreadable');
+    } catch {
+      setError('No se pudo acceder al portapapeles automáticamente. Pega el enlace con Ctrl+V.');
     }
   };
 
-  // Botón 2: Borrar campo
+  // Limpiar campo
   const handleClear = () => {
     setUrl('');
     setError(null);
     setSuccessMsg(null);
   };
 
-  // Botón 3: Aceptar / Sincronizar
+  // Sincronizar
   const handleSync = async (e) => {
     if (e) e.preventDefault();
     if (!url.trim()) {
@@ -103,7 +107,7 @@ export function EnkaSyncModal({ isOpen, onClose, onSyncSuccess }) {
         throw new Error('Los personajes detectados en Enka no están disponibles en el catálogo actual de VGBuilder.');
       }
 
-      setSuccessMsg(`¡Sincronización exitosa! Se importaron/actualizaron ${normalizedCharacters.length} personajes.`);
+      setSuccessMsg(`¡Sincronización exitosa! Se importaron ${normalizedCharacters.length} personajes.`);
 
       // Notificar al padre para actualizar estado y localStorage
       if (onSyncSuccess) {
@@ -123,14 +127,24 @@ export function EnkaSyncModal({ isOpen, onClose, onSyncSuccess }) {
 
   return (
     <div className="enka-modal-backdrop" onClick={onClose} role="dialog" aria-modal="true">
-      <div
-        className={`enka-modal-content ${showHelp ? 'with-help' : ''}`}
-        onClick={(e) => e.stopPropagation()}
-      >
+      <div className="enka-modal-content" onClick={(e) => e.stopPropagation()}>
         {/* Encabezado del Popup */}
         <div className="enka-modal-header">
           <div className="enka-title-group">
-            <span className="enka-badge-icon">⚡</span>
+            <div className="enka-badge-icon" aria-hidden="true">
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+              </svg>
+            </div>
             <div>
               <h3 className="enka-modal-title">Sincronizar Perfil de Enka</h3>
               <p className="enka-modal-subtitle">
@@ -140,18 +154,32 @@ export function EnkaSyncModal({ isOpen, onClose, onSyncSuccess }) {
           </div>
 
           <div className="enka-header-actions">
-            {/* Botón de Ayuda */}
+            {/* Botón circular de Ayuda (?) con SVG limpio */}
             <button
               type="button"
               className={`enka-icon-btn ${showHelp ? 'active' : ''}`}
               onClick={() => setShowHelp(!showHelp)}
-              title={showHelp ? 'Ocultar guía' : 'Ver guía paso a paso'}
-              aria-label="Ayuda para sincronizar con Enka"
+              title={showHelp ? 'Ocultar formato de enlace' : 'Ver formato de enlace'}
+              aria-label="Ayuda de formato de enlace"
             >
-              ❓
+              <svg
+                width="15"
+                height="15"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.3"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+                <circle cx="12" cy="17" r="0.6" fill="currentColor" />
+              </svg>
             </button>
 
-            {/* Botón Cerrar Ventana */}
+            {/* Botón circular de Cierre (×) con SVG limpio */}
             <button
               type="button"
               className="enka-icon-btn"
@@ -159,12 +187,25 @@ export function EnkaSyncModal({ isOpen, onClose, onSyncSuccess }) {
               title="Cerrar ventana"
               aria-label="Cerrar ventana"
             >
-              ✕
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.4"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
             </button>
           </div>
         </div>
 
-        {/* Formulario / Input y Acciones */}
+        {/* Formulario / Input con acciones integradas y Botón Sincronizar */}
         <form onSubmit={handleSync} className="enka-modal-body">
           <label className="enka-input-label" htmlFor="enka-url-input">
             URL de Perfil / Builds de Enka.Network:
@@ -177,112 +218,87 @@ export function EnkaSyncModal({ isOpen, onClose, onSyncSuccess }) {
               className="enka-text-input"
               value={url}
               onChange={(e) => setUrl(e.target.value)}
-              placeholder="https://enka.network/u/tu_usuario/123456/builds/"
+              placeholder="https://enka.network/u/usuario/123456"
               disabled={isLoading}
               autoFocus
             />
+
+            {/* Acción integrada dentro del input a la derecha */}
+            <div className="enka-input-action-slot">
+              {!url ? (
+                <button
+                  type="button"
+                  className="enka-paste-inline-btn"
+                  onClick={handlePaste}
+                  disabled={isLoading}
+                  title="Pegar URL desde el portapapeles"
+                >
+                  Pegar
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  className="enka-clear-inline-btn"
+                  onClick={handleClear}
+                  disabled={isLoading}
+                  title="Borrar texto"
+                  aria-label="Borrar texto"
+                >
+                  <svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
+                </button>
+              )}
+            </div>
           </div>
+
+          {/* Panel de ayuda simplificado: solo formato de enlace de Enka */}
+          {showHelp && (
+            <div className="enka-help-compact-card">
+              <p className="enka-help-text">
+                Ingresa a <strong>enka.network</strong>, abre tu perfil público de builds y copia la URL completa desde tu navegador:
+              </p>
+              <div className="enka-help-example-box font-mono">
+                <span className="enka-help-proto">https://enka.network</span>
+                <span className="enka-help-path">/u/usuario/123456</span>
+              </div>
+            </div>
+          )}
 
           {/* Mensajes de Estado */}
           {error && <div className="enka-feedback-msg error">{error}</div>}
           {successMsg && <div className="enka-feedback-msg success">{successMsg}</div>}
 
-          {/* Barra de 3 Botones Principales + Cancelar */}
-          <div className="enka-modal-footer">
-            <div className="enka-secondary-group">
-              {/* Botón 1: Pegar */}
-              <button
-                type="button"
-                className="btn-pill btn-pill-secondary btn-sm"
-                onClick={handlePaste}
-                disabled={isLoading}
-                title="Pegar URL desde el portapapeles"
-              >
-                📋 Pegar
-              </button>
-
-              {/* Botón 2: Borrar */}
-              <button
-                type="button"
-                className="btn-pill btn-pill-secondary btn-sm"
-                onClick={handleClear}
-                disabled={isLoading || !url}
-                title="Limpiar campo"
-              >
-                🗑️ Borrar
-              </button>
-            </div>
-
-            <div className="enka-primary-group">
-              <button
-                type="button"
-                className="enka-btn-cancel"
-                onClick={onClose}
-                disabled={isLoading}
-              >
-                Cancelar
-              </button>
-
-              {/* Botón 3: Aceptar */}
-              <button
-                type="submit"
-                className="btn-pill btn-pill-primary btn-sm btn-accept"
-                disabled={isLoading || !url.trim()}
-              >
-                {isLoading ? (
-                  <>
-                    <span className="enka-spinner"></span>
-                    Sincronizando...
-                  </>
-                ) : (
-                  <>✓ Aceptar</>
-                )}
-              </button>
-            </div>
-          </div>
+          {/* Botón Filled Sincronizar de ancho completo */}
+          <button
+            type="submit"
+            className="enka-btn-sync"
+            disabled={isLoading || !url.trim()}
+          >
+            {isLoading ? (
+              <>
+                <span className="enka-sync-spinner" aria-hidden="true" />
+                <span>Sincronizando...</span>
+              </>
+            ) : (
+              <span>Sincronizar</span>
+            )}
+          </button>
         </form>
-
-        {/* Submódulo de Ayuda Desplegable */}
-        {showHelp && (
-          <div className="enka-help-drawer">
-            <div className="enka-help-header">
-              <span className="enka-help-title">❓ Guía de Obtención de Perfil Enka (4 Pasos)</span>
-              <span className="enka-help-badge">Soporte In-Game</span>
-            </div>
-
-            <div className="enka-steps-grid">
-              <div className="enka-step-card">
-                <div className="step-num">1</div>
-                <h4>En Genshin</h4>
-                <p>Abre el Menú de Paimon → <strong>Editar Perfil</strong> y activa la casilla <strong>"Mostrar detalles de los personajes"</strong>.</p>
-              </div>
-
-              <div className="enka-step-card">
-                <div className="step-num">2</div>
-                <h4>Exhibidor</h4>
-                <p>Coloca en tu exhibidor público los personajes que desees importar (hasta 8).</p>
-              </div>
-
-              <div className="enka-step-card">
-                <div className="step-num">3</div>
-                <h4>Enka.Network</h4>
-                <p>Ve a <strong>enka.network</strong>, ingresa tu UID público y copia el enlace de tu perfil de builds.</p>
-              </div>
-
-              <div className="enka-step-card highlight">
-                <div className="step-num">4</div>
-                <h4>Pegar y Listo</h4>
-                <p>Haz clic en el botón <strong>"📋 Pegar"</strong> y luego en <strong>"✓ Aceptar"</strong> para sincronizar.</p>
-              </div>
-            </div>
-
-            <div className="enka-privacy-note">
-              🔒 <strong>Privacidad:</strong> Solo se leen los datos públicos del exhibidor. Tus datos se guardan exclusivamente en el <code>localStorage</code> de tu navegador.
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );
 }
+
 export default EnkaSyncModal;
