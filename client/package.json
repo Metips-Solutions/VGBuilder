@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "bunx --bun astro dev --port 5173 --host",
+    "dev": "bunx --bun astro dev --port 8200 --host",
     "build": "bunx --bun astro build",
     "preview": "bunx --bun astro preview --port 4173",
     "start": "bun run server.ts",

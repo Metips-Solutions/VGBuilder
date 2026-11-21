@@ -5,7 +5,7 @@ import { catalogModule } from "./catalog/catalog.routes";
 import { inventoryModule } from "./inventory/inventory.routes";
 import { affinityModule } from "./affinity/affinity.routes";
 
-const port = Number(process.env.PORT ?? 3000);
+const port = Number(process.env.PORT ?? 8300);
 
 const app = new Elysia()
   .use(swagger({ path: "/docs" }))

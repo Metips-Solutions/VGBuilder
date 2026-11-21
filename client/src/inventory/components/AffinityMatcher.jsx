@@ -104,7 +104,7 @@ export function AffinityMatcher({
     const startTime = performance.now();
 
     try {
-      const response = await fetch('/affinity/match', {
+      const response = await fetch('https://apivgb.tyreans.dev/affinity/match', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

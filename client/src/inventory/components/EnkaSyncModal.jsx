@@ -67,7 +67,7 @@ export function EnkaSyncModal({ isOpen, onClose, onSyncSuccess }) {
     setSuccessMsg(null);
 
     try {
-      const response = await fetch('/api/inventory/sync-by-url', {
+      const response = await fetch('https://apivgb.tyreans.dev/api/inventory/sync-by-url', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
