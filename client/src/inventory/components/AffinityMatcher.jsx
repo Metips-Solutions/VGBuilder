@@ -255,38 +255,34 @@ export function AffinityMatcher({
     (item) => item.affinityChar && item.affinityChar.id === selectedCarryId
   );
 
-  if (inventory.length === 0) {
+   if (inventory.length === 0) {
     return (
-      <div className="affinity-empty-state">
-        <div className="hero-icon">⚡</div>
-        <h2 className="hero-title">Tu inventario está vacío</h2>
-        <p className="hero-desc">
-          Para utilizar el Optimizador de Afinidad, primero agrega personajes de Genshin Impact a tu inventario.
-        </p>
-        <button
-          type="button"
-          className="btn-apple btn-apple-tinted btn-apple-add"
-          onClick={onOpenModal}
-          title="Agregar personajes al inventario"
-        >
-          <svg
-            className="btn-apple-icon-svg"
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden="true"
-          >
-            <line x1="12" y1="5" x2="12" y2="19" />
-            <line x1="5" y1="12" x2="19" y2="12" />
-          </svg>
-          <span>Agregar</span>
-        </button>
-      </div>
+      <div className="affinity-placeholder-box">
+              <img
+                src="/Images/stckersGI/yuegui_dance.webp"
+                alt="Yuegui"
+                className="affinity-placeholder-sticker"
+                width="140"
+                height="140"
+                loading="lazy"
+                decoding="async"
+              />
+              <h3 className="placeholder-title">
+                {selectedCarryItem
+                  ? `Carry: ${selectedCarryItem.character.name}`
+                  : 'Parece que no tienes personajes en tu inventario'}
+              </h3>
+              {/*<p className="placeholder-desc">
+                Selecciona un personaje Main DPS de tu inventario para generar automáticamente las mejores combinaciones de equipo.
+              </p>
+              <button
+                type="button"
+                className="btn-pill btn-pill-primary mobile-only-trigger-btn"
+                onClick={() => setIsDrawerOpen(true)}
+              >
+                👥 Abrir Catálogo & Elegir Carry
+              </button>*/}
+            </div>
     );
   }
 

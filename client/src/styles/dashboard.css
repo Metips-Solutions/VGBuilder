@@ -38,7 +38,19 @@
 
 @media (min-width: 768px) {
   .home-hero-banner-container {
-    height: 240px;
+    height: 600px;
+  }
+}
+
+@media (min-width: 1000px) {
+  .home-hero-banner-container {
+    height: 720px;
+  }
+}
+
+@media (-webkit-min-device-pixel-ratio: 1.25) and (min-width: 900px) {
+  .home-hero-banner-container {
+    height: 500px;
   }
 }
 
@@ -85,6 +97,12 @@
   height: 100%;
   position: relative;
   overflow: hidden;
+}
+
+@media (min-width: 1080px) {
+  .hero-carousel-slide {
+    flex: 0 0 clamp(660px, 48vw, 600px);
+  }
 }
 
 .hero-carousel-img {
