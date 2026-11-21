@@ -1,0 +1,23 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import '../styles/genshin/inventory.css';
+import '../styles/genshin/affinity.css';
+import '../styles/genshin/modals.css';
+import { GenshinWorkspace } from '../inventory/GenshinWorkspace.jsx';
+---
+
+<BaseLayout
+  title="VGBuilder | Genshin Impact"
+  description="Gestiona tu inventario de personajes de Genshin Impact, sincroniza con Enka.Network y optimiza afinidades elementales y equipos."
+  imageAlt="VGBuilder · Motor de Inventario y Afinidad para Genshin Impact"
+>
+  <GenshinWorkspace client:only="react">
+    <div
+      slot="fallback"
+      class="engine-container"
+      style="padding: 48px 16px; text-align: center; color: var(--text-secondary);"
+    >
+      Cargando motor de Genshin Impact...
+    </div>
+  </GenshinWorkspace>
+</BaseLayout>

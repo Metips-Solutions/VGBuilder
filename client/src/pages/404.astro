@@ -1,0 +1,22 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import '../styles/dashboard.css';
+---
+
+<BaseLayout
+  title="Página no encontrada | VGBuilder"
+  description="La ruta solicitada no existe en VGBuilder."
+  noindex={true}
+>
+  <div class="not-found-container">
+    <img
+      src="/Images/stckersGI/aino_fix.webp"
+      alt="Página no encontrada"
+      class="not-found-sticker"
+    />
+    <h1 class="not-found-title">La página que buscas no existe</h1>
+    <a href="/" class="not-found-link">
+      O ve a nuestra página principal
+    </a>
+  </div>
+</BaseLayout>

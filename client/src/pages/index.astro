@@ -1,0 +1,249 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import '../styles/dashboard.css';
+
+const games = [
+  {
+    id: 'genshin',
+    name: 'Genshin Impact',
+    status: 'active',
+    statusLabel: '✦ Motor Activo',
+    logoSrc: '/Images/logos/gi_logo.webp',
+    bannerImg: '/Images/banners/genshin.webp',
+    webImg: 'https://wallpapercave.com/wp/wp7486905.jpg',
+    desc: 'Creación de equipos optimizados y sincronización con tu cuenta de Genshin Impact a través de Enka.Network.',
+    actionLabel: 'Abrir motor →',
+    href: '/genshin',
+    featured: true
+  },
+  {
+    id: 'zzz',
+    name: 'Zenless Zone Zero (ZZZ)',
+    status: 'upcoming',
+    statusLabel: 'En Desarrollo',
+    logoSrc: '/Images/logos/zzz_logo.webp',
+    bannerImg: '/Images/banners/zzz.webp',
+    webImg: 'https://wallpapercave.com/wp/wp12340088.jpg',
+    desc: 'Análisis de acumulación de anomalías de atributos, sinergias de facciones urbanas y compatibilidad de Bangboo.',
+    actionLabel: 'Próximamente',
+    href: null,
+    featured: false
+  },
+  {
+    id: 'hsr',
+    name: 'Honkai: Star Rail',
+    status: 'upcoming',
+    statusLabel: 'En Desarrollo',
+    logoSrc: '/Images/logos/hsr_logo.webp',
+    bannerImg: '/Images/banners/hsr.webp',
+    webImg: 'https://wallpapercave.com/wp/wp12342709.jpg',
+    desc: 'Simulación de sinergias entre Vías de combate, cobertura de debilidades de ruptura y optimización de Conos de Luz.',
+    actionLabel: 'Próximamente',
+    href: null,
+    featured: false
+  },
+  {
+    id: 'umamusume',
+    name: 'Uma Musume: Pretty Derby',
+    status: 'upcoming',
+    statusLabel: 'En Desarrollo',
+    logoSrc: '/Images/logos/um_logo.webp',
+    bannerImg: '/Images/banners/umamusume.webp',
+    webImg: 'https://wallpapercave.com/wp/wp6538873.png',
+    desc: 'Modelado de compatibilidad genética entre corredoras, factores de herencia y afinidad de cartas de soporte.',
+    actionLabel: 'Próximamente',
+    href: null,
+    featured: false
+  },
+  {
+    id: 'wuwa',
+    name: 'Wuthering Waves',
+    status: 'planned',
+    statusLabel: 'Planificado',
+    logoSrc: '/Images/logos/ww_logo.webp',
+    bannerImg: '/Images/banners/wuwa.webp',
+    webImg: 'https://wallpapercave.com/wp/wp12600978.jpg',
+    desc: 'Optimización de conjuntos sonoros de Ecos, atributos de concierto y combinaciones de habilidades Intro/Outro.',
+    actionLabel: 'Próximamente',
+    href: null,
+    featured: false
+  }
+];
+
+const heroBanners = [...games, ...games];
+---
+
+<BaseLayout
+  title="VGBuilder"
+  description="Plataforma de sugerencia de equipos, sinergias de escuadra e inventario local para Genshin Impact y próximos títulos gacha."
+>
+  <script is:inline slot="head">
+    (() => {
+      const hash = window.location.hash;
+      if (hash === '#/genshin' || hash === '#/genshin-impact') {
+        window.location.replace('/genshin');
+      }
+    })();
+  </script>
+
+  <div class="home-container">
+    <!-- Hero con carrusel automático tipo GIF (no interactivo) -->
+    <section class="home-hero-wrapper">
+      <div class="home-hero-banner-container">
+        <div class="hero-banner-carousel" aria-hidden="true">
+          <div class="hero-carousel-track">
+            {heroBanners.map((game, idx) => (
+              <div class="hero-carousel-slide">
+                <img
+                  src={game.bannerImg}
+                  data-fallback={game.webImg}
+                  alt=""
+                  class="hero-carousel-img"
+                  loading={idx < 4 ? 'eager' : 'lazy'}
+                  decoding="async"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div class="hero-banner-overlay"></div>
+
+        <div class="hero-banner-content">
+          <h1 class="hero-banner-title">VGBuilder</h1>
+          <p class="hero-banner-subtitle">
+            Optimizador modular de escuadras y sinergias gacha
+          </p>
+        </div>
+      </div>
+
+      <div class="home-hero-actions">
+        <a href="#motores" class="home-btn-primary">
+          Explorar motores
+        </a>
+        <a href="#como-funciona" class="home-btn-secondary">
+          Cómo funciona
+        </a>
+      </div>
+    </section>
+
+    <!-- Directorio de Juegos: Banners, Logos y tarjetas de motores -->
+    <section id="motores" class="games-section">
+      <div class="section-header">
+        <div class="section-title-wrapper">
+          <span class="section-badge">Directorio</span>
+          <h2 class="section-heading">Motores de Juegos</h2>
+        </div>
+        <p class="section-subheading">
+          Selecciona el motor correspondiente a tu juego favorito o explora las integraciones actualmente en desarrollo.
+        </p>
+      </div>
+
+      <div class="games-grid">
+        {games.map((game) => (
+          <article
+            class={`game-card ${game.featured ? 'game-card-featured' : ''} game-card-${game.status}`}
+          >
+            <div class="game-card-cover">
+              <img
+                src={game.bannerImg}
+                data-fallback={game.webImg}
+                alt={`Portada oficial del juego ${game.name}`}
+                class="game-cover-image"
+                loading="lazy"
+                decoding="async"
+              />
+              <div class="game-cover-overlay"></div>
+              <div class="game-card-header">
+                <div class="game-logo-wrapper">
+                  <img
+                    src={game.logoSrc}
+                    alt={`Logo de ${game.name}`}
+                    class="game-logo-img"
+                    loading="lazy"
+                  />
+                </div>
+                <div class="game-status-badge">
+                  <span class={`status-dot dot-${game.status}`}></span>
+                  {game.statusLabel}
+                </div>
+              </div>
+            </div>
+
+            <div class="game-card-body">
+              <h3 class="game-title">{game.name}</h3>
+              <p class="game-description">{game.desc}</p>
+            </div>
+
+            <div class="game-card-footer">
+              {game.href ? (
+                <a href={game.href} class="game-action-btn game-action-btn-primary">
+                  {game.actionLabel}
+                </a>
+              ) : (
+                <button
+                  type="button"
+                  class="game-action-btn game-action-btn-disabled"
+                  disabled
+                >
+                  {game.actionLabel}
+                </button>
+              )}
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- Resumen de características y arquitectura -->
+    <section id="como-funciona" class="features-section">
+      <div class="features-header">
+        <h2 class="features-heading">¿Cómo funciona la plataforma VGBuilder?</h2>
+        <p class="features-subheading">
+          Diseñada pensando en la escalabilidad para abarcar múltiples juegos bajo un estándar común de experiencia de usuario.
+        </p>
+      </div>
+
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">🧩</div>
+          <h3 class="feature-title">Motores Especializados Desacoplados</h3>
+          <p class="feature-desc">
+            Cada juego posee mecánicas singulares (reacciones elementales en Genshin, rupturas en Star Rail o factores en Uma Musume). Cada motor implementa sus algoritmos de forma independiente.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">⚡</div>
+          <h3 class="feature-title">Ingesta Rápida por UID Público</h3>
+          <p class="feature-desc">
+            Evita tener que capturar personajes uno por uno a mano. Nos integramos con servicios comunitarios públicos (como Enka.Network) para leer los perfiles públicos y cargar personajes con un clic.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">🛡️</div>
+          <h3 class="feature-title">Privacidad y Almacenamiento Local</h3>
+          <p class="feature-desc">
+            No almacenamos tus datos en bases de datos externas ni te pedimos cuentas privadas. Toda la información de tu equipo se guarda en el <code>localStorage</code> de tu propio navegador.
+          </p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    document.querySelectorAll<HTMLImageElement>('img[data-fallback]').forEach((img) => {
+      img.addEventListener(
+        'error',
+        () => {
+          const fallback = img.dataset.fallback;
+          if (fallback && img.src !== fallback) {
+            img.src = fallback;
+          }
+        },
+        { once: true }
+      );
+    });
+  </script>
+</BaseLayout>

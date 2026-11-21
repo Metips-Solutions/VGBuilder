@@ -1,0 +1,97 @@
+---
+import '../styles/global.css';
+import Header from '../components/layout/Header.astro';
+import Footer from '../components/layout/Footer.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  imageAlt?: string;
+  type?: 'website' | 'article';
+  noindex?: boolean;
+}
+
+const {
+  title = 'VGBuilder · Gestión de Inventario Genshin Impact',
+  description = 'Plataforma modular de optimización de afinidad, inventario local y sinergias gacha para Genshin Impact y más juegos.',
+  image = '/og-image.jpg',
+  imageAlt = 'VGBuilder — Optimizador modular de escuadras y sinergias gacha',
+  type = 'website',
+  noindex = false
+} = Astro.props;
+
+const siteBase = Astro.site ?? Astro.url;
+const canonicalURL = new URL(Astro.url.pathname, siteBase);
+const ogImageURL = new URL(image, siteBase);
+---
+
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    {noindex ? (
+      <meta name="robots" content="noindex, nofollow" />
+    ) : (
+      <link rel="canonical" href={canonicalURL} />
+    )}
+    <meta name="theme-color" content="#f2f2f7" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#1e2026" media="(prefers-color-scheme: dark)" />
+    <link rel="icon" type="image/webp" href="/Images/logos/LogoVGBuilder.webp" />
+
+    <!-- Open Graph / Facebook / Discord / WhatsApp -->
+    <meta property="og:type" content={type} />
+    <meta property="og:site_name" content="VGBuilder" />
+    <meta property="og:locale" content="es_MX" />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImageURL} />
+    {ogImageURL.protocol === 'https:' && (
+      <meta property="og:image:secure_url" content={ogImageURL} />
+    )}
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={imageAlt} />
+
+    <!-- Twitter / X Cards -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content={canonicalURL} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageURL} />
+    <meta name="twitter:image:alt" content={imageAlt} />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <script is:inline>
+      (() => {
+        try {
+          const saved = localStorage.getItem('vgbuilder_theme');
+          const theme = saved === 'dark' || saved === 'light' ? saved : 'light';
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch {
+          document.documentElement.setAttribute('data-theme', 'light');
+        }
+      })();
+    </script>
+    <slot name="head" />
+  </head>
+  <body>
+    <div class="app-container">
+      <Header />
+      <main class="main-content">
+        <slot />
+      </main>
+      <Footer />
+    </div>
+  </body>
+</html>

@@ -18,4 +18,5 @@ export {
   getShortCharacterName
 } from './data/characterStickers';
 export { GenshinEngine } from './GenshinEngine';
+export { GenshinWorkspace } from './GenshinWorkspace';
 

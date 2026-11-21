@@ -1,0 +1,99 @@
+---
+import '../../styles/footer.css';
+
+const currentYear = new Date().getFullYear();
+---
+
+<footer class="app-footer">
+  <div class="footer-content">
+    <div class="footer-info">
+      <div class="footer-brand">
+        <span class="footer-brand-title">VGBuilder</span>
+        <span class="footer-version-badge">PoC v0.1.0</span>
+      </div>
+      <p class="footer-desc">
+        Plataforma de optimización de afinidad y sinergias Gacha para Genshin Impact y más juegos.
+      </p>
+      <p class="footer-copyright">
+        © {currentYear} <strong>Metips Solutions</strong>
+      </p>
+      <p class="footer-copyright">
+        VGBuilder es una herramienta independiente creada por fans y no está afiliada, asociada ni respaldada por HoYoverse / COGNOSPHERE.
+      </p>
+      <button
+        type="button"
+        id="footer-reset-btn"
+        class="footer-reset-link"
+        title="Borra todos los personajes y configuraciones almacenadas en este navegador"
+      >
+        Restablecer datos locales
+      </button>
+    </div>
+  </div>
+</footer>
+
+<dialog
+  id="reset-storage-dialog"
+  class="apple-modal-dialog"
+  aria-labelledby="apple-modal-title"
+  aria-describedby="apple-modal-desc"
+>
+  <div class="apple-modal-card">
+    <h3 id="apple-modal-title" class="apple-modal-title">
+      ¿Restablecer datos locales?
+    </h3>
+    <p id="apple-modal-desc" class="apple-modal-description">
+      Se eliminarán todos los personajes del inventario, constelaciones y configuraciones guardadas en este navegador. Esta acción no se puede deshacer.
+    </p>
+    <div class="apple-modal-actions">
+      <button
+        type="button"
+        id="reset-confirm-btn"
+        class="btn-apple-modal-destructive"
+        autofocus
+      >
+        Eliminar todo
+      </button>
+      <button
+        type="button"
+        id="reset-cancel-btn"
+        class="btn-apple-modal-cancel"
+      >
+        Cancelar
+      </button>
+    </div>
+  </div>
+</dialog>
+
+<script>
+  const openResetBtn = document.getElementById('footer-reset-btn');
+  const resetDialog = document.getElementById('reset-storage-dialog') as HTMLDialogElement | null;
+  const confirmResetBtn = document.getElementById('reset-confirm-btn');
+  const cancelResetBtn = document.getElementById('reset-cancel-btn');
+
+  openResetBtn?.addEventListener('click', () => {
+    resetDialog?.showModal();
+  });
+
+  cancelResetBtn?.addEventListener('click', () => {
+    resetDialog?.close();
+  });
+
+  resetDialog?.addEventListener('click', (event) => {
+    if (event.target === resetDialog) {
+      resetDialog.close();
+    }
+  });
+
+  confirmResetBtn?.addEventListener('click', () => {
+    try {
+      localStorage.removeItem('genshin_inventory_team');
+      localStorage.removeItem('genshin_saved_teams');
+      localStorage.clear();
+    } catch (err) {
+      console.warn('Error al limpiar localStorage:', err);
+    }
+    resetDialog?.close();
+    window.location.reload();
+  });
+</script>
