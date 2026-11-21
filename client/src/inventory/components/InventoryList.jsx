@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ELEMENTS } from '../data/characters';
+import { ELEMENTS, CHARACTERS } from '../data/characters';
 
 export function InventoryList({
   inventory,
@@ -72,21 +72,45 @@ export function InventoryList({
           {onOpenEnkaModal && (
             <button
               type="button"
-              className="btn-pill btn-pill-secondary btn-sync-enka"
+              className="btn-apple btn-apple-secondary btn-apple-sync"
               onClick={onOpenEnkaModal}
               title="Sincronizar inventario desde perfil de Enka.Network"
             >
-              <span className="sync-icon-symbol">⚡</span>
+              <img
+                src="/Images/Genshin Impact/UI_Icons/Icon_Switch_Character.webp"
+                alt=""
+                className="btn-apple-icon-img"
+                width="20"
+                height="20"
+                loading="lazy"
+                decoding="async"
+              />
               <span>Sincronizar Enka</span>
             </button>
           )}
 
           <button
             type="button"
-            className="btn-pill btn-pill-primary"
+            className="btn-apple btn-apple-tinted btn-apple-add"
             onClick={onOpenModal}
+            title="Agregar personajes al inventario"
           >
-            + Agregar Personaje
+            <svg
+              className="btn-apple-icon-svg"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+            <span>Agregar</span>
           </button>
         </div>
       </div>
@@ -105,21 +129,45 @@ export function InventoryList({
           {onOpenEnkaModal && (
             <button
               type="button"
-              className="btn-pill btn-pill-secondary btn-sync-enka"
+              className="btn-apple btn-apple-secondary btn-apple-sync"
               onClick={onOpenEnkaModal}
               title="Sincronizar inventario desde perfil de Enka.Network"
             >
-              <span className="sync-icon-symbol">⚡</span>
+              <img
+                src="/Images/Genshin Impact/UI_Icons/Icon_Switch_Character.webp"
+                alt=""
+                className="btn-apple-icon-img"
+                width="20"
+                height="20"
+                loading="lazy"
+                decoding="async"
+              />
               <span>Sincronizar Enka</span>
             </button>
           )}
 
           <button
             type="button"
-            className="btn-pill btn-pill-primary"
+            className="btn-apple btn-apple-tinted btn-apple-add"
             onClick={onOpenModal}
+            title="Agregar personajes al inventario"
           >
-            + Agregar Personaje
+            <svg
+              className="btn-apple-icon-svg"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+            <span>Agregar</span>
           </button>
         </div>
       </div>
@@ -129,8 +177,16 @@ export function InventoryList({
           const { character, constellation } = item;
           const elemMeta = ELEMENTS[character.element] || {
             name: character.element,
-            color: '#38bdf8'
+            color: '#38bdf8',
+            colorLight: '#0284c7',
+            bgTint: 'rgba(56, 189, 248, 0.15)',
+            bgTintLight: 'rgba(2, 132, 199, 0.10)'
           };
+          const rarity =
+            character.rarity ||
+            character.stars ||
+            CHARACTERS.find((c) => c.name.toLowerCase() === character.name?.toLowerCase())?.rarity ||
+            4;
           const sanitizeWebp = (url) => (typeof url === 'string' ? url.replace(/\.(png|jpe?g)$/i, '.webp') : url);
           const namecardUrl = sanitizeWebp(character.namecard);
           const thumbUrl = sanitizeWebp(character.icon || character.image);
@@ -141,6 +197,9 @@ export function InventoryList({
               className={`inventory-card ${pressingIndex === index ? 'is-pressing' : ''}`}
               style={{
                 '--card-elem-color': elemMeta.color,
+                '--card-elem-color-light': elemMeta.colorLight || elemMeta.color,
+                '--card-elem-bg': elemMeta.bgTint,
+                '--card-elem-bg-light': elemMeta.bgTintLight || 'rgba(0, 0, 0, 0.04)',
                 backgroundImage: namecardUrl ? `url("${namecardUrl}")` : undefined
               }}
               onPointerDown={(e) => handlePointerDown(e, index)}
@@ -152,10 +211,7 @@ export function InventoryList({
             >
               <div className="inventory-card-backdrop" />
 
-              <div
-                className="inventory-card-thumb-wrap"
-                style={{ borderColor: elemMeta.color }}
-              >
+              <div className={`inventory-card-thumb-wrap rarity-${rarity}`}>
                 <img
                   src={thumbUrl}
                   alt={`Retrato de ${character.name}`}
@@ -174,7 +230,7 @@ export function InventoryList({
               <div className="inventory-card-info">
                 <h4 className="inventory-card-name">{character.name}</h4>
                 <div className="inventory-card-meta">
-                  <span className="inventory-card-elem" style={{ color: elemMeta.color }}>
+                  <span className="inventory-card-elem">
                     {elemMeta.icon && (
                       <img
                         src={elemMeta.icon}
@@ -186,12 +242,12 @@ export function InventoryList({
                     )}
                     {elemMeta.name}
                   </span>
-                  <span>·</span>
-                  <span>{character.region}</span>
+                  <span className="meta-separator">·</span>
+                  <span className="inventory-card-region">{character.region}</span>
                 </div>
 
                 <span className="inventory-card-constellation-badge">
-                  Constelación C{constellation}
+                  Const. C{constellation}
                 </span>
               </div>
 

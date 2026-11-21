@@ -3,6 +3,7 @@ import { CharacterModal, EnkaSyncModal, GenshinEngine } from './inventory';
 import { CHARACTERS } from './inventory/data/characters';
 import { HomePage, NotFoundPage } from './dashboard';
 import { RouterProvider, useRouter } from './shared/router';
+import { AppleConfirmModal } from './shared';
 
 export function sanitizeToWebp(url) {
   if (!url || typeof url !== 'string') return url;
@@ -13,8 +14,9 @@ function AppContent() {
   const { path, navigate } = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEnkaModalOpen, setIsEnkaModalOpen] = useState(false);
-  // Iniciar siempre en modo oscuro (sin persistencia en localStorage para garantizar inicio dark)
-  const [theme, setTheme] = useState('dark');
+  const [isResetStorageModalOpen, setIsResetStorageModalOpen] = useState(false);
+  // Iniciar por defecto en modo claro (light)
+  const [theme, setTheme] = useState('light');
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -119,20 +121,16 @@ function AppContent() {
     setInventory((prev) => prev.filter((_, idx) => idx !== indexToRemove));
   };
 
-  const handleResetLocalStorage = (e) => {
-    if (e) e.preventDefault();
-    const confirmed = window.confirm(
-      '¿Estás seguro de que deseas restablecer el almacenamiento local (localStorage)?\n\nSe eliminarán todos los personajes y constelaciones guardados en este navegador.'
-    );
-    if (confirmed) {
-      try {
-        localStorage.removeItem('genshin_inventory_team');
-        localStorage.clear();
-      } catch (err) {
-        console.warn('Error al limpiar localStorage:', err);
-      }
-      setInventory([]);
+  const handleResetLocalStorageConfirmed = () => {
+    try {
+      localStorage.removeItem('genshin_inventory_team');
+      localStorage.removeItem('genshin_saved_teams');
+      localStorage.clear();
+    } catch (err) {
+      console.warn('Error al limpiar localStorage:', err);
     }
+    setInventory([]);
+    window.location.reload();
   };
 
   const isGenshinRoute = path === '/genshin' || path === '/genshin-impact';
@@ -141,7 +139,7 @@ function AppContent() {
 
   return (
     <div className="app-container">
-      {/* Barra de cabecera con navegación y acciones */}
+      {/* Barra de cabecera unificada: solo logo, nombre y botón de modo oscuro en toda la app */}
       <header className="app-header">
         <div className="header-left">
           {/* Logo y Nombre del Proyecto clickeable para ir a la raíz */}
@@ -153,7 +151,7 @@ function AppContent() {
             title="Ir a la pantalla principal de VGBuilder"
           >
             <img
-              src="/LogoVGBuilder.webp"
+              src="/Images/logos/LogoVGBuilder.webp"
               alt="Logotipo oficial de VGBuilder"
               className="brand-logo-img"
               width="36"
@@ -163,58 +161,56 @@ function AppContent() {
               VGBuilder
             </div>
           </div>
-
-          {/* Navegación de Motores: solo visible fuera de /genshin */}
-          {!isGenshinRoute && (
-            <nav className="header-nav" aria-label="Navegación de motores">
-              <button
-                type="button"
-                className="nav-btn"
-                onClick={() => navigate('/genshin')}
-                title="Ir al motor de Genshin Impact"
-              >
-                <span className="nav-btn-icon">✦</span>
-                <span>Motor Genshin Impact</span>
-              </button>
-
-              <button
-                type="button"
-                className="nav-btn nav-btn-more"
-                onClick={(e) => {
-                  e.preventDefault();
-                }}
-                title="Próximamente más motores de juegos"
-                aria-label="Más juegos próximamente"
-              >
-                <span className="nav-btn-plus">+</span>
-                <span>Más</span>
-                <span className="nav-pill-soon">Pronto</span>
-              </button>
-            </nav>
-          )}
         </div>
 
         <div className="header-actions">
-          {/* Si está en la pantalla principal (raíz) o 404, botón directo para entrar al motor */}
-          {!isGenshinRoute && (
-            <button
-              type="button"
-              className="btn-pill btn-pill-primary header-direct-btn"
-              onClick={() => navigate('/genshin')}
-            >
-              ✦ Abrir Motor Genshin
-            </button>
-          )}
-
-          {/* Botón simple de Modo Claro / Modo Oscuro con emoji cambiante */}
+          {/* Botón de Modo Claro / Modo Oscuro con iconografía limpia (SF Symbols style) */}
           <button
             type="button"
             className="theme-simple-btn"
             onClick={toggleTheme}
-            aria-label={`Cambiar a modo ${theme === 'dark' ? 'claro' : 'oscuro'}`}
-            title={`Cambiar a modo ${theme === 'dark' ? 'claro' : 'oscuro'}`}
+            aria-label={theme === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
+            title={theme === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
           >
-            {theme === 'dark' ? '🌙' : '☀️'}
+            {theme === 'dark' ? (
+              <svg
+                className="theme-btn-icon icon-moon"
+                width="19"
+                height="19"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+              </svg>
+            ) : (
+              <svg
+                className="theme-btn-icon icon-sun"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <circle cx="12" cy="12" r="4" />
+                <path d="M12 2v2" />
+                <path d="M12 20v2" />
+                <path d="m4.93 4.93 1.41 1.41" />
+                <path d="m17.66 17.66 1.41 1.41" />
+                <path d="M2 12h2" />
+                <path d="M20 12h2" />
+                <path d="m6.34 17.66-1.41 1.41" />
+                <path d="m19.07 4.93-1.41 1.41" />
+              </svg>
+            )}
           </button>
         </div>
       </header>
@@ -245,24 +241,37 @@ function AppContent() {
               Plataforma de optimización de afinidad y sinergias Gacha para Genshin Impact y más juegos.
             </p>
             <p className="footer-copyright">
-              © {new Date().getFullYear()} <strong>Metips Solutions</strong> · Todos los derechos reservados.
+              © {new Date().getFullYear()} <strong>Metips Solutions</strong>
             </p>
-          </div>
-
-          <div className="footer-actions">
-            <span className="footer-action-label">Gestión de Almacenamiento:</span>
-            <a
-              href="#reset-storage"
+            <p className="footer-copyright">
+              VGBuilder es una herramienta independiente creada por fans y no está afiliada, asociada ni respaldada por HoYoverse / COGNOSPHERE.
+            </p>
+            <button
+              type="button"
               className="footer-reset-link"
-              onClick={handleResetLocalStorage}
-              role="button"
+              onClick={() => setIsResetStorageModalOpen(true)}
               title="Borra todos los personajes y configuraciones almacenadas en este navegador"
             >
-              Restablecer datos locales (Resetear localStorage)
-            </a>
+              Restablecer datos locales
+            </button>
           </div>
         </div>
       </footer>
+
+      {/* Modal de confirmación nativo estilo Apple para restablecer datos locales */}
+      <AppleConfirmModal
+        isOpen={isResetStorageModalOpen}
+        title="¿Restablecer datos locales?"
+        description="Se eliminarán todos los personajes del inventario, constelaciones y configuraciones guardadas en este navegador. Esta acción no se puede deshacer."
+        confirmText="Eliminar todo"
+        cancelText="Cancelar"
+        onConfirm={() => {
+          handleResetLocalStorageConfirmed();
+          setIsResetStorageModalOpen(false);
+        }}
+        onCancel={() => setIsResetStorageModalOpen(false)}
+        isDestructive={true}
+      />
 
       {/* Popup Modal con carrusel, filtros, showcase animado y constelaciones (filtrando ya agregados) */}
       <CharacterModal

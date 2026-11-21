@@ -1,6 +1,5 @@
 import React from 'react';
 import { useRouter } from '../shared/router';
-import { GenshinLogo, ZZZLogo, HSRLogo, UmaMusumeLogo, WuWaLogo } from './GameLogos';
 
 export function HomePage() {
   const { navigate } = useRouter();
@@ -9,29 +8,25 @@ export function HomePage() {
     {
       id: 'genshin',
       name: 'Genshin Impact',
-      tagline: 'Afinidad Elemental & Sinergias Teyvat',
       status: 'active',
       statusLabel: '✦ Motor Activo',
-      logo: <GenshinLogo size={52} />,
+      logoSrc: '/Images/logos/gi_logo.webp',
       bannerImg: '/Images/banners/genshin.webp',
       webImg: 'https://wallpapercave.com/wp/wp7486905.jpg',
-      desc: 'Gestión completa de inventario de personajes, constelaciones C0-C6, sincronización automática vía Enka.Network y optimización de afinidad elemental.',
-      tags: ['Afinidad Elemental', 'Sincronización Enka', 'Constelaciones C0-C6', 'Filtrado por Elemento'],
-      actionLabel: 'Abrir Motor de Genshin Impact →',
+      desc: 'Creación de equipos optimizados y sincronización con tu cuenta de Genshin Impact a través de Enka.Network.',
+      actionLabel: 'Abrir motor →',
       action: () => navigate('/genshin'),
       featured: true
     },
     {
       id: 'zzz',
       name: 'Zenless Zone Zero (ZZZ)',
-      tagline: 'Facciones de New Eridu & Bangboos',
       status: 'upcoming',
       statusLabel: 'En Desarrollo',
-      logo: <ZZZLogo size={52} />,
+      logoSrc: '/Images/logos/zzz_logo.webp',
       bannerImg: '/Images/banners/zzz.webp',
       webImg: 'https://wallpapercave.com/wp/wp12340088.jpg',
-      desc: 'Análisis de acumulación de anomalías de atributos (Físico, Fuego, Hielo, Eléctrico, Éter), sinergias de facciones urbanas y compatibilidad de Bangboo.',
-      tags: ['Sinergias de Facción', 'Cálculo de Anomalías', 'Compatibilidad Bangboo'],
+      desc: 'Análisis de acumulación de anomalías de atributos, sinergias de facciones urbanas y compatibilidad de Bangboo.',
       actionLabel: 'Próximamente',
       action: null,
       featured: false
@@ -39,14 +34,12 @@ export function HomePage() {
     {
       id: 'hsr',
       name: 'Honkai: Star Rail',
-      tagline: 'Vías Estelares & Cobertura de Debilidades',
       status: 'upcoming',
       statusLabel: 'En Desarrollo',
-      logo: <HSRLogo size={52} />,
+      logoSrc: '/Images/logos/hsr_logo.webp',
       bannerImg: '/Images/banners/hsr.webp',
       webImg: 'https://wallpapercave.com/wp/wp12342709.jpg',
-      desc: 'Simulación de sinergias entre Vías de combate (Destrucción, Cacería, Armonía, Nihilidad), cobertura de debilidades de ruptura y optimización de Conos de Luz.',
-      tags: ['Afinidad de Vías', 'Cobertura de Ruptura', 'Sinergias Conos de Luz'],
+      desc: 'Simulación de sinergias entre Vías de combate, cobertura de debilidades de ruptura y optimización de Conos de Luz.',
       actionLabel: 'Próximamente',
       action: null,
       featured: false
@@ -54,14 +47,12 @@ export function HomePage() {
     {
       id: 'umamusume',
       name: 'Uma Musume: Pretty Derby',
-      tagline: 'Linajes Genéticos & Factores de Herencia',
       status: 'upcoming',
       statusLabel: 'En Desarrollo',
-      logo: <UmaMusumeLogo size={52} />,
+      logoSrc: '/Images/logos/um_logo.webp',
       bannerImg: '/Images/banners/umamusume.webp',
       webImg: 'https://wallpapercave.com/wp/wp6538873.png',
-      desc: 'Modelado de compatibilidad genética entre corredoras, simulación de factores de herencia (azul, rojo, blanco) y afinidad de mazos de soporte.',
-      tags: ['Afinidad de Linaje', 'Factores de Herencia', 'Aptitud de Pista'],
+      desc: 'Modelado de compatibilidad genética entre corredoras, factores de herencia y afinidad de cartas de soporte.',
       actionLabel: 'Próximamente',
       action: null,
       featured: false
@@ -69,105 +60,81 @@ export function HomePage() {
     {
       id: 'wuwa',
       name: 'Wuthering Waves',
-      tagline: 'Ecos de Sonata & Cadenas de Concierto',
       status: 'planned',
       statusLabel: 'Planificado',
-      logo: <WuWaLogo size={52} />,
+      logoSrc: '/Images/logos/ww_logo.webp',
       bannerImg: '/Images/banners/wuwa.webp',
       webImg: 'https://wallpapercave.com/wp/wp12600978.jpg',
-      desc: 'Optimización de conjuntos sonoros de Ecos, atributos de concierto y combinaciones de habilidades Intro/Outro entre resonadores.',
-      tags: ['Conjuntos de Ecos', 'Cadenas Intro/Outro', 'Resonancia Elemental'],
-      actionLabel: 'Planificado',
+      desc: 'Optimización de conjuntos sonoros de Ecos, atributos de concierto y combinaciones de habilidades Intro/Outro.',
+      actionLabel: 'Próximamente',
       action: null,
       featured: false
     }
   ];
 
+  // Lista de banners duplicada para loop infinito continuo tipo GIF
+  const heroBanners = [...games, ...games];
+
   return (
     <div className="home-container">
-      {/* Hero Banner Principal con nombre de proyecto, imágenes de juegos y resumen */}
-      <section className="home-hero">
-        {/* <div className="home-hero-badge">
-          <span className="hero-badge-spark">✦</span>
-          <span>Plataforma de Optimización Gacha Multi-Juego</span>
-        </div> */}
-
-        <h1 className="home-hero-title">
-          VGBuilder
-        </h1>
-
-        <p className="home-hero-summary">
-          Plataforma de alto rendimiento diseñada para calcular afinidades, evaluar sinergias de escuadra y gestionar
-          el inventario de tus personajes de forma <strong>100% local, privada y modular</strong> para los principales
-          títulos gacha del mercado.
-        </p>
-
-        {/* Tira visual de imágenes de los juegos sacadas de internet en el banner */}
-        <div className="hero-games-reel">
-          {games.map((g) => (
-            <div
-              key={g.id}
-              className={`reel-card ${g.featured ? 'reel-card-featured' : ''}`}
-              onClick={g.action ? g.action : undefined}
-              role={g.action ? 'button' : undefined}
-              tabIndex={g.action ? 0 : undefined}
-              title={g.action ? `Ir a ${g.name}` : `${g.name} (${g.statusLabel})`}
-            >
-              <img
-                src={g.bannerImg}
-                alt={`Banner ilustrativo de ${g.name}`}
-                className="reel-img"
-                loading="lazy"
-                decoding="async"
-                onError={(e) => {
-                  if (e.target.src !== g.webImg) e.target.src = g.webImg;
-                }}
-              />
-              <div className="reel-overlay" />
-              <div className="reel-content">
-                <span className="reel-logo">{g.logo}</span>
-                <span className="reel-name">{g.name}</span>
-                <span className={`reel-badge badge-${g.status}`}>{g.statusLabel}</span>
-              </div>
+      {/* Hero con carrusel automático tipo GIF (no interactivo) */}
+      <section className="home-hero-wrapper">
+        <div className="home-hero-banner-container">
+          {/* Carrusel continuo sin gaps ni interactividad */}
+          <div className="hero-banner-carousel" aria-hidden="true">
+            <div className="hero-carousel-track">
+              {heroBanners.map((game, idx) => (
+                <div key={`${game.id}-${idx}`} className="hero-carousel-slide">
+                  <img
+                    src={game.bannerImg}
+                    alt=""
+                    className="hero-carousel-img"
+                    loading={idx < 4 ? 'eager' : 'lazy'}
+                    decoding="async"
+                    onError={(e) => {
+                      if (game.webImg && e.target.src !== game.webImg) {
+                        e.target.src = game.webImg;
+                      }
+                    }}
+                  />
+                </div>
+              ))}
             </div>
-          ))}
+          </div>
+
+          {/* Degradado oscuro de alto contraste */}
+          <div className="hero-banner-overlay" />
+
+          {/* Textos centrados sobre el degradado */}
+          <div className="hero-banner-content">
+            <h1 className="hero-banner-title">VGBuilder</h1>
+            <p className="hero-banner-subtitle">
+              Optimizador modular de escuadras y sinergias gacha
+            </p>
+          </div>
         </div>
 
-        {/* <div className="home-hero-actions">
+        {/* Botones de acción debajo del Hero (Estilo iOS) */}
+        <div className="home-hero-actions">
           <button
             type="button"
-            className="btn-pill btn-pill-primary home-btn-cta"
-            onClick={() => navigate('/genshin')}
+            className="home-btn-primary"
+            onClick={() => {
+              document.getElementById('motores')?.scrollIntoView({ behavior: 'smooth' });
+            }}
           >
-            ✦ Abrir Motor de Genshin Impact
+            Explorar motores
           </button>
-          <a
-            href="#motores"
-            className="btn-pill btn-pill-secondary home-btn-explore"
+          <button
+            type="button"
+            className="home-btn-secondary"
+            onClick={() => {
+              document.getElementById('como-funciona')?.scrollIntoView({ behavior: 'smooth' });
+            }}
           >
-            Ver Catálogo Completo ↓
-          </a>
-        </div> */}
-
-        {/* Pilares clave del proyecto en formato chips */}
-        {/* <div className="home-hero-chips">
-          <div className="hero-chip">
-            <span className="hero-chip-icon">🎮</span>
-            <span>Arquitectura Multi-Motor</span>
-          </div>
-          <div className="hero-chip">
-            <span className="hero-chip-icon">⚡</span>
-            <span>Sincronización Enka Automática</span>
-          </div>
-          <div className="hero-chip">
-            <span className="hero-chip-icon">🔒</span>
-            <span>100% Privado en LocalStorage</span>
-          </div>
-          <div className="hero-chip">
-            <span className="hero-chip-icon">🚀</span>
-            <span>React 19 + Bun</span>
-          </div>
-        </div> */}
+            Cómo funciona
+          </button>
+        </div>
       </section>
 
       {/* Directorio de Juegos: Banners, Logos y tarjetas de motores */}
@@ -188,7 +155,7 @@ export function HomePage() {
               key={game.id}
               className={`game-card ${game.featured ? 'game-card-featured' : ''} game-card-${game.status}`}
             >
-              {/* Portada / Banner del juego extraído de internet */}
+              {/* Portada / Banner del juego */}
               <div className="game-card-cover">
                 <img
                   src={game.bannerImg}
@@ -197,15 +164,21 @@ export function HomePage() {
                   loading="lazy"
                   decoding="async"
                   onError={(e) => {
-                    if (e.target.src !== game.webImg) {
+                    if (game.webImg && e.target.src !== game.webImg) {
                       e.target.src = game.webImg;
                     }
                   }}
                 />
                 <div className="game-cover-overlay" />
                 <div className="game-card-header">
+                  {/* Contenedor del logo: abarca toda la caja con bordes redondeados y borde */}
                   <div className="game-logo-wrapper">
-                    {game.logo}
+                    <img
+                      src={game.logoSrc}
+                      alt={`Logo de ${game.name}`}
+                      className="game-logo-img"
+                      loading="lazy"
+                    />
                   </div>
                   <div className="game-status-badge">
                     <span className={`status-dot dot-${game.status}`} />
@@ -216,23 +189,14 @@ export function HomePage() {
 
               <div className="game-card-body">
                 <h3 className="game-title">{game.name}</h3>
-                <span className="game-tagline">{game.tagline}</span>
                 <p className="game-description">{game.desc}</p>
-
-                <div className="game-tags">
-                  {game.tags.map((tag) => (
-                    <span key={tag} className="game-tag-pill">
-                      {tag}
-                    </span>
-                  ))}
-                </div>
               </div>
 
               <div className="game-card-footer">
                 {game.action ? (
                   <button
                     type="button"
-                    className="btn-pill btn-pill-primary game-action-btn"
+                    className="game-action-btn game-action-btn-primary"
                     onClick={game.action}
                   >
                     {game.actionLabel}
@@ -240,7 +204,7 @@ export function HomePage() {
                 ) : (
                   <button
                     type="button"
-                    className="btn-pill btn-pill-secondary game-action-btn game-action-disabled"
+                    className="game-action-btn game-action-btn-disabled"
                     disabled
                   >
                     {game.actionLabel}
@@ -253,7 +217,7 @@ export function HomePage() {
       </section>
 
       {/* Resumen de características y arquitectura */}
-      <section className="features-section">
+      <section id="como-funciona" className="features-section">
         <div className="features-header">
           <h2 className="features-heading">¿Cómo funciona la plataforma VGBuilder?</h2>
           <p className="features-subheading">
@@ -290,3 +254,5 @@ export function HomePage() {
     </div>
   );
 }
+
+export default HomePage;

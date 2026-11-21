@@ -6,6 +6,7 @@ import {
   getDefaultCharacterIcon,
   getShortCharacterName
 } from '../data/characterStickers';
+import { getArtifactSetIcon } from '../data/artifactIcons';
 
 export function AffinityMatcher({
   inventory = [],
@@ -264,10 +265,26 @@ export function AffinityMatcher({
         </p>
         <button
           type="button"
-          className="btn-pill btn-pill-primary"
+          className="btn-apple btn-apple-tinted btn-apple-add"
           onClick={onOpenModal}
+          title="Agregar personajes al inventario"
         >
-          + Agregar Personajes
+          <svg
+            className="btn-apple-icon-svg"
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <line x1="12" y1="5" x2="12" y2="19" />
+            <line x1="5" y1="12" x2="19" y2="12" />
+          </svg>
+          <span>Agregar</span>
         </button>
       </div>
     );
@@ -282,7 +299,7 @@ export function AffinityMatcher({
       <div className="affinity-filter-bar">
         <div className="affinity-filter-left">
           <span className="affinity-filter-label">Elemento:</span>
-          <div className="element-filter-pills-compact">
+          <div className="element-filter-pills-compact no-scrollbar">
             {elementKeys.map((key) => {
               const isAll = key === 'ALL';
               const meta = !isAll ? ELEMENTS[key] : null;
@@ -323,33 +340,59 @@ export function AffinityMatcher({
         )}
       </div>
 
-      {/* BARRA DE CONTROL MÓVIL (BOTÓN PARA DESPLEGAR ROSTER/DRAWER) */}
+      {/* BARRA DE CONTROL MÓVIL STICKY (SELECTOR DE CARRY ACTIVO TIPO APPLE DROPDOWN) */}
       <div className="affinity-mobile-control-bar">
         <button
           type="button"
           className="btn-drawer-trigger"
           onClick={() => setIsDrawerOpen(true)}
-          title="Abrir catálogo de personajes para selección de Carry y filtros"
+          title="Abrir catálogo para seleccionar Carry activo"
           aria-expanded={isDrawerOpen}
         >
-          <div className="drawer-trigger-left">
-            <span className="drawer-trigger-icon">👥</span>
-            <span className="drawer-trigger-title">
+          <div className="drawer-trigger-content">
+            <div className="drawer-trigger-avatar-wrap">
               {selectedCarryItem ? (
-                <>
-                  Carry Activo: <strong>{selectedCarryItem.character.name}</strong> · Cambiar personaje
-                </>
+                <img
+                  src={(selectedCarryItem.character.icon || selectedCarryItem.character.image || getDefaultCharacterIcon(selectedCarryItem.character.name)).replace(/\.(png|jpe?g)$/i, '.webp')}
+                  alt={selectedCarryItem.character.name}
+                  className="drawer-trigger-avatar-img"
+                  width="28"
+                  height="28"
+                  loading="lazy"
+                  decoding="async"
+                />
               ) : (
-                <>Seleccionar Carry & Personajes (Filtros)</>
+                <img
+                  src="/Images/Genshin Impact/UI_Icons/Icon_Character_Lumine.webp"
+                  alt="Selector de Personaje"
+                  className="drawer-trigger-avatar-img drawer-trigger-avatar-lumine"
+                  width="28"
+                  height="28"
+                  loading="lazy"
+                  decoding="async"
+                />
               )}
+            </div>
+            <span className="drawer-trigger-name">
+              {selectedCarryItem ? selectedCarryItem.character.name : 'Selector de Personaje'}
             </span>
           </div>
-          <div className="drawer-trigger-right">
-            <span className="drawer-trigger-pill">
-              {mainDpsCharacters.length} Carries · {supportCharacters.length} Soportes
-            </span>
-            <span className="drawer-trigger-arrow">▾</span>
-          </div>
+
+          <svg
+            className="drawer-trigger-chevrons"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <polyline points="7 15 12 20 17 15" />
+            <polyline points="7 9 12 4 17 9" />
+          </svg>
         </button>
       </div>
 
@@ -376,17 +419,12 @@ export function AffinityMatcher({
         >
           {/* Cabecera del Drawer visible SOLO en móvil */}
           <div className="affinity-drawer-mobile-header">
-            <div className="affinity-drawer-title-group">
-              <h3 className="affinity-drawer-title">Catálogo de Personajes</h3>
-              <span className="affinity-drawer-subtitle">
-                Elige tu Carry y gestiona exclusiones (clic en icono)
-              </span>
-            </div>
+            <h3 className="affinity-drawer-title">Selector de Personaje</h3>
             <button
               type="button"
               className="affinity-drawer-close-btn"
               onClick={() => setIsDrawerOpen(false)}
-              aria-label="Cerrar catálogo"
+              aria-label="Cerrar selector"
             >
               ✕
             </button>
@@ -395,7 +433,7 @@ export function AffinityMatcher({
           {/* Filtro compacto por Elementos visible SOLO en el drawer móvil */}
           <div className="affinity-drawer-mobile-filter">
             <span className="affinity-filter-label">Filtrar por elemento:</span>
-            <div className="element-filter-pills-compact">
+            <div className="element-filter-pills-compact no-scrollbar">
               {elementKeys.map((key) => {
                 const isAll = key === 'ALL';
                 const meta = !isAll ? ELEMENTS[key] : null;
@@ -430,9 +468,11 @@ export function AffinityMatcher({
           </div>
 
           {/* SECCIÓN 1: Main DPS */}
-          <div className="section-label section-main-dps">
-            <span>⚔️ MAIN DPS</span>
-            <span className="section-hint">Click para calcular</span>
+          <div className="section-label ios-section-header section-main-dps">
+            <span className="ios-section-title">MAIN DPS</span>
+          </div>
+          <div className="ios-section-caption">
+            <span>Click para calcular | Click en el retrato para excluir</span>
           </div>
 
           {mainDpsCharacters.length === 0 ? (
@@ -440,10 +480,11 @@ export function AffinityMatcher({
               No hay personajes Main DPS con este filtro.
             </div>
           ) : (
-            <div className="affinity-char-list">
+            <div className="affinity-char-list ios-inset-grouped">
               {mainDpsCharacters.map((item) => {
                 const char = item.character;
                 const affChar = item.affinityChar;
+                const rarity = char.rarity || char.stars || 4;
                 const isCarrySelected = selectedCarryId === affChar.id;
                 const isDeactivated = deactivatedIds.has(affChar.id);
                 const elemKey = (char.element || affChar.element || '').toLowerCase();
@@ -452,19 +493,17 @@ export function AffinityMatcher({
                 return (
                   <div
                     key={`${char.name}-${item.originalIndex}`}
-                    className={`affinity-char-row row-main-dps ${isCarrySelected ? 'row-selected-carry' : ''} ${
-                      isDeactivated ? 'row-deactivated' : ''
-                    }`}
+                    className={`affinity-char-row row-main-dps ${isCarrySelected ? 'row-selected-carry' : ''} ${isDeactivated ? 'row-deactivated' : ''
+                      }`}
                     onClick={() => handleSelectCarry(affChar.id)}
                     role="button"
                     tabIndex={0}
-                    title="Haz clic para seleccionar como Carry y calcular composiciones"
+                    title="Toca para seleccionar como Carry y calcular composiciones"
                   >
                     <div className="char-info-col">
                       {/* Clic en icono: monocromático y desactivado */}
                       <div
-                        className={`char-avatar-box ${isDeactivated ? 'is-monochrome' : ''}`}
-                        style={{ borderColor: isDeactivated ? '#4b5563' : elemMeta.color }}
+                        className={`char-avatar-box rarity-${rarity} ${isDeactivated ? 'is-monochrome' : ''}`}
                         onClick={(e) => {
                           e.stopPropagation();
                           if (onToggleDeactivate) onToggleDeactivate(affChar.id);
@@ -473,8 +512,8 @@ export function AffinityMatcher({
                         tabIndex={0}
                         title={
                           isDeactivated
-                            ? 'Click en icono para activar'
-                            : 'Click en icono para desactivar (monocromático)'
+                            ? 'Toca para activar'
+                            : 'Toca para excluir (monocromático)'
                         }
                       >
                         <img
@@ -492,9 +531,12 @@ export function AffinityMatcher({
                           <span
                             className="element-tag"
                             style={{
+                              '--elem-color': elemMeta.color,
+                              '--elem-color-light': elemMeta.colorLight || elemMeta.color,
+                              '--elem-bg-light': elemMeta.bgTintLight || `${elemMeta.color}18`,
                               backgroundColor: `${elemMeta.color}22`,
                               color: elemMeta.color,
-                              borderColor: `${elemMeta.color}66`
+                              borderColor: `${elemMeta.color}44`
                             }}
                           >
                             {affChar.element}
@@ -502,6 +544,14 @@ export function AffinityMatcher({
                         </div>
                       </div>
                     </div>
+
+                    {isCarrySelected && (
+                      <div className="char-selection-checkmark" aria-hidden="true">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                      </div>
+                    )}
                   </div>
                 );
               })}
@@ -509,13 +559,9 @@ export function AffinityMatcher({
           )}
 
           {/* SECCIÓN 2: Soportes, Sub-DPS y Curadores */}
-          <div className="section-label section-supports">
-            <span>🛡️ SUB-DPS / SOPORTES</span>
-          </div>
-
-          {/* LEYENDA ARRIBA DE ESTE DATO */}
-          <div className="supports-work-in-progress-note">
-            <span>⚙️ Trabajando en poder usar personajes que no sean Main Dps</span>
+          <div className="section-label ios-section-header section-supports">
+            <span className="ios-section-title">SUB-DPS / SOPORTES</span>
+            <span className="section-hint ios-section-hint">Solo exclusión</span>
           </div>
 
           {supportCharacters.length === 0 ? (
@@ -523,10 +569,11 @@ export function AffinityMatcher({
               No hay soportes con este filtro.
             </div>
           ) : (
-            <div className="affinity-char-list">
+            <div className="affinity-char-list ios-inset-grouped">
               {supportCharacters.map((item) => {
                 const char = item.character;
                 const affChar = item.affinityChar;
+                const rarity = char.rarity || char.stars || 4;
                 const isDeactivated = deactivatedIds.has(affChar.id);
                 const elemKey = (char.element || affChar.element || '').toLowerCase();
                 const elemMeta = ELEMENTS[elemKey] || { color: '#38bdf8' };
@@ -539,8 +586,7 @@ export function AffinityMatcher({
                     <div className="char-info-col">
                       {/* Clic en icono: monocromático y desactivado */}
                       <div
-                        className={`char-avatar-box ${isDeactivated ? 'is-monochrome' : ''}`}
-                        style={{ borderColor: isDeactivated ? '#4b5563' : elemMeta.color }}
+                        className={`char-avatar-box rarity-${rarity} ${isDeactivated ? 'is-monochrome' : ''}`}
                         onClick={(e) => {
                           e.stopPropagation();
                           if (onToggleDeactivate) onToggleDeactivate(affChar.id);
@@ -549,8 +595,8 @@ export function AffinityMatcher({
                         tabIndex={0}
                         title={
                           isDeactivated
-                            ? 'Click en icono para activar'
-                            : 'Click en icono para desactivar (monocromático)'
+                            ? 'Toca para activar'
+                            : 'Toca para excluir (monocromático)'
                         }
                       >
                         <img
@@ -568,9 +614,12 @@ export function AffinityMatcher({
                           <span
                             className="element-tag"
                             style={{
+                              '--elem-color': elemMeta.color,
+                              '--elem-color-light': elemMeta.colorLight || elemMeta.color,
+                              '--elem-bg-light': elemMeta.bgTintLight || `${elemMeta.color}18`,
                               backgroundColor: `${elemMeta.color}22`,
                               color: elemMeta.color,
-                              borderColor: `${elemMeta.color}66`
+                              borderColor: `${elemMeta.color}44`
                             }}
                           >
                             {affChar.element}
@@ -613,13 +662,21 @@ export function AffinityMatcher({
           {/* Si aún no se selecciona ningún Carry */}
           {!teams && !isLoading && !errorMsg && (
             <div className="affinity-placeholder-box">
-              <div className="placeholder-icon">🎯</div>
+              <img
+                src="/Images/stckersGI/yuegui_dance.webp"
+                alt="Yuegui"
+                className="affinity-placeholder-sticker"
+                width="140"
+                height="140"
+                loading="lazy"
+                decoding="async"
+              />
               <h3 className="placeholder-title">
                 {selectedCarryItem
                   ? `Carry: ${selectedCarryItem.character.name}`
                   : 'Selecciona un Personaje Principal'}
               </h3>
-              <p className="placeholder-desc">
+              {/*<p className="placeholder-desc">
                 Selecciona un personaje Main DPS de tu inventario para generar automáticamente las mejores combinaciones de equipo.
               </p>
               <button
@@ -628,7 +685,7 @@ export function AffinityMatcher({
                 onClick={() => setIsDrawerOpen(true)}
               >
                 👥 Abrir Catálogo & Elegir Carry
-              </button>
+              </button>*/}
             </div>
           )}
 
@@ -652,9 +709,24 @@ export function AffinityMatcher({
                         type="button"
                         className={`btn-save-team ${isSaved ? 'btn-save-team-saved' : ''}`}
                         onClick={() => handleSaveTeam(t, index)}
-                        title="Guardar este equipo en el almacenamiento local"
+                        title={isSaved ? 'Equipo guardado en almacenamiento local' : 'Guardar equipo'}
+                        aria-label={isSaved ? 'Guardado' : 'Guardar'}
                       >
-                        {isSaved ? '✓ Guardado' : '💾 Guardar Equipo'}
+                        <svg
+                          className="btn-save-bookmark-icon"
+                          width="15"
+                          height="15"
+                          viewBox="0 0 24 24"
+                          fill={isSaved ? 'currentColor' : 'none'}
+                          stroke="currentColor"
+                          strokeWidth="2.2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          aria-hidden="true"
+                        >
+                          <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" />
+                        </svg>
+                        <span>{isSaved ? 'Guardado' : 'Guardar'}</span>
                       </button>
                     </div>
 
@@ -674,6 +746,7 @@ export function AffinityMatcher({
                         );
                         const artifactSetName = artifactBind?.artifactSetName || 'Sin set sugerido';
                         const isNone = !artifactBind?.artifactSetName || artifactSetName === 'Sin set sugerido';
+                        const artifactIcon = getArtifactSetIcon(artifactSetName);
 
                         return (
                           <div key={`${m.name}-${mIdx}`} className="team-member-showcase">
@@ -726,7 +799,19 @@ export function AffinityMatcher({
                                 className={`member-showcase-artifact ${isNone ? 'is-none' : ''}`}
                                 title={`Set sugerido: ${artifactSetName}`}
                               >
-                                <span className="artifact-icon-sparkle">✦</span>
+                                {artifactIcon ? (
+                                  <img
+                                    src={artifactIcon}
+                                    alt=""
+                                    className="artifact-set-icon-img"
+                                    width="18"
+                                    height="18"
+                                    loading="lazy"
+                                    decoding="async"
+                                  />
+                                ) : (
+                                  <span className="artifact-icon-sparkle">✦</span>
+                                )}
                                 <span className="artifact-name-text">{artifactSetName}</span>
                               </div>
                             </div>

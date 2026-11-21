@@ -5,8 +5,11 @@ import {
   getDefaultCharacterIcon,
   getShortCharacterName
 } from '../data/characterStickers';
+import { getArtifactSetIcon } from '../data/artifactIcons';
+import { AppleConfirmModal } from '../../shared';
 
 export function SavedTeamsView({ onGoToOptimizer }) {
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [savedTeams, setSavedTeams] = useState(() => {
     try {
       const data = localStorage.getItem('genshin_saved_teams');
@@ -53,21 +56,16 @@ export function SavedTeamsView({ onGoToOptimizer }) {
     setTimeout(() => setNotification(null), 2000);
   };
 
-  const handleClearAll = () => {
+  const handleClearAllConfirmed = () => {
     if (savedTeams.length === 0) return;
-    const confirmed = window.confirm(
-      '¿Estás seguro de que deseas eliminar TODOS los equipos guardados?'
-    );
-    if (confirmed) {
-      setSavedTeams([]);
-      try {
-        localStorage.removeItem('genshin_saved_teams');
-      } catch (e) {
-        console.warn('Error al limpiar equipos en localStorage:', e);
-      }
-      setNotification('Se han eliminado todos los equipos guardados');
-      setTimeout(() => setNotification(null), 2000);
+    setSavedTeams([]);
+    try {
+      localStorage.removeItem('genshin_saved_teams');
+    } catch (e) {
+      console.warn('Error al limpiar equipos en localStorage:', e);
     }
+    setNotification('Se han eliminado todos los equipos guardados');
+    setTimeout(() => setNotification(null), 2000);
   };
 
   const getCharacterImage = (memberName) => {
@@ -81,20 +79,24 @@ export function SavedTeamsView({ onGoToOptimizer }) {
   if (savedTeams.length === 0) {
     return (
       <div className="saved-teams-empty">
-        <div className="saved-teams-empty-icon">💾</div>
-        <h3 className="saved-teams-empty-title">No hay equipos guardados</h3>
+        <img
+          src="/Images/Genshin Impact/Character Icons/wolfy_sleep.webp"
+          alt="Sin equipos guardados"
+          className="saved-teams-empty-sticker"
+          width="130"
+          height="130"
+          loading="lazy"
+          decoding="async"
+          onError={(e) => {
+            const fallback = '/Images/Genshin Impact/Character Icons/wolfy_sleep.png';
+            if (e.target.src !== fallback) {
+              e.target.src = fallback;
+            }
+          }}
+        />
         <p className="saved-teams-empty-desc">
-          En el <strong>Optimizador de Afinidad</strong>, selecciona un Main DPS y pulsa el botón <strong>💾 Guardar Equipo</strong> para conservarlos aquí.
+          ¡Usa el <strong>Creador de Equipos</strong> para guardar tu equipo preferido aquí!
         </p>
-        {onGoToOptimizer && (
-          <button
-            type="button"
-            className="btn-pill btn-pill-primary"
-            onClick={onGoToOptimizer}
-          >
-            ⚡ Ir al Optimizador de Afinidad
-          </button>
-        )}
       </div>
     );
   }
@@ -103,27 +105,47 @@ export function SavedTeamsView({ onGoToOptimizer }) {
     <div className="saved-teams-section">
       <div className="saved-teams-header">
         <div className="saved-teams-title-group">
-          <h2 className="saved-teams-heading">
-            Equipos Guardados
-            <span className="badge-counter">{savedTeams.length}</span>
-          </h2>
-          <p className="saved-teams-subheading">
+          <div className="saved-teams-title-row">
+            <h2 className="saved-teams-heading">
+              Equipos Guardados
+              <span className="badge-counter">{savedTeams.length}</span>
+            </h2>
+            <div className="saved-teams-actions">
+              {notification && (
+                <span className="saved-teams-toast">{notification}</span>
+              )}
+              <button
+                type="button"
+                className="btn-apple-destructive-tinted"
+                onClick={() => setIsConfirmModalOpen(true)}
+                title="Vaciar todos los equipos guardados"
+                aria-label="Vaciar equipos guardados"
+              >
+                {/* <svg
+                  className="btn-destructive-trash-icon"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M3 6h18" />
+                  <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                  <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                  <line x1="10" y1="11" x2="10" y2="17" />
+                  <line x1="14" y1="11" x2="14" y2="17" />
+                </svg> */}
+                <span>Vaciar</span>
+              </button>
+            </div>
+          </div>
+          {/* <p className="saved-teams-subheading">
             Tus composiciones favoritas guardadas en el almacenamiento local
-          </p>
-        </div>
-
-        <div className="saved-teams-actions">
-          {notification && (
-            <span className="saved-teams-toast">{notification}</span>
-          )}
-          <button
-            type="button"
-            className="btn-pill btn-pill-danger-outline"
-            onClick={handleClearAll}
-            title="Borrar todas las composiciones guardadas"
-          >
-            🗑️ Vaciar Guardados
-          </button>
+          </p> */}
         </div>
       </div>
 
@@ -144,7 +166,7 @@ export function SavedTeamsView({ onGoToOptimizer }) {
                   title="Eliminar este equipo guardado"
                   aria-label="Eliminar equipo"
                 >
-                  🗑️ Eliminar
+                  Eliminar
                 </button>
               </div>
 
@@ -164,6 +186,7 @@ export function SavedTeamsView({ onGoToOptimizer }) {
                   );
                   const artifactSetName = artifactBind?.artifactSetName || 'Sin set sugerido';
                   const isNone = !artifactBind?.artifactSetName || artifactSetName === 'Sin set sugerido';
+                  const artifactIcon = getArtifactSetIcon(artifactSetName);
 
                   return (
                     <div key={`${m.name}-${mIdx}`} className="team-member-showcase">
@@ -216,7 +239,19 @@ export function SavedTeamsView({ onGoToOptimizer }) {
                           className={`member-showcase-artifact ${isNone ? 'is-none' : ''}`}
                           title={`Set sugerido: ${artifactSetName}`}
                         >
-                          <span className="artifact-icon-sparkle">✦</span>
+                          {artifactIcon ? (
+                            <img
+                              src={artifactIcon}
+                              alt=""
+                              className="artifact-set-icon-img"
+                              width="18"
+                              height="18"
+                              loading="lazy"
+                              decoding="async"
+                            />
+                          ) : (
+                            <span className="artifact-icon-sparkle">✦</span>
+                          )}
                           <span className="artifact-name-text">{artifactSetName}</span>
                         </div>
                       </div>
@@ -228,6 +263,21 @@ export function SavedTeamsView({ onGoToOptimizer }) {
           );
         })}
       </div>
+
+      {/* Modal de confirmación nativo estilo Apple para vaciar guardados */}
+      <AppleConfirmModal
+        isOpen={isConfirmModalOpen}
+        title="¿Vaciar equipos guardados?"
+        description="Esta acción eliminará todas las composiciones guardadas de forma permanente. No se puede deshacer."
+        confirmText="Eliminar todo"
+        cancelText="Cancelar"
+        onConfirm={() => {
+          handleClearAllConfirmed();
+          setIsConfirmModalOpen(false);
+        }}
+        onCancel={() => setIsConfirmModalOpen(false)}
+        isDestructive={true}
+      />
     </div>
   );
 }
