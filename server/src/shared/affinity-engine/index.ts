@@ -1,1 +1,1 @@
-export * from "./affinity-engine";
+export * from "./affinity-engine.bundle.js";

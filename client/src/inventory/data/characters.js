@@ -99,10 +99,9 @@ export const CHARACTERS = [
     role: "Apoyo · Curación",
     region: "Mondstadt",
     stars: 4,
-    rarity: 4,
-    image: encodeURI("/Images/Genshin Impact/Splash Art/barbara-nobg · Genshin Impact.png"),
-    icon: encodeURI("/Images/Genshin Impact/Character Icons/Barbara · Icon · Genshin Impact.png"),
-    namecard: encodeURI("/Images/Genshin Impact/Namecards/Barbara · Namecard · Genshin Impact.png")
+    image: encodeURI("/Images/Genshin Impact/Splash Art/barbara-nobg-·-Genshin-Impact.webp"),
+    icon: encodeURI("/Images/Genshin Impact/Character Icons/Barbara · Icon · Genshin Impact.webp"),
+    namecard: encodeURI("/Images/Genshin Impact/Namecards/Barbara · Namecard · Genshin Impact.webp")
   },
   {
     id: "beidou",
@@ -162,7 +161,7 @@ export const CHARACTERS = [
     rarity: 4,
     image: encodeURI("/Images/Genshin Impact/Splash Art/diona-nobg · Genshin Impact.webp"),
     icon: encodeURI("/Images/Genshin Impact/Character Icons/Diona · Icon · Genshin Impact.webp"),
-    namecard: null
+    namecard: encodeURI("/Images/Genshin Impact/Namecards/Diona-·-Namecard-·-Genshin-Impact.webp")
   },
   {
     id: "fischl",
@@ -343,5 +342,324 @@ export const CHARACTERS = [
     image: encodeURI("/Images/Genshin Impact/Splash Art/xinyan-nobg · Genshin Impact.webp"),
     icon: encodeURI("/Images/Genshin Impact/Character Icons/Xinyan · Icon · Genshin Impact.webp"),
     namecard: encodeURI("/Images/Genshin Impact/Namecards/Xinyan · Namecard · Genshin Impact.webp")
+  },
+  {
+    id: "tartaglia",
+    name: "Tartaglia",
+    element: "hydro",
+    role: "Main-DPS · Aplicador Hydro",
+    region: "Snezhnaya",
+    stars: 5,
+    image: encodeURI("/Images/Genshin Impact/Splash Art/tartaglia-nobg · Genshin Impact.webp"),
+    icon: encodeURI("/Images/Genshin Impact/Character Icons/Tartaglia · Icon · Genshin Impact.webp"),
+    namecard: encodeURI("/Images/Genshin Impact/Namecards/Tartaglia · Namecard · Genshin Impact.webp")
+  },
+  {
+    id: "zhongli",
+    name: "Zhongli",
+    element: "geo",
+    role: "Main-DPS · Aplicador Geo",
+    region: "Snezhnaya",
+    stars: 5,
+    image: encodeURI("/Images/Genshin Impact/Splash Art/zhongli-nobg · Genshin Impact.webp"),
+    icon: encodeURI("/Images/Genshin Impact/Character Icons/Zhongli · Icon · Genshin Impact.webp"),
+    namecard: encodeURI("/Images/Genshin Impact/Namecards/Zhongli · Namecard · Genshin Impact.webp")
+  },
+  {
+    id: "albedo",
+    name: "Albedo",
+    element: "geo",
+    role: "Main-DPS · Aplicador Geo",
+    region: "Snezhnaya",
+    stars: 5,
+    image: encodeURI("/Images/Genshin Impact/Splash Art/albedo-nobg · Genshin Impact.webp"),
+    icon: encodeURI("/Images/Genshin Impact/Character Icons/Albedo · Icon · Genshin Impact.webp"),
+    namecard: encodeURI("/Images/Genshin Impact/Namecards/Albedo · Namecard · Genshin Impact.webp")
+  },
+  {
+    id: "ganyu",
+    name: "Ganyu",
+    element: "cryo",
+    role: "Main-DPS · Aplicador Cryo",
+    region: "Snezhnaya",
+    stars: 5,
+    image: encodeURI("/Images/Genshin Impact/Splash Art/ganyu-nobg · Genshin Impact.webp"),
+    icon: encodeURI("/Images/Genshin Impact/Character Icons/Ganyu · Outfit icon · Genshin Impact.webp"),
+    namecard: encodeURI("/Images/Genshin Impact/Namecards/Ganyu · Namecard · Genshin Impact.webp")
+  },
+  {
+    id: "xiao",
+    name: "Xiao",
+    element: "anemo",
+    role: "Main-DPS · Aplicador Anemo",
+    region: "Snezhnaya",
+    stars: 5,
+    image: encodeURI("/Images/Genshin Impact/Splash Art/xiao-nobg · Genshin Impact.webp"),
+    icon: encodeURI("/Images/Genshin Impact/Character Icons/Xiao · Icon · Genshin Impact.webp"),
+    namecard: encodeURI("/Images/Genshin Impact/Namecards/Xiao · Namecard · Genshin Impact.webp")
+  },
+  {
+    id: "hu tao",
+    name: "Hu Tao",
+    element: "pyro",
+    role: "Main-DPS · Aplicador Pyro",
+    region: "Snezhnaya",
+    stars: 5,
+    image: encodeURI("/Images/Genshin Impact/Splash Art/hu-tao-nobg · Genshin Impact.webp"),
+    icon: encodeURI("/Images/Genshin Impact/Character Icons/Hu Tao · Icon · Genshin Impact.webp"),
+    namecard: encodeURI("/Images/Genshin Impact/Namecards/Hu Tao · Namecard · Genshin Impact.webp")
+  },
+  {
+    id: "rosaria",
+    name: "Rosaria",
+    element: "cryo",
+    role: "Main-DPS · Aplicador Cryo",
+    region: "Snezhnaya",
+    stars: 5,
+    image: encodeURI("/Images/Genshin Impact/Splash Art/rosaria-nobg · Genshin Impact.webp"),
+    icon: encodeURI("/Images/Genshin Impact/Character Icons/Rosaria · Icon · Genshin Impact.webp"),
+    namecard: encodeURI("/Images/Genshin Impact/Namecards/Rosaria · Namecard · Genshin Impact.webp")
+  },
+  {
+    id: "yanfei",
+    name: "Yanfei",
+    element: "pyro",
+    role: "Main-DPS · Aplicador Pyro",
+    region: "Snezhnaya",
+    stars: 5,
+    image: encodeURI("/Images/Genshin Impact/Splash Art/yanfei-nobg · Genshin Impact.webp"),
+    icon: encodeURI("/Images/Genshin Impact/Character Icons/Yanfei · Icon · Genshin Impact.webp"),
+    namecard: encodeURI("/Images/Genshin Impact/Namecards/Yanfei · Namecard · Genshin Impact.webp")
+  },
+  {
+    id: "eula",
+    name: "Eula",
+    element: "cryo",
+    role: "Main-DPS · Aplicador Cryo",
+    region: "Snezhnaya",
+    stars: 5,
+    image: encodeURI("/Images/Genshin Impact/Splash Art/eula-nobg · Genshin Impact.webp"),
+    icon: encodeURI("/Images/Genshin Impact/Character Icons/Eula · Icon · Genshin Impact.webp"),
+    namecard: encodeURI("/Images/Genshin Impact/Namecards/Eula · Namecard · Genshin Impact.webp")
+  },
+  {
+    id: "kaedehara kazuha",
+    name: "Kaedehara Kazuha",
+    element: "anemo",
+    role: "Main-DPS · Aplicador Anemo",
+    region: "Snezhnaya",
+    stars: 5,
+    image: encodeURI("/Images/Genshin Impact/Splash Art/kazuha_genshin_impact_full_body_render_by_deg5270_den41ud-fullview.webp"),
+    icon: encodeURI("/Images/Genshin Impact/Character Icons/Kaedehara Kazuha · Icon · Genshin Impact.webp"),
+    namecard: encodeURI("/Images/Genshin Impact/Namecards/Kaedehara Kazuha · Namecard · Genshin Impact.webp")
+  },
+  {
+    id: "kamisato ayaka",
+    name: "Kamisato Ayaka",
+    element: "cryo",
+    role: "Main-DPS · Aplicador Cryo",
+    region: "Snezhnaya",
+    stars: 5,
+    image: encodeURI("/Images/Genshin Impact/Splash Art/ayaka-nobg · Genshin Impact.webp"),
+    icon: encodeURI("/Images/Genshin Impact/Character Icons/Kamisato Ayaka · Outfit icon · Genshin Impact.webp"),
+    namecard: encodeURI("/Images/Genshin Impact/Namecards/Kamisato Ayaka · Namecard · Genshin Impact.webp")
+  },
+  {
+    id: "sayu",
+    name: "Sayu",
+    element: "anemo",
+    role: "Main-DPS · Aplicador Anemo",
+    region: "Snezhnaya",
+    stars: 5,
+    image: encodeURI("/Images/Genshin Impact/Splash Art/sayu-nobg · Genshin Impact.webp"),
+    icon: encodeURI("/Images/Genshin Impact/Character Icons/Sayu · Icon · Genshin Impact.webp"),
+    namecard: encodeURI("/Images/Genshin Impact/Namecards/Sayu · Namecard · Genshin Impact.webp")
+  },
+  {
+    id: "yoimiya",
+    name: "Yoimiya",
+    element: "pyro",
+    role: "Main-DPS · Aplicador Pyro",
+    region: "Snezhnaya",
+    stars: 5,
+    image: encodeURI("/Images/Genshin Impact/Splash Art/yoimiya-nobg · Genshin Impact.webp"),
+    icon: encodeURI("/Images/Genshin Impact/Character Icons/Yoimiya · Icon · Genshin Impact.webp"),
+    namecard: encodeURI("/Images/Genshin Impact/Namecards/Yoimiya · Namecard · Genshin Impact.webp")
+  },
+  {
+    id: "aloy",
+    name: "Aloy",
+    element: "cryo",
+    role: "Main-DPS · Aplicador Cryo",
+    region: "Snezhnaya",
+    stars: 5,
+    image: encodeURI("/Images/Genshin Impact/Splash Art/aloy-nobg · Genshin Impact.webp"),
+    icon: encodeURI("/Images/Genshin Impact/Character Icons/Aloy · Icon · Genshin Impact.webp"),
+    namecard: encodeURI("/Images/Genshin Impact/Namecards/Aloy · Namecard · Genshin Impact.webp")
+  },
+  {
+    id: "kujou sara",
+    name: "Kujou Sara",
+    element: "electro",
+    role: "Main-DPS · Aplicador Electro",
+    region: "Snezhnaya",
+    stars: 5,
+    image: encodeURI("/Images/Genshin Impact/Splash Art/kujou-sara-nobg · Genshin Impact.webp"),
+    icon: encodeURI("/Images/Genshin Impact/Character Icons/Kujou Sara · Icon · Genshin Impact.webp"),
+    namecard: encodeURI("/Images/Genshin Impact/Namecards/Kujou Sara · Namecard · Genshin Impact.webp")
+  },
+  {
+    id: "shogun raiden",
+    name: "Shogun Raiden",
+    element: "electro",
+    role: "Main-DPS · Aplicador Electro",
+    region: "Snezhnaya",
+    stars: 5,
+    image: encodeURI("/Images/Genshin Impact/Splash Art/shogun_raiden_genshin_impact_full_body_render_by_deg5270_deqwe2o-pre.webp"),
+    icon: encodeURI("/Images/Genshin Impact/Character Icons/Raiden Shogun · Icon · Genshin Impact.webp"),
+    namecard: encodeURI("/Images/Genshin Impact/Namecards/Raiden Shogun · Namecard · Genshin Impact.webp")
+  },
+  {
+    id: "sangonomiya kokomi",
+    name: "Sangonomiya Kokomi",
+    element: "hydro",
+    role: "Main-DPS · Aplicador Hydro",
+    region: "Snezhnaya",
+    stars: 5,
+    image: encodeURI("/Images/Genshin Impact/Splash Art/kokomi_genshin_impact_full_body_render_by_deg5270_derxa2v-pre.webp"),
+    icon: encodeURI("/Images/Genshin Impact/Character Icons/Sangonomiya Kokomi · Icon · Genshin Impact.webp"),
+    namecard: encodeURI("/Images/Genshin Impact/Namecards/Sangonomiya Kokomi · Namecard · Genshin Impact.webp")
+  },
+  {
+    id: "thoma",
+    name: "Thoma",
+    element: "pyro",
+    role: "Main-DPS · Aplicador Pyro",
+    region: "Snezhnaya",
+    stars: 5,
+    image: encodeURI("/Images/Genshin Impact/Splash Art/thoma-nobg · Genshin Impact.webp"),
+    icon: encodeURI("/Images/Genshin Impact/Character Icons/Thoma · Icon · Genshin Impact.webp"),
+    namecard: encodeURI("/Images/Genshin Impact/Namecards/Thoma · Namecard · Genshin Impact.webp")
+  },
+  {
+    id: "gorou",
+    name: "Gorou",
+    element: "geo",
+    role: "Main-DPS · Aplicador Geo",
+    region: "Snezhnaya",
+    stars: 5,
+    image: encodeURI("/Images/Genshin Impact/Splash Art/gorou-nobg · Genshin Impact.webp"),
+    icon: encodeURI("/Images/Genshin Impact/Character Icons/Gorou · Icon · Genshin Impact.webp"),
+    namecard: encodeURI("/Images/Genshin Impact/Namecards/Gorou · Namecard · Genshin Impact.webp")
+  },
+  {
+    id: "arataki itto",
+    name: "Arataki Itto",
+    element: "geo",
+    role: "Main-DPS · Aplicador Geo",
+    region: "Snezhnaya",
+    stars: 5,
+    image: encodeURI("/Images/Genshin Impact/Splash Art/arataki-itto-nobg · Genshin Impact.webp"),
+    icon: encodeURI("/Images/Genshin Impact/Character Icons/Arataki Itto · Icon · Genshin Impact.webp"),
+    namecard: encodeURI("/Images/Genshin Impact/Namecards/Arataki Itto · Namecard · Genshin Impact.webp")
+  },
+  {
+    id: "yun-jin",
+    name: "Yun Jin",
+    element: "geo",
+    role: "Main-DPS · Aplicador Geo",
+    region: "Snezhnaya",
+    stars: 5,
+    image: encodeURI("/Images/Genshin Impact/Splash Art/yun-jin-nobg · Genshin Impact.webp"),
+    icon: encodeURI("/Images/Genshin Impact/Character Icons/Yun Jin · Icon · Genshin Impact.webp"),
+    namecard: encodeURI("/Images/Genshin Impact/Namecards/Yun Jin · Namecard · Genshin Impact.webp")
+  },
+  {
+    id: "shenhe",
+    name: "Shenhe",
+    element: "geo",
+    role: "Main-DPS · Aplicador Geo",
+    region: "Snezhnaya",
+    stars: 5,
+    image: encodeURI("/Images/Genshin Impact/Splash Art/shenhe-nobg · Genshin Impact.webp"),
+    icon: encodeURI("/Images/Genshin Impact/Character Icons/Shenhe · Icon · Genshin Impact.webp"),
+    namecard: encodeURI("/Images/Genshin Impact/Namecards/Shenhe · Namecard · Genshin Impact.webp")
+  },
+  {
+    id: "yae miko",
+    name: "Yae Miko",
+    element: "electro",
+    role: "Main-DPS · Aplicador Electro",
+    region: "Snezhnaya",
+    stars: 5,
+    image: encodeURI("/Images/Genshin Impact/Splash Art/yae_miko_genshin_impact_full_body_render_by_deg5270_df0i8p6-fullview.webp"),
+    icon: encodeURI("/Images/Genshin Impact/Character Icons/Yae Miko · Icon · Genshin Impact.webp"),
+    namecard: encodeURI("/Images/Genshin Impact/Namecards/Yae Miko · Namecard · Genshin Impact.webp")
+  },
+  {
+    id: "kamisato ayato",
+    name: "Kamisato Ayato",
+    element: "hydro",
+    role: "Main-DPS · Aplicador Hydro",
+    region: "Snezhnaya",
+    stars: 5,
+    image: encodeURI("/Images/Genshin Impact/Splash Art/ayato_genshin_impact_full_body_render_by_deg5270_df2sckt-pre.webp"),
+    icon: encodeURI("/Images/Genshin Impact/Character Icons/Kamisato Ayato · Icon · Genshin Impact.webp"),
+    namecard: encodeURI("/Images/Genshin Impact/Namecards/Kamisato Ayato · Namecard · Genshin Impact.webp")
+  },
+  {
+    id: "yelan",
+    name: "Yelan",
+    element: "hydro",
+    role: "Main-DPS · Aplicador Hydro",
+    region: "Snezhnaya",
+    stars: 5,
+    image: encodeURI("/Images/Genshin Impact/Splash Art/yelan_genshin_impact_full_body_render_by_deg5270_df6iqj2-414w-2x.webp"),
+    icon: encodeURI("/Images/Genshin Impact/Character Icons/Yelan · Icon · Genshin Impact.webp"),
+    namecard: encodeURI("/Images/Genshin Impact/Namecards/Yelan · Namecard · Genshin Impact.webp")
+  },
+  {
+    id: "kuki shinobu",
+    name: "Kuki Shinobu",
+    element: "electro",
+    role: "Main-DPS · Aplicador Electro",
+    region: "Snezhnaya",
+    stars: 5,
+    image: encodeURI("/Images/Genshin Impact/Splash Art/kuki_shinobu_genshin_impact_full_body_render_by_deg5270_df86ze4-fullview.webp"),
+    icon: encodeURI("/Images/Genshin Impact/Character Icons/Kuki Shinobu · Icon · Genshin Impact.webp"),
+    namecard: encodeURI("/Images/Genshin Impact/Namecards/Kuki Shinobu · Namecard · Genshin Impact.webp")
+  },
+  {
+    id: "shikanoin heizou",
+    name: "Shikanoin Heizou",
+    element: "Anemo",
+    role: "Main-DPS · ",
+    region: "Snezhnaya",
+    stars: 5,
+    image: encodeURI("/Images/Genshin Impact/Splash Art/heizou_genshin_impact_full_body_render_by_deg5270_dfbjq9z-fullview.webp"),
+    icon: encodeURI("/Images/Genshin Impact/Character Icons/Shikanoin Heizou · Icon · Genshin Impact.webp"),
+    namecard: encodeURI("/Images/Genshin Impact/Namecards/Shikanoin Heizou · Namecard · Genshin Impact.webp")
+  },
+  {
+    id: "tighnari",
+    name: "Tighnari",
+    element: "dendro",
+    role: "Main-DPS · Aplicador Dendro",
+    region: "Snezhnaya",
+    stars: 5,
+    image: encodeURI("/Images/Genshin Impact/Splash Art/tighnari-nobg · Genshin Impact.webp"),
+    icon: encodeURI("/Images/Genshin Impact/Character Icons/Tighnari · Icon · Genshin Impact.webp"),
+    namecard: encodeURI("/Images/Genshin Impact/Namecards/Tighnari · Namecard · Genshin Impact.webp")
+  },
+  {
+    id: "collei",
+    name: "Collei",
+    element: "dendro",
+    role: "Main-DPS · Aplicador Dendro",
+    region: "Snezhnaya",
+    stars: 5,
+    image: encodeURI("/Images/Genshin Impact/Splash Art/collei-nobg · Genshin Impact.webp"),
+    icon: encodeURI("/Images/Genshin Impact/Character Icons/Collei · Icon · Genshin Impact.webp"),
+    namecard: encodeURI("/Images/Genshin Impact/Namecards/Collei · Namecard · Genshin Impact.webp")
   }
 ];
