@@ -2,6 +2,10 @@
    PANTALLA PRINCIPAL (HOME / LANDING EN RAÍZ)
    ========================================================================== */
 
+.main-content {
+  padding-top: 0px;
+}
+
 .home-container {
   display: flex;
   flex-direction: column;
@@ -15,14 +19,15 @@
   flex-direction: column;
   align-items: center;
   width: 100%;
+  padding-bottom: 100px;
 }
 
 .home-hero-banner-container {
   position: relative;
-  width: 100%;
-  height: 220px;
-  max-height: 240px;
-  border-radius: 20px;
+  width: 100vw;
+  height: 380px;
+  /* max-height: 240px; */
+  /* border-radius: 20px; */
   overflow: hidden;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
   user-select: none;
@@ -76,7 +81,7 @@
 }
 
 .hero-carousel-slide {
-  flex: 0 0 clamp(260px, 42vw, 420px);
+  flex: 0 0 clamp(360px, 48vw, 420px);
   height: 100%;
   position: relative;
   overflow: hidden;
@@ -105,9 +110,9 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
+  padding: 20px 24px 60px 24px;
   text-align: center;
-  padding: 20px 24px;
   pointer-events: none;
 }
 
@@ -727,4 +732,8 @@ a.game-action-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+}
+
+#motores, #como-funciona{
+  scroll-margin-top: 67px;
 }
