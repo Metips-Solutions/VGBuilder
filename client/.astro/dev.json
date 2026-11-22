@@ -1,0 +1,22 @@
+{
+	"pid": 5755,
+	"port": 8200,
+	"url": "http://localhost:8200",
+	"urls": {
+		"local": [
+			"http://localhost:8200/"
+		],
+		"network": [
+			"http://10.255.255.254:8200/",
+			"http://192.168.100.6:8200/",
+			"http://172.18.0.1:8200/"
+		],
+		"networkInterfaceNames": [
+			"lo",
+			"eth1",
+			"br-4e7e654dc90c"
+		]
+	},
+	"background": false,
+	"startedAt": "2026-11-21T23:43:56.158Z"
+}

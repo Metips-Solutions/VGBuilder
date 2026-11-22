@@ -6,6 +6,11 @@ import {
   getDefaultCharacterIcon,
   getShortCharacterName
 } from '../data/characterStickers';
+import {
+  findOptimalTeams,
+  DEFAULT_CHARACTERS,
+  DEFAULT_CATALOG
+} from '../../affinity/affinity-engine.js';
 
 export function AffinityMatcher({
   inventory = [],
@@ -103,35 +108,18 @@ export function AffinityMatcher({
     const startTime = performance.now();
 
     try {
-      const response = await fetch('/affinity/match', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(payload)
-      });
+      const data = findOptimalTeams({
+      targetCharacterId: payload.targetCharacterId,
+      inventory: payload.inventory,
+      characters: DEFAULT_CHARACTERS,
+      catalog: DEFAULT_CATALOG
+    });
 
-      const elapsed = (performance.now() - startTime).toFixed(1);
-      console.log(`⏱️ [VGBuilder Affinity] Tiempo de respuesta: ${elapsed} ms (HTTP ${response.status})`);
-
-      const text = await response.text();
-      let data;
-      try {
-        data = JSON.parse(text);
-      } catch {
-        data = text;
-      }
-
+      const elapsed = (performance.now() - startTime).toFixed(2);
+      console.log(`⏱️ [VGBuilder Affinity] Cálculo local completado en ${elapsed} ms`);
       console.log('📥 [VGBuilder Affinity] Response Data:', data);
 
-      if (!response.ok) {
-        throw new Error(
-          (data && data.message) || `Error HTTP ${response.status}: ${response.statusText || 'Error en servidor'}`
-        );
-      }
-
       if (Array.isArray(data)) {
-        // Enriquecer cada miembro del equipo con sticker aleatorio (o icono oficial si no posee)
         const enrichedTeams = data.map((teamObj) => ({
           ...teamObj,
           team: (teamObj.team || []).map((member) => ({
@@ -144,13 +132,11 @@ export function AffinityMatcher({
           setErrorMsg('No se encontraron combinaciones viables con los acompañantes activos.');
         }
       } else {
-        throw new Error('La respuesta del servidor no tiene el formato esperado.');
+        throw new Error('El motor local no devolvió el formato esperado.');
       }
     } catch (err) {
-      console.error('❌ [VGBuilder Affinity] Error en petición:', err);
-      setErrorMsg(
-        err.message || 'No se pudo conectar con el endpoint /affinity/match. Asegúrate de que el servidor esté activo.'
-      );
+      console.error('❌ [VGBuilder Affinity] Error en motor local:', err);
+      setErrorMsg(err.message || 'Ocurrió un error al calcular las composiciones.');
       setTeams(null);
     } finally {
       setIsLoading(false);
