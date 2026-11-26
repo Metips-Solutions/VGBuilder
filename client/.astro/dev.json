@@ -1,5 +1,5 @@
 {
-	"pid": 7531,
+	"pid": 23353,
 	"port": 8200,
 	"url": "http://localhost:8200",
 	"urls": {
@@ -8,7 +8,7 @@
 		],
 		"network": [
 			"http://10.255.255.254:8200/",
-			"http://10.19.37.125:8200/",
+			"http://10.13.115.11:8200/",
 			"http://172.18.0.1:8200/"
 		],
 		"networkInterfaceNames": [
@@ -18,5 +18,5 @@
 		]
 	},
 	"background": false,
-	"startedAt": "2026-11-23T20:50:26.612Z"
+	"startedAt": "2026-11-25T20:47:39.314Z"
 }
